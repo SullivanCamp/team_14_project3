@@ -31,7 +31,7 @@ app.set("view engine", "ejs");
 // });
 
 
-app.get('/user', (req, res) => {
+app.get('/', (req, res) => {
     teammembers = []
     pool
         .query('SELECT * FROM teammembers;')
