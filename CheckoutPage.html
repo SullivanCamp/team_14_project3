@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Checkout Page</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="checkout-page">
+    <header class="checkout-header">
+      <h1>Checkout</h1>
+      <p>Review your order and make any final changes.</p>
+    </header>
+
+    <main class="checkout-container">
+      <section class="cart-section">
+        <h2>Your Order</h2>
+        <div id="cart-list" class="cart-list"></div>
+      </section>
+
+      <aside class="summary-section">
+        <h2>Order Summary</h2>
+
+        <div class="summary-row">
+          <span>Subtotal</span>
+          <span id="subtotal">$0.00</span>
+        </div>
+
+        <div class="summary-row">
+          <span>Tax</span>
+          <span id="tax">$0.00</span>
+        </div>
+
+        <div class="summary-row total-row">
+          <span>Total</span>
+          <span id="total">$0.00</span>
+        </div>
+
+        <button id="place-order-btn" class="checkout-btn">
+          Place Order
+        </button>
+      </aside>
+    </main>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
