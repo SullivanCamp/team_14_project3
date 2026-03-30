@@ -1,6 +1,76 @@
+body {
+    background-color: white;
+    font-family: fantasy;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+}
+.logo-and-weather {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+}
+
+
 .logohome {
-    position: relative;
-    margin-left: auto;
-    margin-right: auto;
-    width: 50%;
+    width: auto;
+    height: 85vh;
+    object-fit: contain;
+    margin: auto;
+}
+
+a {
+    display: block;
+    width: 100%;
+}
+
+.order-btn {
+    background-color: #4CAF50;
+    border: none;
+    color: white;
+    font-size: 24px;
+    cursor: pointer;
+    font-family: fantasy;
+    font-weight: lighter;
+    width: 100%;
+    height: 15vh; /* bottom 20% */
+}
+
+
+
+div.widget
+{
+  position: fixed;
+  top: 0;
+  transform: translateY(-50%);
+  right: 10px;
+  width: 355px;
+  height: 125px;
+  margin: 150px auto;
+  background-color: #e8f5e9;
+  border-radius: 9px;
+  padding: 25px;
+  padding-right: 30px;
+  box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+div.city
+{
+  font-family: 'Roboto', sans-serif;
+  font-size: 21px;
+  font-weight: bold;
+  text-transform: uppercase;
+  padding-top: 5px;
+  color: rgba(0,0,0,0.7);
+}
+
+div.temp {
+    font-family: 'Roboto', sans-serif;
+    font-size: 49px;
+    font-weight: bold;
+    color: rgba(0,0,0,0.5);
 }
