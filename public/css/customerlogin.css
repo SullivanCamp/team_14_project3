@@ -1,6 +1,29 @@
+body {
+    background-color: white;
+    font-family: fantasy;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+}
+
 .logohome {
-    position: relative;
-    margin-left: auto;
-    margin-right: auto;
-    width: 50%;
+    width: auto;
+    height: auto;
+    max-width: 750px;
+    flex: 1; /* takes up the top 80% */
+    object-fit: contain;
+}
+
+.order-btn {
+    background-color: #4CAF50;
+    border: none;
+    color: white;
+    font-size: 24px;
+    cursor: pointer;
+    font-family: fantasy;
+    font-weight: lighter;
+    width: 100%;
+    height: 20vh; /* bottom 20% */
 }
