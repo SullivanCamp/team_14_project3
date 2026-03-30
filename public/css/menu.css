@@ -257,6 +257,19 @@ body
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
+.cart-link
+{
+  margin-left: auto;
+  border: none;
+  color: white;
+  font-size: 1rem;
+  padding: 12px 20px;
+  border-radius: 20px;
+  cursor: pointer;
+  font-weight: 600;
+  position: relative;
+}
+
 
 .cart-count 
 {
