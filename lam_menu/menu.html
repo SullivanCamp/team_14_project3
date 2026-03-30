@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Team 14 Menu</title>
+  <link rel="stylesheet" href="menu.css" />
+</head>
+<body>
+  <div class="page-shell">
+    <main class="menu-container">
+      <header class="menu-header">
+        <h1>Team 14</h1>
+
+        <input type="text" id="searchInput" class="search-bar" placeholder="Search drinks..." />
+
+        <button class="cart-btn" id="cartBtn">
+          View Cart
+          <span id="cartCount" class="cart-count">0</span>
+        </button>
+
+        <nav class="top-tabs" aria-label="Menu Categories">
+          <button class="tab-btn active" data-category="all">All</button>
+          <button class="tab-btn" data-category="popular">Most Popular</button>
+          <button class="tab-btn" data-category="seasonal">Seasonal</button>
+        </nav>
+      </header>
+
+      <section class="menu-section" id="allSection">
+        <h2 id="sectionTitle">All</h2>
+        <div class="card-row">
+          <article class="drink-card"
+                   data-name="Boba Milk Tea"
+                   data-category="popular"
+                   data-price="5.95">
+            <div class="drink-image">
+              <img src="images/boba1.png" alt="Boba Milk Tea">
+            </div>
+            <button class="plus-btn" aria-label="Add Boba Milk Tea">+</button>
+            <h3>Boba Milk Tea</h3>
+            <p class="desc">Classic black milk tea with chewy boba pearls.</p>
+            <p class="price">$5.95</p>
+          </article>
+
+          <article class="drink-card"
+                   data-name="Mango Cream Tea"
+                   data-category="seasonal"
+                   data-price="6.50">
+            <div class="drink-image">
+              <img src="images/boba2.png" alt="Mango Cream Tea">
+            </div>
+            <button class="plus-btn" aria-label="Add Mango Cream Tea">+</button>
+            <h3>Mango Cream Tea</h3>
+            <p class="desc">A refreshing blend of seasonal mango and milk tea.</p>
+            <p class="price">$6.50</p>
+          </article>
+        </div>
+
+        <p id="noResultMessage" class="no-result" style="display: none;">No item found.</p>
+      </section>
+    </main>
+
+  <script src="menu.js"></script>
+</body>
+</html>
