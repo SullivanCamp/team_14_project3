@@ -4,7 +4,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Team 14 Menu</title>
-  <link rel="stylesheet" href="menu.css" />
+  <link rel="stylesheet" href="css/menu.css">
+  <link rel="stylesheet" href="css/addonpopup.css">
 </head>
 <body>
   <div class="page-shell">
@@ -13,12 +14,12 @@
         <h1>Team 14</h1>
 
         <input type="text" id="searchInput" class="search-bar" placeholder="Search drinks..." />
-
-        <button class="cart-btn" id="cartBtn">
-          View Cart
-          <span id="cartCount" class="cart-count">0</span>
-        </button>
-
+        <a href="/checkout">
+          <button class="cart-btn" id="cartBtn">
+            View Cart
+            <span id="cartCount" class="cart-count">0</span>
+          </button>
+        </a>
         <nav class="top-tabs" aria-label="Menu Categories">
           <button class="tab-btn active" data-category="all">All</button>
           <button class="tab-btn" data-category="popular">Most Popular</button>
@@ -33,9 +34,9 @@
                    data-name="Boba Milk Tea"
                    data-category="popular"
                    data-price="5.95">
-            <div class="drink-image">
+            <button class="drink-image drink-image-button" type="button" aria-label="Customize Boba Milk Tea">
               <img src="images/boba1.png" alt="Boba Milk Tea">
-            </div>
+            </button>
             <button class="plus-btn" aria-label="Add Boba Milk Tea">+</button>
             <h3>Boba Milk Tea</h3>
             <p class="desc">Classic black milk tea with chewy boba pearls.</p>
@@ -46,9 +47,9 @@
                    data-name="Mango Cream Tea"
                    data-category="seasonal"
                    data-price="6.50">
-            <div class="drink-image">
+            <button class="drink-image drink-image-button" type="button" aria-label="Customize Mango Cream Tea">
               <img src="images/boba2.png" alt="Mango Cream Tea">
-            </div>
+            </button>
             <button class="plus-btn" aria-label="Add Mango Cream Tea">+</button>
             <h3>Mango Cream Tea</h3>
             <p class="desc">A refreshing blend of seasonal mango and milk tea.</p>
@@ -59,7 +60,34 @@
         <p id="noResultMessage" class="no-result" style="display: none;">No item found.</p>
       </section>
     </main>
+    <div class="popup-overlay" id="popupOverlay"></div>
 
-  <script src="menu.js"></script>
+    <div class="addon-popup" id="addonPopup">
+      <h2 id="popupDrinkName">Customize Drink</h2>
+
+      <form id="addonForm">
+        <label class="addon-option">
+          <input type="checkbox" name="addon" value="Boba">
+          Boba
+        </label>
+
+        <label class="addon-option">
+          <input type="checkbox" name="addon" value="Jelly">
+          Jelly
+        </label>
+
+        <label class="addon-option">
+          <input type="checkbox" name="addon" value="Oat Milk">
+          Oat Milk
+        </label>
+
+        <div class="popup-actions">
+          <button type="button" class="popup-button cancel-button" id="cancelPopupBtn">Cancel</button>
+          <button type="submit" class="popup-button done-button">Done</button>
+        </div>
+      </form>
+    </div>
+  <script src="js/addonpopup.js"></script>
+  <script src="js/menu.js"></script>
 </body>
 </html>
