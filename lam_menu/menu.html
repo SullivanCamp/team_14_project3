@@ -3,90 +3,65 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Tea Time Menu</title>
+  <title>Team 14 Menu</title>
   <link rel="stylesheet" href="menu.css" />
 </head>
 <body>
   <div class="page-shell">
     <main class="menu-container">
       <header class="menu-header">
-        <h1>Tea Time</h1>
+        <h1>Team 14</h1>
+
+        <input type="text" id="searchInput" class="search-bar" placeholder="Search drinks..." />
 
         <nav class="top-tabs" aria-label="Menu Categories">
-          <button class="tab-btn active" data-category="popular">Popular</button>
-          <button class="tab-btn" data-category="new">New Items</button>
-          <button class="tab-btn" data-category="favorites">Customer Favorites</button>
-          <button class="tab-btn" data-category="milk">Milk Tea</button>
-          <button class="tab-btn" data-category="fruit">Fruit Tea</button>
-          <button class="tab-btn" data-category="frosties">Frosties</button>
-          <button class="tab-btn" data-category="original">Original Tea</button>
-          <button class="tab-btn" data-category="kids">Kid's Menu</button>
+          <button class="tab-btn active" data-category="all">All</button>
+          <button class="tab-btn" data-category="popular">Most Popular</button>
+          <button class="tab-btn" data-category="seasonal">Seasonal</button>
         </nav>
       </header>
 
-      <section class="menu-section" id="popularSection">
-        <h2>Popular</h2>
+      <section class="menu-section" id="allSection">
+        <h2 id="sectionTitle">All</h2>
         <div class="card-row">
           <article class="drink-card"
                    data-name="Boba Milk Tea"
-                   data-price="5.95"
-                   data-description="A customer favorite with classic black tea, milk, and chewy boba."
-                   data-image="images/boba-milk-tea.jpg">
-            <button class="plus-btn" aria-label="Open Boba Milk Tea">+</button>
+                   data-category="popular"
+                   data-price="5.95">
+            <div class="drink-image">
+              <img src="images/boba1.png" alt="Boba Milk Tea">
+            </div>
+            <button class="plus-btn" aria-label="Add Boba Milk Tea">+</button>
             <h3>Boba Milk Tea</h3>
             <p class="desc">Classic black milk tea with chewy boba pearls.</p>
             <p class="price">$5.95</p>
           </article>
-        </div>
-      </section>
 
-      <section class="menu-section" id="SeasonalSection">
-        <h2>Seasonal</h2>
-        <div class="card-row">
           <article class="drink-card"
                    data-name="Mango Cream Tea"
-                   data-price="6.10"
-                   data-description="Bright mango flavor with a creamy tea base."
-                   data-image="images/mango-cream-tea.jpg">
-            <button class="plus-btn" aria-label="Open Mango Cream Tea">+</button>
+                   data-category="seasonal"
+                   data-price="6.50">
+            <div class="drink-image">
+              <img src="images/boba2.png" alt="Mango Cream Tea">
+            </div>
+            <button class="plus-btn" aria-label="Add Mango Cream Tea">+</button>
             <h3>Mango Cream Tea</h3>
-            <p class="desc">Sweet mango with smooth cream topping.</p>
-            <p class="price">$6.10</p>
+            <p class="desc">A refreshing blend of seasonal mango and milk tea.</p>
+            <p class="price">$6.50</p>
           </article>
         </div>
+
+        <p id="noResultMessage" class="no-result" style="display: none;">No item found.</p>
       </section>
     </main>
 
     <div class="bottom-bar">
-      <button class="bottom-btn">Search</button>
-      <button class="bottom-btn">Rewards</button>
-      <button class="cart-btn">View Cart</button>
-    </div>
-  </div>
+      <button class="bottom-btn" id="searchBtn">Search</button>
 
-  <div class="modal-overlay hidden" id="drinkModal">
-    <div class="modal-box" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
-      <button class="close-modal" id="closeModal" aria-label="Close popup">X</button>
-
-      <div class="modal-grid">
-        <div class="modal-visual" id="modalImage"></div>
-
-        <div class="modal-info">
-          <h2 id="modalTitle">Drink Name</h2>
-          <p class="modal-price" id="modalPrice">$0.00</p>
-          <p class="modal-description" id="modalDescription">
-            Drink description goes here.
-          </p>
-
-          <div class="custom-box">
-            <h3>Customization</h3>
-            <p>Sugar Level: teammate will add here</p>
-            <p>Ice Level: teammate will add here</p>
-            <p>Toppings: teammate will add here</p>
-            <p>Quantity / Add to Cart: teammate will add here</p>
-          </div>
-        </div>
-      </div>
+      <button class="cart-btn" id="cartBtn">
+        View Cart
+        <span id="cartCount" class="cart-count">0</span>
+      </button>
     </div>
   </div>
 

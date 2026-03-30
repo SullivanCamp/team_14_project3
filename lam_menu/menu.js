@@ -1,82 +1,115 @@
 const cards = document.querySelectorAll(".drink-card");
 const plusButtons = document.querySelectorAll(".plus-btn");
-const modal = document.getElementById("drinkModal");
-const closeModal = document.getElementById("closeModal");
-
-const modalTitle = document.getElementById("modalTitle");
-const modalPrice = document.getElementById("modalPrice");
-const modalDescription = document.getElementById("modalDescription");
-const modalImage = document.getElementById("modalImage");
-
 const tabButtons = document.querySelectorAll(".tab-btn");
-const popularSection = document.getElementById("popularSection");
-const newSection = document.getElementById("newSection");
 
-function openDrinkModal(card)
+const searchInput = document.getElementById("searchInput");
+const searchBtn = document.getElementById("searchBtn");
+const cartCount = document.getElementById("cartCount");
+const sectionTitle = document.getElementById("sectionTitle");
+const noResultMessage = document.getElementById("noResultMessage");
+
+let currentCategory = "all";
+let cartTotal = 0;
+
+function updateItems()
 {
-  const name = card.dataset.name;
-  const price = card.dataset.price;
-  const description = card.dataset.description;
-  const image = card.dataset.image;
+  const searchText = searchInput.value.toLowerCase();
+  let visibleCount = 0;
 
-  modalTitle.textContent = name;
-  modalPrice.textContent = `$${Number(price).toFixed(2)}`;
-  modalDescription.textContent = description;
-  modalImage.textContent = image;
+  cards.forEach((card) =>
+  {
+    const itemName = card.dataset.name.toLowerCase();
+    const itemCategory = card.dataset.category.toLowerCase();
 
-  modal.classList.remove("hidden");
-}
+    let matchCategory = false;
 
-cards.forEach((card) => 
+    if (currentCategory === "all")
     {
-  card.addEventListener("click", () => {
-    openDrinkModal(card);
-  });
-});
-
-plusButtons.forEach((button) => 
-{
-  button.addEventListener("click", (event) => {
-    event.stopPropagation();
-    const card = button.closest(".drink-card");
-    openDrinkModal(card);
-  });
-});
-
-closeModal.addEventListener("click", () => 
-{
-  modal.classList.add("hidden");
-});
-
-modal.addEventListener("click", (event) =>
-{
-  if (event.target === modal) {
-    modal.classList.add("hidden");
-  }
-});
-
-document.addEventListener("keydown", (event) => 
-{
-  if (event.key === "Escape") {
-    modal.classList.add("hidden");
-  }
-});
-
-tabButtons.forEach((button) => 
-{
-  button.addEventListener("click", () => 
-{
-    tabButtons.forEach((btn) => btn.classList.remove("active"));
-    button.classList.add("active");
-
-    const category = button.dataset.category;
-
-    if (category === "popular") 
+      matchCategory = true;
+    }
+    else if (currentCategory === itemCategory)
     {
-      popularSection.scrollIntoView({ behavior: "smooth", block: "start" });
-    } else if (category === "new") 
+      matchCategory = true;
+    }
+
+    let matchSearch = itemName.includes(searchText);
+
+    if (matchCategory && matchSearch)
     {
-      newSection.scrollIntoView({ behavior: "smooth", block: "start" });
+      card.style.display = "block";
+      visibleCount++;
+    }
+    else
+    {
+      card.style.display = "none";
     }
   });
+
+  if (visibleCount === 0)
+  {
+    noResultMessage.style.display = "block";
+  }
+  else
+  {
+    noResultMessage.style.display = "none";
+  }
+}
+
+tabButtons.forEach((button) =>
+{
+  button.addEventListener("click", () =>
+  {
+    tabButtons.forEach((btn) =>
+    {
+      btn.classList.remove("active");
+    });
+
+    button.classList.add("active");
+    currentCategory = button.dataset.category;
+
+    if (currentCategory === "all")
+    {
+      sectionTitle.textContent = "All";
+    }
+    else if (currentCategory === "popular")
+    {
+      sectionTitle.textContent = "Most Popular";
+    }
+    else if (currentCategory === "seasonal")
+    {
+      sectionTitle.textContent = "Seasonal";
+    }
+
+    updateItems();
+  });
 });
+
+searchInput.addEventListener("input", () =>
+{
+  updateItems();
+});
+
+searchBtn.addEventListener("click", () =>
+{
+  searchInput.focus();
+});
+
+plusButtons.forEach((button) =>
+{
+  button.addEventListener("click", (event) =>
+  {
+    event.stopPropagation();
+
+    cartTotal++;
+    cartCount.textContent = cartTotal;
+
+    button.style.transform = "scale(1.2)";
+
+    setTimeout(() =>
+    {
+      button.style.transform = "scale(1)";
+    }, 150);
+  });
+});
+
+updateItems();
