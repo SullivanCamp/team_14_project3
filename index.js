@@ -26,13 +26,16 @@ process.on('SIGINT', function() {
 app.set("view engine", "ejs");
 app.use(express.static('public'));
 
-// app.get('/', (req, res) => {
-//     const data = {name: 'Mario'};
-//     res.render('index', data);
-// });
 
-
+// default to customer home page
 app.get('/', (req, res) => {
+    res.render('customerhome');
+});
+
+
+
+app.get('/order', (req, res) => {
+    // add whatever data is needed from db
     teammembers = []
     pool
         .query('SELECT * FROM teammembers;')
@@ -42,7 +45,7 @@ app.get('/', (req, res) => {
             }
             const data = {teammembers: teammembers};
             console.log(teammembers);
-            res.render('customerhome', data);
+            res.render('order', data);
         });
 });
 
