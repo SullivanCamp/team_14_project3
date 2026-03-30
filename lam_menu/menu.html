@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tea Time Menu</title>
+  <link rel="stylesheet" href="menu.css" />
+</head>
+<body>
+  <div class="page-shell">
+    <main class="menu-container">
+      <header class="menu-header">
+        <h1>Tea Time</h1>
+
+        <nav class="top-tabs" aria-label="Menu Categories">
+          <button class="tab-btn active" data-category="popular">Popular</button>
+          <button class="tab-btn" data-category="new">New Items</button>
+          <button class="tab-btn" data-category="favorites">Customer Favorites</button>
+          <button class="tab-btn" data-category="milk">Milk Tea</button>
+          <button class="tab-btn" data-category="fruit">Fruit Tea</button>
+          <button class="tab-btn" data-category="frosties">Frosties</button>
+          <button class="tab-btn" data-category="original">Original Tea</button>
+          <button class="tab-btn" data-category="kids">Kid's Menu</button>
+        </nav>
+      </header>
+
+      <section class="menu-section" id="popularSection">
+        <h2>Popular</h2>
+        <div class="card-row">
+          <article class="drink-card"
+                   data-name="Boba Milk Tea"
+                   data-price="5.95"
+                   data-description="A customer favorite with classic black tea, milk, and chewy boba."
+                   data-image="images/boba-milk-tea.jpg">
+            <div class="drink-image"></div>
+            <button class="plus-btn" aria-label="Open Boba Milk Tea">+</button>
+            <h3>Boba Milk Tea</h3>
+            <p class="desc">Classic black milk tea with chewy boba pearls.</p>
+            <p class="price">$5.95</p>
+          </article>
