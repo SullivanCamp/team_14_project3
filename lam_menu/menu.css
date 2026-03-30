@@ -1,0 +1,35 @@
+* {
+  box-sizing: border-box;
+}
+
+body 
+{
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #dcdcdc;
+  color: #222;
+}
+
+.page-shell 
+{
+  min-height: 100vh;
+  padding: 18px;
+}
+
+.menu-container 
+{
+  background: #f8f8f8;
+  border-radius: 24px;
+  padding: 22px 22px 120px;
+  min-height: calc(100vh - 36px);
+  overflow-x: hidden;
+}
+
+.menu-header 
+{
+  display: flex;
+  align-items: flex-start;
+  gap: 28px;
+  margin-bottom: 28px;
+  flex-wrap: wrap;
+}
