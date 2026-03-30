@@ -1,6 +1,8 @@
 const cards = document.querySelectorAll(".drink-card");
 const plusButtons = document.querySelectorAll(".plus-btn");
 const tabButtons = document.querySelectorAll(".tab-btn");
+const drinkImageButtons = document.querySelectorAll(".drink-image-button");
+const addonForm = document.getElementById("addonForm");
 
 const searchInput = document.getElementById("searchInput");
 const searchBtn = document.getElementById("searchBtn");
@@ -10,6 +12,7 @@ const noResultMessage = document.getElementById("noResultMessage");
 
 let currentCategory = "all";
 let cartTotal = 0;
+let cartItems = [];
 
 function updateItems()
 {
@@ -53,6 +56,39 @@ function updateItems()
   {
     noResultMessage.style.display = "none";
   }
+}
+
+function animatePlusButton(button)
+{
+  button.style.transform = "scale(1.2)";
+
+  setTimeout(() =>
+  {
+    button.style.transform = "scale(1)";
+  }, 150);
+}
+
+function addItemToCart(drinkCard, addons)
+{
+  const drinkName = drinkCard.dataset.name;
+  const drinkPrice = Number(drinkCard.dataset.price);
+
+  cartItems.push({
+    name: drinkName,
+    price: drinkPrice,
+    addons: addons
+  });
+
+  cartTotal++;
+  cartCount.textContent = cartTotal;
+
+  const plusButton = drinkCard.querySelector(".plus-btn");
+  if (plusButton)
+  {
+    animatePlusButton(plusButton);
+  }
+
+  console.log(cartItems);
 }
 
 tabButtons.forEach((button) =>
@@ -103,16 +139,35 @@ plusButtons.forEach((button) =>
   {
     event.stopPropagation();
 
-    cartTotal++;
-    cartCount.textContent = cartTotal;
-
-    button.style.transform = "scale(1.2)";
-
-    setTimeout(() =>
-    {
-      button.style.transform = "scale(1)";
-    }, 150);
+    const drinkCard = button.closest(".drink-card");
+    openAddonPopup(drinkCard);
   });
 });
+
+drinkImageButtons.forEach((button) =>
+{
+  button.addEventListener("click", () =>
+  {
+    const drinkCard = button.closest(".drink-card");
+    openAddonPopup(drinkCard);
+  });
+});
+
+addonForm.addEventListener("submit", (event) =>
+{
+  event.preventDefault();
+
+  const activeDrinkCard = getActiveDrinkCard();
+
+  if (!activeDrinkCard)
+  {
+    return;
+  }
+
+  const selectedAddons = getSelectedAddons();
+  addItemToCart(activeDrinkCard, selectedAddons);
+  closeAddonPopup();
+});
+
 
 updateItems();
