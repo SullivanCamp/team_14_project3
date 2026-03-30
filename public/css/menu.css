@@ -281,3 +281,10 @@ body
   font-size: 1rem;
   margin-top: 20px;
 }
+
+.drink-image-button
+{
+  border: none;
+  padding: 0;
+  cursor: pointer;
+}
