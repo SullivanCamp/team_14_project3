@@ -24,6 +24,7 @@ process.on('SIGINT', function() {
 });
 	 	 	 	
 app.set("view engine", "ejs");
+app.use(express.static('public'));
 
 // app.get('/', (req, res) => {
 //     const data = {name: 'Mario'};
@@ -41,11 +42,11 @@ app.get('/', (req, res) => {
             }
             const data = {teammembers: teammembers};
             console.log(teammembers);
-            res.render('user', data);
+            res.render('customerhome', data);
         });
 });
 
 
 app.listen(port, () => {
-    console.log(`Example app listening at http://localhost:${port}/user`);
+    console.log(`Example app listening at http://localhost:${port}/customerhome`);
 });
