@@ -34,14 +34,16 @@ body
   flex-wrap: wrap;
 }
 
-.menu-header h1 {
+.menu-header h1 
+{
   margin: 0;
   font-size: 2rem;
   font-weight: 500;
   min-width: 120px;
 }
 
-.top-tabs {
+.top-tabs 
+{
   display: flex;
   gap: 28px;
   flex-wrap: nowrap;
@@ -50,11 +52,13 @@ body
   scrollbar-width: none;
 }
 
-.top-tabs::-webkit-scrollbar {
+.top-tabs::-webkit-scrollbar 
+{
   display: none;
 }
 
-.tab-btn {
+.tab-btn 
+{
   border: none;
   background: transparent;
   color: #7a7a7a;
@@ -65,3 +69,67 @@ body
   white-space: nowrap;
 }
 
+.tab-btn.active 
+{
+  color: #222;
+  font-weight: 500;
+}
+
+.tab-btn.active::after 
+{
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -2px;
+  width: 100%;
+  height: 3px;
+  background: #737373;
+  border-radius: 10px;
+}
+
+.menu-section 
+{
+  margin-bottom: 34px;
+}
+
+.menu-section h2 
+{
+  font-size: 1.7rem;
+  margin: 0 0 18px;
+}
+
+.card-row 
+{
+  display: flex;
+  gap: 20px;
+  overflow-x: auto;
+  padding-bottom: 6px;
+  scrollbar-width: thin;
+}
+
+.drink-card 
+{
+  position: relative;
+  min-width: 220px;
+  max-width: 220px;
+  cursor: pointer;
+}
+
+.drink-image 
+{
+  height: 220px;
+  border-radius: 28px;
+  background: #ececec;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 4.4rem;
+  margin-bottom: 14px;
+}
+
+.drink-card h3 
+{
+  font-size: 1.25rem;
+  margin: 0 0 8px;
+  font-weight: 500;
+}
