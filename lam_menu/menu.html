@@ -14,6 +14,11 @@
 
         <input type="text" id="searchInput" class="search-bar" placeholder="Search drinks..." />
 
+        <button class="cart-btn" id="cartBtn">
+          View Cart
+          <span id="cartCount" class="cart-count">0</span>
+        </button>
+
         <nav class="top-tabs" aria-label="Menu Categories">
           <button class="tab-btn active" data-category="all">All</button>
           <button class="tab-btn" data-category="popular">Most Popular</button>
@@ -54,16 +59,6 @@
         <p id="noResultMessage" class="no-result" style="display: none;">No item found.</p>
       </section>
     </main>
-
-    <div class="bottom-bar">
-      <button class="bottom-btn" id="searchBtn">Search</button>
-
-      <button class="cart-btn" id="cartBtn">
-        View Cart
-        <span id="cartCount" class="cart-count">0</span>
-      </button>
-    </div>
-  </div>
 
   <script src="menu.js"></script>
 </body>

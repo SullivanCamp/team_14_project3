@@ -89,10 +89,13 @@ searchInput.addEventListener("input", () =>
   updateItems();
 });
 
-searchBtn.addEventListener("click", () =>
+if (searchBtn)
 {
-  searchInput.focus();
-});
+  searchBtn.addEventListener("click", () =>
+  {
+    searchInput.focus();
+  });
+}
 
 plusButtons.forEach((button) =>
 {
