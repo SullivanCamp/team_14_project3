@@ -56,3 +56,40 @@
         </div>
       </section>
     </main>
+
+    <div class="bottom-bar">
+      <button class="bottom-btn">Search</button>
+      <button class="bottom-btn">Rewards</button>
+      <button class="cart-btn">View Cart</button>
+    </div>
+  </div>
+
+  <div class="modal-overlay hidden" id="drinkModal">
+    <div class="modal-box" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <button class="close-modal" id="closeModal" aria-label="Close popup">X</button>
+
+      <div class="modal-grid">
+        <div class="modal-visual" id="modalImage"></div>
+
+        <div class="modal-info">
+          <h2 id="modalTitle">Drink Name</h2>
+          <p class="modal-price" id="modalPrice">$0.00</p>
+          <p class="modal-description" id="modalDescription">
+            Drink description goes here.
+          </p>
+
+          <div class="custom-box">
+            <h3>Customization</h3>
+            <p>Sugar Level: teammate will add here</p>
+            <p>Ice Level: teammate will add here</p>
+            <p>Toppings: teammate will add here</p>
+            <p>Quantity / Add to Cart: teammate will add here</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="menu.js"></script>
+</body>
+</html>
