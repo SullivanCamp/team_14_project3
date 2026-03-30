@@ -34,6 +34,18 @@ app.get('/', (req, res) => {
 
 
 
+// Weather data access
+app.get('/weather', (req, res) => {
+    const apiKey = process.env.WEATHER_API_KEY;
+    const url = `http://api.weatherapi.com/v1/current.json?key=${apiKey}&q=College Station&aqi=no`;
+    
+    fetch(url)
+        .then(response => response.json())
+        .then(data => res.json({ temp: data.current.temp_f }))
+        .catch(error => res.status(500).json({ error: 'Weather fetch failed' }));
+});
+
+
 app.get('/order', (req, res) => {
     // add whatever data is needed from db
     teammembers = []
