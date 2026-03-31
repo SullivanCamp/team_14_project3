@@ -1,32 +1,4 @@
-const cartItems = [
-  {
-    id: 1,
-    name: "Classic Milk Tea",
-    price: 5.25,
-    quantity: 2,
-    size: "Large",
-    sweetness: "50%",
-    ice: "Less Ice"
-  },
-  {
-    id: 2,
-    name: "Taro Milk Tea",
-    price: 5.75,
-    quantity: 1,
-    size: "Medium",
-    sweetness: "100%",
-    ice: "Regular Ice"
-  },
-  {
-    id: 3,
-    name: "Brown Sugar Boba",
-    price: 6.25,
-    quantity: 1,
-    size: "Large",
-    sweetness: "75%",
-    ice: "No Ice"
-  }
-];
+let cartItems = JSON.parse(localStorage.getItem("cartItems")) || [];
 
 const taxRate = 0.0825;
 
@@ -36,16 +8,24 @@ const taxElement = document.getElementById("tax");
 const totalElement = document.getElementById("total");
 const placeOrderBtn = document.getElementById("place-order-btn");
 
-function renderCart() {
+function saveCart()
+{
+  localStorage.setItem("cartItems", JSON.stringify(cartItems));
+}
+
+function renderCart()
+{
   cartList.innerHTML = "";
 
-  if (cartItems.length === 0) {
+  if (cartItems.length === 0)
+  {
     cartList.innerHTML = `<p class="empty-cart">Your cart is empty.</p>`;
     updateSummary();
     return;
   }
 
-  cartItems.forEach((item) => {
+  cartItems.forEach((item) =>
+  {
     const itemDiv = document.createElement("div");
     itemDiv.classList.add("cart-item");
 
@@ -74,38 +54,53 @@ function renderCart() {
   updateSummary();
 }
 
-function increaseQuantity(id) {
+function increaseQuantity(id)
+{
   const item = cartItems.find((cartItem) => cartItem.id === id);
-  if (item) {
+
+  if (item)
+  {
     item.quantity += 1;
+    saveCart();
     renderCart();
   }
 }
 
-function decreaseQuantity(id) {
+function decreaseQuantity(id)
+{
   const item = cartItems.find((cartItem) => cartItem.id === id);
-  if (item) {
+
+  if (item)
+  {
     item.quantity -= 1;
 
-    if (item.quantity <= 0) {
+    if (item.quantity <= 0)
+    {
       const index = cartItems.findIndex((cartItem) => cartItem.id === id);
       cartItems.splice(index, 1);
     }
 
+    saveCart();
     renderCart();
   }
 }
 
-function removeItem(id) {
+function removeItem(id)
+{
   const index = cartItems.findIndex((cartItem) => cartItem.id === id);
-  if (index !== -1) {
+
+  if (index !== -1)
+  {
     cartItems.splice(index, 1);
+    saveCart();
     renderCart();
   }
 }
 
-function updateSummary() {
-  const subtotal = cartItems.reduce((sum, item) => {
+function updateSummary()
+{
+  const subtotal = cartItems.reduce((sum, item) =>
+  {
     return sum + item.price * item.quantity;
   }, 0);
 
@@ -119,13 +114,18 @@ function updateSummary() {
   placeOrderBtn.disabled = cartItems.length === 0;
 }
 
-placeOrderBtn.addEventListener("click", () => {
-  if (cartItems.length === 0) {
+placeOrderBtn.addEventListener("click", () =>
+{
+  if (cartItems.length === 0)
+  {
     alert("Your cart is empty.");
     return;
   }
 
   alert("Order placed successfully!");
+  cartItems = [];
+  saveCart();
+  renderCart();
 });
 
 renderCart();
