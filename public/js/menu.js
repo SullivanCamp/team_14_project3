@@ -11,8 +11,10 @@ const sectionTitle = document.getElementById("sectionTitle");
 const noResultMessage = document.getElementById("noResultMessage");
 
 let currentCategory = "all";
-let cartTotal = 0;
-let cartItems = [];
+let cartItems = JSON.parse(localStorage.getItem("cartItems")) || [];
+let cartTotal = cartItems.reduce((sum, item) => sum + item.quantity, 0);
+
+cartCount.textContent = cartTotal;
 
 function updateItems()
 {
@@ -35,7 +37,7 @@ function updateItems()
       matchCategory = true;
     }
 
-    let matchSearch = itemName.includes(searchText);
+    const matchSearch = itemName.includes(searchText);
 
     if (matchCategory && matchSearch)
     {
@@ -68,18 +70,50 @@ function animatePlusButton(button)
   }, 150);
 }
 
+function saveCart()
+{
+  localStorage.setItem("cartItems", JSON.stringify(cartItems));
+}
+
 function addItemToCart(drinkCard, addons)
 {
   const drinkName = drinkCard.dataset.name;
   const drinkPrice = Number(drinkCard.dataset.price);
 
-  cartItems.push({
-    name: drinkName,
-    price: drinkPrice,
-    addons: addons
+  const size = addons.size || "Medium";
+  const sweetness = addons.sweetness || "100%";
+  const ice = addons.ice || "Regular Ice";
+
+  const existingItem = cartItems.find((item) =>
+  {
+    return (
+      item.name === drinkName &&
+      item.size === size &&
+      item.sweetness === sweetness &&
+      item.ice === ice
+    );
   });
 
-  cartTotal++;
+  if (existingItem)
+  {
+    existingItem.quantity += 1;
+  }
+  else
+  {
+    cartItems.push({
+      id: Date.now(),
+      name: drinkName,
+      price: drinkPrice,
+      quantity: 1,
+      size: size,
+      sweetness: sweetness,
+      ice: ice
+    });
+  }
+
+  saveCart();
+
+  cartTotal = cartItems.reduce((sum, item) => sum + item.quantity, 0);
   cartCount.textContent = cartTotal;
 
   const plusButton = drinkCard.querySelector(".plus-btn");
@@ -114,6 +148,10 @@ tabButtons.forEach((button) =>
     else if (currentCategory === "seasonal")
     {
       sectionTitle.textContent = "Seasonal";
+    }
+    else
+    {
+      sectionTitle.textContent = currentCategory;
     }
 
     updateItems();
@@ -168,6 +206,5 @@ addonForm.addEventListener("submit", (event) =>
   addItemToCart(activeDrinkCard, selectedAddons);
   closeAddonPopup();
 });
-
 
 updateItems();
