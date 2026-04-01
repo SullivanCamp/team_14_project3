@@ -1,7 +1,17 @@
 const express = require("express");
-const pool = require("../db");
+const { Pool } = require("pg");
+require("dotenv").config();
 
 const router = express.Router();
+
+const pool = new Pool({
+  user: process.env.PSQL_USER,
+  host: process.env.PSQL_HOST,
+  database: process.env.PSQL_DATABASE,
+  password: process.env.PSQL_PASSWORD,
+  port: process.env.PSQL_PORT,
+  ssl: { rejectUnauthorized: false }
+});
 
 router.get("/", async (req, res) => {
   try {
