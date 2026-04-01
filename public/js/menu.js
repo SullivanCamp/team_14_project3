@@ -203,6 +203,10 @@ tabButtons.forEach((button) => {
     } else if (currentCategory === "seasonal") {
       sectionTitle.textContent = "Seasonal";
     }
+    else
+    {
+      sectionTitle.textContent = currentCategory;
+    }
 
     renderMenuItems();
   });
