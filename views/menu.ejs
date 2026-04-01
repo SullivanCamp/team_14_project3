@@ -4,8 +4,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Team 14 Menu</title>
-  <link rel="stylesheet" href="css/menu.css">
-  <link rel="stylesheet" href="css/addonpopup.css">
+  <link rel="stylesheet" href="/css/menu.css">
+  <link rel="stylesheet" href="/css/addonpopup.css">
 </head>
 <body>
   <div class="page-shell">
@@ -13,53 +13,36 @@
       <header class="menu-header">
         <h1>Team 14</h1>
 
-        <input type="text" id="searchInput" class="search-bar" placeholder="Search drinks..." />
-        <a href="/checkout" class = "cart-link">
-          <button class="cart-btn" id="cartBtn">
+        <input
+          type="text"
+          id="searchInput"
+          class="search-bar"
+          placeholder="Search drinks..."
+        />
+
+        <a href="/checkout" class="cart-link">
+          <button class="cart-btn" id="cartBtn" type="button">
             View Cart
             <span id="cartCount" class="cart-count">0</span>
           </button>
         </a>
+
         <nav class="top-tabs" aria-label="Menu Categories">
-          <button class="tab-btn active" data-category="all">All</button>
-          <button class="tab-btn" data-category="popular">Most Popular</button>
-          <button class="tab-btn" data-category="seasonal">Seasonal</button>
+          <button class="tab-btn active" data-category="all" type="button">All</button>
+          <button class="tab-btn" data-category="popular" type="button">Most Popular</button>
+          <button class="tab-btn" data-category="seasonal" type="button">Seasonal</button>
         </nav>
       </header>
 
       <section class="menu-section" id="allSection">
         <h2 id="sectionTitle">All</h2>
-        <div class="card-row">
-          <article class="drink-card"
-                   data-name="Boba Milk Tea"
-                   data-category="popular"
-                   data-price="5.95">
-            <button class="drink-image drink-image-button" type="button" aria-label="Customize Boba Milk Tea">
-              <img src="images/boba1.png" alt="Boba Milk Tea">
-            </button>
-            <button class="plus-btn" aria-label="Add Boba Milk Tea">+</button>
-            <h3>Boba Milk Tea</h3>
-            <p class="desc">Classic black milk tea with chewy boba pearls.</p>
-            <p class="price">$5.95</p>
-          </article>
 
-          <article class="drink-card"
-                   data-name="Mango Cream Tea"
-                   data-category="seasonal"
-                   data-price="6.50">
-            <button class="drink-image drink-image-button" type="button" aria-label="Customize Mango Cream Tea">
-              <img src="images/boba2.png" alt="Mango Cream Tea">
-            </button>
-            <button class="plus-btn" aria-label="Add Mango Cream Tea">+</button>
-            <h3>Mango Cream Tea</h3>
-            <p class="desc">A refreshing blend of seasonal mango and milk tea.</p>
-            <p class="price">$6.50</p>
-          </article>
-        </div>
+        <div class="card-row" id="menuCardRow"></div>
 
         <p id="noResultMessage" class="no-result" style="display: none;">No item found.</p>
       </section>
     </main>
+
     <div class="popup-overlay" id="popupOverlay"></div>
 
     <div class="addon-popup" id="addonPopup">
@@ -87,7 +70,9 @@
         </div>
       </form>
     </div>
-  <script src="js/addonpopup.js"></script>
-  <script src="js/menu.js"></script>
+  </div>
+
+  <script src="/js/addonpopup.js"></script>
+  <script src="/js/menu.js"></script>
 </body>
 </html>
