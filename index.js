@@ -45,6 +45,10 @@ app.get('/weather', (req, res) => {
         .catch(error => res.status(500).json({ error: 'Weather fetch failed' }));
 });
 
+// Menu data access
+const menuDataRoute = require("./routes/menuData");
+app.use("/menu-data", menuDataRoute);
+
 
 app.get('/order', (req, res) => {
     // add whatever data is needed from db
