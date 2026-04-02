@@ -40,18 +40,8 @@ function updateCartCount() {
   cartCount.textContent = totalCount;
 }
 
-function getImagePathByName(itemName) {
-  const name = itemName.toLowerCase();
-
-  if (name.includes("mango")) {
-    return "/images/boba2.png";
-  }
-
-  if (name.includes("milk") || name.includes("boba") || name.includes("tea")) {
-    return "/images/boba1.png";
-  }
-
-  return "/images/happy-tapi.png";
+function getImagePath(itemId) {
+  return `/images/${itemId}.png`;
 }
 
 function renderMenuItems() {
@@ -90,7 +80,7 @@ function renderMenuItems() {
 
     card.innerHTML = `
       <button class="drink-image drink-image-button" type="button" aria-label="Customize ${item.name}">
-        <img src="${getImagePathByName(item.name)}" alt="${item.name}">
+        <img src="${getImagePath(item.item_id)}" alt="${item.name}" onerror="this.src='/images/default.png'">
       </button>
 
       <button class="plus-btn" type="button" aria-label="Add ${item.name}">+</button>
