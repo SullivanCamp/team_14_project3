@@ -5,8 +5,11 @@
 body
 {
   margin: 0;
-  font-family: Arial, sans-serif;
-  background: #111;
+  font-family: "Inter", "Segoe UI", Arial, sans-serif;
+  background:
+    radial-gradient(circle at top left, rgba(91, 141, 239, 0.18), transparent 28%),
+    radial-gradient(circle at bottom right, rgba(255, 166, 77, 0.16), transparent 24%),
+    linear-gradient(135deg, #121212, #1b1b1b 45%, #101010);
   color: #222;
 }
 
@@ -18,13 +21,15 @@ body
 
 .menu-container
 {
-  background: #f6f6f6;
+  background: rgba(248, 248, 248, 0.96);
+  backdrop-filter: blur(10px);
   border-radius: 28px;
-  padding: 30px 30px 40px;
-  min-height: calc(100vh - 56px);
-  max-width: 1280px;
-  margin: 0 auto;
-  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.18);
+  padding: 28px 28px 42px;
+  min-height: calc(100vh - 36px);
+  width: 100%;
+  max-width: none;
+  margin: 0;
+  box-shadow: 0 22px 60px rgba(0, 0, 0, 0.25);
   overflow-x: hidden;
 }
 
@@ -40,20 +45,21 @@ body
 .menu-header h1
 {
   margin: 0;
-  font-size: 2.1rem;
-  font-weight: 500;
-  color: #1f1f1f;
+  font-size: 2.7rem;
+  font-weight: 700;
+  color: #1c1c1c;
+  letter-spacing: -0.03em;
 }
 
 .search-bar
 {
-  padding: 14px 18px;
+  padding: 15px 20px;
   border: none;
-  border-radius: 16px;
+  border-radius: 18px;
   font-size: 1rem;
-  width: 300px;
+  width: 360px;
   background: white;
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.08);
   outline: none;
   transition: box-shadow 0.2s ease, transform 0.2s ease;
 }
@@ -190,16 +196,18 @@ body
 
 .menu-section h2
 {
-  font-size: 1.8rem;
-  margin: 0 0 18px;
-  color: #1f1f1f;
+  font-size: 2.2rem;
+  margin: 0 0 22px;
+  color: #1b1b1b;
+  font-weight: 700;
+  letter-spacing: -0.02em;
 }
 
 .card-row
 {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  gap: 24px;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 28px;
   align-items: start;
 }
 
@@ -221,22 +229,20 @@ body
 {
   width: 100%;
   aspect-ratio: 1 / 1;
-  border-radius: 26px;
-  background: #ececec;
+  border-radius: 28px;
+  background: linear-gradient(180deg, #f0f0f0, #e7e7e7);
   display: flex;
   justify-content: center;
   align-items: center;
   overflow: hidden;
-  position: relative;
-  margin-bottom: 14px;
-  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.06);
+  margin-bottom: 16px;
+  box-shadow: 0 14px 28px rgba(0, 0, 0, 0.08);
   transition: transform 0.22s ease, box-shadow 0.22s ease, background 0.22s ease;
 }
 
-.drink-card:hover .drink-image
+.drink-card:hover .drink-image img
 {
-  background: #e8e8e8;
-  box-shadow: 0 18px 30px rgba(0, 0, 0, 0.12);
+  transform: scale(1.05);
 }
 
 .drink-image img
@@ -245,6 +251,7 @@ body
   height: 100%;
   object-fit: cover;
   display: block;
+  transition: transform 0.28s ease;
 }
 
 .drink-image-button
@@ -257,19 +264,20 @@ body
 
 .drink-card h3
 {
-  font-size: 1.22rem;
-  margin: 0 0 8px;
-  font-weight: 600;
-  color: #2b2b2b;
+  font-size: 1.45rem;
+  margin: 0 0 10px;
+  font-weight: 700;
+  color: #222;
+  letter-spacing: -0.02em;
 }
 
 .desc
 {
   margin: 0 0 12px;
-  color: #8a8a8a;
-  font-size: 0.92rem;
+  color: #7f7f7f;
+  font-size: 1rem;
   line-height: 1.45;
-  min-height: 44px;
+  min-height: 52px;
 }
 
 .price
@@ -280,28 +288,28 @@ body
   font-weight: 500;
 }
 
-.plus-btn 
+.plus-btn
 {
   position: absolute;
-  right: 10px;
-  bottom: 10px; /* anchor to bottom of image */
-  width: 44px;
-  height: 44px;
+  right: 14px;
+  bottom: 112px;
+  width: 50px;
+  height: 50px;
   border-radius: 50%;
   border: none;
   background: white;
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
-  font-size: 1.4rem;
+  box-shadow: 0 10px 22px rgba(0, 0, 0, 0.16);
+  font-size: 1.6rem;
   cursor: pointer;
-  transition: 0.2s ease;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
   z-index: 3;
 }
 
 .plus-btn:hover
 {
-  transform: scale(1.08);
-  box-shadow: 0 12px 22px rgba(0, 0, 0, 0.18);
-  background: #fdfdfd;
+  transform: scale(1.1);
+  box-shadow: 0 14px 28px rgba(0, 0, 0, 0.2);
+  background: #ffffff;
 }
 
 .no-result
