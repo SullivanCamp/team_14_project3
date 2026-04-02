@@ -85,7 +85,7 @@ function renderMenuItems() {
       </button>
 
       <h3>${item.name}</h3>
-      <p class="desc">Freshly made and ready to customize.</p>
+      <p class="desc">${item.description || "Freshly made and ready to customize."}</p>
       <p class="price">$${Number(item.price).toFixed(2)}</p>
     `;
 

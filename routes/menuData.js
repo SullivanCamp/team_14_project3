@@ -16,7 +16,7 @@ const pool = new Pool({
 router.get("/", async (req, res) => {
   try {
     const query = `
-      SELECT item_id, name, price
+      SELECT item_id, name, price, description
       FROM menu_item
       WHERE item_id < 200
       ORDER BY item_id
@@ -37,6 +37,7 @@ router.get("/", async (req, res) => {
         item_id: Number(row.item_id),
         name: row.name,
         price: Number(row.price),
+        description: row.description || "Freshly made and ready to customize.",
         category: category
       };
     });
