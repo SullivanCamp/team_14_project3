@@ -79,11 +79,10 @@ function renderMenuItems() {
     card.dataset.price = item.price;
 
     card.innerHTML = `
-      <button class="drink-image drink-image-button" type="button" aria-label="Customize ${item.name}">
+      <button class="drink-image drink-image-button" type="button">
         <img src="${getImagePath(item.item_id)}" alt="${item.name}" onerror="this.src='/images/default.png'">
+        <button class="plus-btn" type="button">+</button>
       </button>
-
-      <button class="plus-btn" type="button" aria-label="Add ${item.name}">+</button>
 
       <h3>${item.name}</h3>
       <p class="desc">Freshly made and ready to customize.</p>
