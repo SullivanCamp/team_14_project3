@@ -15,6 +15,18 @@ const paymentMethodSelect = document.getElementById("paymentMethodSelect");
 const cashierTabs = document.querySelectorAll(".cashier-tab");
 const clockBox = document.getElementById("clockBox");
 
+const cashierModal = document.getElementById("cashierModal");
+const cashierModalOverlay = document.getElementById("cashierModalOverlay");
+const closeCashierModalBtn = document.getElementById("closeCashierModalBtn");
+const cancelCashierModalBtn = document.getElementById("cancelCashierModalBtn");
+const addDrinkBtn = document.getElementById("addDrinkBtn");
+
+const modalDrinkName = document.getElementById("modalDrinkName");
+const modalDrinkPrice = document.getElementById("modalDrinkPrice");
+const drinkQtyInput = document.getElementById("drinkQtyInput");
+const sugarSelect = document.getElementById("sugarSelect");
+const iceSelect = document.getElementById("iceSelect");
+
 let currentCategory = "all";
 let menuItems = [];
 let cashierCart = [];
@@ -204,3 +216,137 @@ function renderCart() {
 
   saveCashierCart();
 }
+
+function addActiveDrinkToOrder() {
+  if (!activeDrink) {
+    return;
+  }
+
+  const quantity = Math.max(1, Number(drinkQtyInput.value) || 1);
+
+  cashierCart.push({
+    itemId: Number(activeDrink.item_id),
+    name: activeDrink.name,
+    price: Number(activeDrink.price),
+    qty: quantity,
+    sugar: Number(sugarSelect.value),
+    ice: Number(iceSelect.value),
+    toppings: getSelectedToppings()
+  });
+
+  renderCart();
+  closeCashierModal();
+}
+
+async function loadMenu() {
+  try {
+    const response = await fetch("/menu-data");
+    const data = await response.json();
+
+    if (!data.success) {
+      throw new Error(data.error || "Failed to load menu");
+    }
+
+    menuItems = data.items || [];
+    renderMenu();
+  } catch (error) {
+    console.error("Cashier menu load failed:", error);
+    cashierNoResult.style.display = "block";
+    cashierNoResult.textContent = "Failed to load menu items.";
+  }
+}
+
+function clearOrder() {
+  cashierCart = [];
+  renderCart();
+}
+
+async function payNow() {
+  if (cashierCart.length === 0) {
+    alert("Please add at least one item first.");
+    return;
+  }
+
+  const subtotal = cashierCart.reduce((sum, item) => {
+    return sum + Number(item.price) * Number(item.qty);
+  }, 0);
+
+  try {
+    const response = await fetch("/orders", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        employeeFirstName: "Lam",
+        totalPrice: subtotal,
+        paymentMethod: paymentMethodSelect.value,
+        cart: cashierCart
+      })
+    });
+
+    const result = await response.json();
+
+    if (!response.ok) {
+      throw new Error(result.error || "Failed to submit order.");
+    }
+
+    alert(`Order submitted successfully. Order ID: ${result.orderId}`);
+    cashierCart = [];
+    renderCart();
+  } catch (error) {
+    console.error("Pay now failed:", error);
+    alert(error.message || "Something went wrong while placing the order.");
+  }
+}
+
+cashierTabs.forEach((tab) => {
+  tab.addEventListener("click", () => {
+    cashierTabs.forEach((btn) => btn.classList.remove("active"));
+    tab.classList.add("active");
+    currentCategory = tab.dataset.category;
+    renderMenu();
+  });
+});
+
+cashierSearch.addEventListener("input", renderMenu);
+closeCashierModalBtn.addEventListener("click", closeCashierModal);
+cancelCashierModalBtn.addEventListener("click", closeCashierModal);
+cashierModalOverlay.addEventListener("click", closeCashierModal);
+addDrinkBtn.addEventListener("click", addActiveDrinkToOrder);
+clearOrderBtn.addEventListener("click", clearOrder);
+payNowBtn.addEventListener("click", payNow);
+
+orderItems.addEventListener("click", (event) => {
+  const minusBtn = event.target.closest(".minus-btn");
+  const plusBtn = event.target.closest(".plus-qty-btn");
+  const removeBtn = event.target.closest(".remove-btn");
+
+  if (minusBtn) {
+    const index = Number(minusBtn.dataset.index);
+    if (cashierCart[index].qty > 1) {
+      cashierCart[index].qty -= 1;
+    } else {
+      cashierCart.splice(index, 1);
+    }
+    renderCart();
+    return;
+  }
+
+  if (plusBtn) {
+    const index = Number(plusBtn.dataset.index);
+    cashierCart[index].qty += 1;
+    renderCart();
+    return;
+  }
+
+  if (removeBtn) {
+    const index = Number(removeBtn.dataset.index);
+    cashierCart.splice(index, 1);
+    renderCart();
+  }
+});
+
+loadCashierCart();
+renderCart();
+loadMenu();
