@@ -29,8 +29,25 @@ app.get("/weather", (req, res) => {
     .catch(() => res.status(500).json({ error: "Weather fetch failed" }));
 });
 
-app.get("/order", (req, res) => {
-  res.render("menu");
+// Menu data access
+const menuDataRoute = require("./routes/menuData");
+app.use("/menu-data", menuDataRoute);
+
+
+app.get('/order', (req, res) => {
+    // add whatever data is needed from db
+    // teammembers = []
+    // pool
+    //     .query('SELECT * FROM teammembers;')
+    //     .then(query_res => {
+    //         for (let i = 0; i < query_res.rowCount; i++){
+    //             teammembers.push(query_res.rows[i]);
+    //         }
+    //         const data = {teammembers: teammembers};
+    //         console.log(teammembers);
+    //         res.render('order', data);
+    //     });
+    res.render('menu');
 });
 
 app.get("/checkout", (req, res) => {
@@ -38,5 +55,5 @@ app.get("/checkout", (req, res) => {
 });
 
 app.listen(port, () => {
-  console.log(`Example app listening at http://localhost:${port}/customerhome`);
+    console.log(`Example app listening at http://localhost:${port}/customerhome`);
 });
