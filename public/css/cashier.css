@@ -183,3 +183,176 @@ body
   font-size: 0.95rem;
   min-width: 130px;
 }
+
+.order-items
+{
+  background: #f7f9fc;
+  border-radius: 18px;
+  padding: 14px;
+  min-height: 340px;
+  max-height: 340px;
+  overflow-y: auto;
+  margin-bottom: 16px;
+}
+
+.empty-order
+{
+  color: #7b8490;
+  font-size: 0.98rem;
+  line-height: 1.5;
+}
+
+.order-item-card
+{
+  background: white;
+  border-radius: 16px;
+  padding: 12px 12px 10px;
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.06);
+  margin-bottom: 10px;
+}
+
+.order-item-top
+{
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.order-item-name
+{
+  margin: 0 0 4px;
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.order-item-custom
+{
+  color: #6e7682;
+  font-size: 0.87rem;
+  line-height: 1.4;
+}
+
+.order-item-price
+{
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.order-item-actions
+{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 12px;
+}
+
+.qty-controls
+{
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.qty-btn,
+.remove-btn
+{
+  border: none;
+  cursor: pointer;
+  border-radius: 12px;
+  padding: 8px 12px;
+  font-weight: 700;
+  transition: 0.18s ease;
+}
+
+.qty-btn
+{
+  background: #eef3ff;
+  color: #2e58b3;
+}
+
+.qty-btn:hover
+{
+  background: #dfe9ff;
+}
+
+.remove-btn
+{
+  background: #fff0f0;
+  color: #c53939;
+}
+
+.remove-btn:hover
+{
+  background: #ffe1e1;
+}
+
+.summary-box
+{
+  background: #10141b;
+  color: white;
+  border-radius: 18px;
+  padding: 16px;
+  margin-bottom: 16px;
+}
+
+.summary-row
+{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.summary-row:last-child
+{
+  margin-bottom: 0;
+}
+
+.total-row
+{
+  font-size: 1.2rem;
+  font-weight: 800;
+  padding-top: 8px;
+  border-top: 1px solid rgba(255, 255, 255, 0.14);
+}
+
+.order-actions,
+.modal-actions
+{
+  display: flex;
+  gap: 12px;
+}
+
+.primary-btn,
+.secondary-btn
+{
+  border: none;
+  border-radius: 16px;
+  padding: 14px 18px;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.18s ease, box-shadow 0.18s ease, opacity 0.18s ease;
+}
+
+.primary-btn
+{
+  background: linear-gradient(135deg, #469dff, #2e7ff3);
+  color: white;
+  box-shadow: 0 12px 24px rgba(70, 157, 255, 0.24);
+  flex: 1;
+}
+
+.secondary-btn
+{
+  background: #eef1f6;
+  color: #222d3c;
+  flex: 1;
+}
+
+.primary-btn:hover,
+.secondary-btn:hover
+{
+  transform: translateY(-1px);
+}
