@@ -16,67 +16,53 @@ let cartTotal = cartItems.reduce((sum, item) => sum + item.quantity, 0);
 
 cartCount.textContent = cartTotal;
 
-function updateItems()
-{
+function saveCart() {
+  localStorage.setItem("cartItems", JSON.stringify(cartItems));
+}
+
+function updateItems() {
   const searchText = searchInput.value.toLowerCase();
   let visibleCount = 0;
 
-  cards.forEach((card) =>
-  {
+  cards.forEach((card) => {
     const itemName = card.dataset.name.toLowerCase();
     const itemCategory = card.dataset.category.toLowerCase();
 
     let matchCategory = false;
 
-    if (currentCategory === "all")
-    {
+    if (currentCategory === "all") {
       matchCategory = true;
-    }
-    else if (currentCategory === itemCategory)
-    {
+    } else if (currentCategory === itemCategory) {
       matchCategory = true;
     }
 
     const matchSearch = itemName.includes(searchText);
 
-    if (matchCategory && matchSearch)
-    {
+    if (matchCategory && matchSearch) {
       card.style.display = "block";
       visibleCount++;
-    }
-    else
-    {
+    } else {
       card.style.display = "none";
     }
   });
 
-  if (visibleCount === 0)
-  {
+  if (visibleCount === 0) {
     noResultMessage.style.display = "block";
-  }
-  else
-  {
+  } else {
     noResultMessage.style.display = "none";
   }
 }
 
-function animatePlusButton(button)
-{
+function animatePlusButton(button) {
   button.style.transform = "scale(1.2)";
 
-  setTimeout(() =>
-  {
+  setTimeout(() => {
     button.style.transform = "scale(1)";
   }, 150);
 }
 
-function saveCart()
-{
-  localStorage.setItem("cartItems", JSON.stringify(cartItems));
-}
-
-function addItemToCart(drinkCard, addons)
-{
+function addItemToCart(drinkCard, addons) {
+  const drinkId = Number(drinkCard.dataset.id);
   const drinkName = drinkCard.dataset.name;
   const drinkPrice = Number(drinkCard.dataset.price);
 
@@ -84,24 +70,21 @@ function addItemToCart(drinkCard, addons)
   const sweetness = addons.sweetness || "100%";
   const ice = addons.ice || "Regular Ice";
 
-  const existingItem = cartItems.find((item) =>
-  {
+  const existingItem = cartItems.find((item) => {
     return (
-      item.name === drinkName &&
+      item.itemId === drinkId &&
       item.size === size &&
       item.sweetness === sweetness &&
       item.ice === ice
     );
   });
 
-  if (existingItem)
-  {
+  if (existingItem) {
     existingItem.quantity += 1;
-  }
-  else
-  {
+  } else {
     cartItems.push({
       id: Date.now(),
+      itemId: drinkId,
       name: drinkName,
       price: drinkPrice,
       quantity: 1,
@@ -117,40 +100,29 @@ function addItemToCart(drinkCard, addons)
   cartCount.textContent = cartTotal;
 
   const plusButton = drinkCard.querySelector(".plus-btn");
-  if (plusButton)
-  {
+  if (plusButton) {
     animatePlusButton(plusButton);
   }
 
   console.log(cartItems);
 }
 
-tabButtons.forEach((button) =>
-{
-  button.addEventListener("click", () =>
-  {
-    tabButtons.forEach((btn) =>
-    {
+tabButtons.forEach((button) => {
+  button.addEventListener("click", () => {
+    tabButtons.forEach((btn) => {
       btn.classList.remove("active");
     });
 
     button.classList.add("active");
     currentCategory = button.dataset.category;
 
-    if (currentCategory === "all")
-    {
+    if (currentCategory === "all") {
       sectionTitle.textContent = "All";
-    }
-    else if (currentCategory === "popular")
-    {
+    } else if (currentCategory === "popular") {
       sectionTitle.textContent = "Most Popular";
-    }
-    else if (currentCategory === "seasonal")
-    {
+    } else if (currentCategory === "seasonal") {
       sectionTitle.textContent = "Seasonal";
-    }
-    else
-    {
+    } else {
       sectionTitle.textContent = currentCategory;
     }
 
@@ -158,23 +130,18 @@ tabButtons.forEach((button) =>
   });
 });
 
-searchInput.addEventListener("input", () =>
-{
+searchInput.addEventListener("input", () => {
   updateItems();
 });
 
-if (searchBtn)
-{
-  searchBtn.addEventListener("click", () =>
-  {
+if (searchBtn) {
+  searchBtn.addEventListener("click", () => {
     searchInput.focus();
   });
 }
 
-plusButtons.forEach((button) =>
-{
-  button.addEventListener("click", (event) =>
-  {
+plusButtons.forEach((button) => {
+  button.addEventListener("click", (event) => {
     event.stopPropagation();
 
     const drinkCard = button.closest(".drink-card");
@@ -182,23 +149,19 @@ plusButtons.forEach((button) =>
   });
 });
 
-drinkImageButtons.forEach((button) =>
-{
-  button.addEventListener("click", () =>
-  {
+drinkImageButtons.forEach((button) => {
+  button.addEventListener("click", () => {
     const drinkCard = button.closest(".drink-card");
     openAddonPopup(drinkCard);
   });
 });
 
-addonForm.addEventListener("submit", (event) =>
-{
+addonForm.addEventListener("submit", (event) => {
   event.preventDefault();
 
   const activeDrinkCard = getActiveDrinkCard();
 
-  if (!activeDrinkCard)
-  {
+  if (!activeDrinkCard) {
     return;
   }
 

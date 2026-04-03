@@ -14,12 +14,13 @@
         <h1>Team 14</h1>
 
         <input type="text" id="searchInput" class="search-bar" placeholder="Search drinks..." />
-        <a href="/checkout" class = "cart-link">
+        <a href="/checkout" class="cart-link">
           <button class="cart-btn" id="cartBtn">
             View Cart
             <span id="cartCount" class="cart-count">0</span>
           </button>
         </a>
+
         <nav class="top-tabs" aria-label="Menu Categories">
           <button class="tab-btn active" data-category="all">All</button>
           <button class="tab-btn" data-category="popular">Most Popular</button>
@@ -29,11 +30,15 @@
 
       <section class="menu-section" id="allSection">
         <h2 id="sectionTitle">All</h2>
+
         <div class="card-row">
-          <article class="drink-card"
-                   data-name="Boba Milk Tea"
-                   data-category="popular"
-                   data-price="5.95">
+          <article
+            class="drink-card"
+            data-id="9"
+            data-name="Boba Milk Tea"
+            data-category="popular"
+            data-price="5.95"
+          >
             <button class="drink-image drink-image-button" type="button" aria-label="Customize Boba Milk Tea">
               <img src="images/boba1.png" alt="Boba Milk Tea">
             </button>
@@ -43,10 +48,13 @@
             <p class="price">$5.95</p>
           </article>
 
-          <article class="drink-card"
-                   data-name="Mango Cream Tea"
-                   data-category="seasonal"
-                   data-price="6.50">
+          <article
+            class="drink-card"
+            data-id="10"
+            data-name="Mango Cream Tea"
+            data-category="seasonal"
+            data-price="6.50"
+          >
             <button class="drink-image drink-image-button" type="button" aria-label="Customize Mango Cream Tea">
               <img src="images/boba2.png" alt="Mango Cream Tea">
             </button>
@@ -60,6 +68,7 @@
         <p id="noResultMessage" class="no-result" style="display: none;">No item found.</p>
       </section>
     </main>
+
     <div class="popup-overlay" id="popupOverlay"></div>
 
     <div class="addon-popup" id="addonPopup">
@@ -67,17 +76,35 @@
 
       <form id="addonForm">
         <label class="addon-option">
-          <input type="checkbox" name="addon" value="Boba">
+          <input
+            type="checkbox"
+            name="addon"
+            value="Boba"
+            data-id="301"
+            data-qty="1"
+          >
           Boba
         </label>
 
         <label class="addon-option">
-          <input type="checkbox" name="addon" value="Jelly">
+          <input
+            type="checkbox"
+            name="addon"
+            value="Jelly"
+            data-id="302"
+            data-qty="1"
+          >
           Jelly
         </label>
 
         <label class="addon-option">
-          <input type="checkbox" name="addon" value="Oat Milk">
+          <input
+            type="checkbox"
+            name="addon"
+            value="Oat Milk"
+            data-id="303"
+            data-qty="1"
+          >
           Oat Milk
         </label>
 
@@ -87,7 +114,9 @@
         </div>
       </form>
     </div>
-  <script src="js/addonpopup.js"></script>
-  <script src="js/menu.js"></script>
+
+    <script src="js/addonpopup.js"></script>
+    <script src="js/menu.js"></script>
+  </div>
 </body>
 </html>

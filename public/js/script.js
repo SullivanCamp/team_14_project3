@@ -1,30 +1,29 @@
 const cartItems = [
   {
     id: 1,
+    itemId: 1,
     name: "Classic Milk Tea",
     price: 5.25,
-    quantity: 2,
+    qty: 2,
     size: "Large",
     sweetness: "50%",
-    ice: "Less Ice"
+    iceLabel: "Less Ice",
+    sugar: 50,
+    ice: 50,
+    toppings: []
   },
   {
     id: 2,
+    itemId: 2,
     name: "Taro Milk Tea",
     price: 5.75,
-    quantity: 1,
+    qty: 1,
     size: "Medium",
     sweetness: "100%",
-    ice: "Regular Ice"
-  },
-  {
-    id: 3,
-    name: "Brown Sugar Boba",
-    price: 6.25,
-    quantity: 1,
-    size: "Large",
-    sweetness: "75%",
-    ice: "No Ice"
+    iceLabel: "Regular Ice",
+    sugar: 100,
+    ice: 100,
+    toppings: []
   }
 ];
 
@@ -52,18 +51,18 @@ function renderCart() {
     itemDiv.innerHTML = `
       <div class="item-info">
         <h3>${item.name}</h3>
-        <p>${item.size} • ${item.sweetness} • ${item.ice}</p>
+        <p>${item.size} • ${item.sweetness} • ${item.iceLabel}</p>
         <p class="item-price">$${item.price.toFixed(2)} each</p>
       </div>
 
       <div class="item-controls">
         <button class="qty-btn" onclick="decreaseQuantity(${item.id})">-</button>
-        <span class="quantity">${item.quantity}</span>
+        <span class="quantity">${item.qty}</span>
         <button class="qty-btn" onclick="increaseQuantity(${item.id})">+</button>
       </div>
 
       <div class="item-total">
-        <p>$${(item.price * item.quantity).toFixed(2)}</p>
+        <p>$${(item.price * item.qty).toFixed(2)}</p>
         <button class="remove-btn" onclick="removeItem(${item.id})">Remove</button>
       </div>
     `;
@@ -76,24 +75,23 @@ function renderCart() {
 
 function increaseQuantity(id) {
   const item = cartItems.find((cartItem) => cartItem.id === id);
-  if (item) {
-    item.quantity += 1;
-    renderCart();
-  }
+  if (!item) return;
+  item.qty += 1;
+  renderCart();
 }
 
 function decreaseQuantity(id) {
   const item = cartItems.find((cartItem) => cartItem.id === id);
-  if (item) {
-    item.quantity -= 1;
+  if (!item) return;
 
-    if (item.quantity <= 0) {
-      const index = cartItems.findIndex((cartItem) => cartItem.id === id);
-      cartItems.splice(index, 1);
-    }
+  item.qty -= 1;
 
-    renderCart();
+  if (item.qty <= 0) {
+    const index = cartItems.findIndex((cartItem) => cartItem.id === id);
+    cartItems.splice(index, 1);
   }
+
+  renderCart();
 }
 
 function removeItem(id) {
@@ -104,11 +102,12 @@ function removeItem(id) {
   }
 }
 
-function updateSummary() {
-  const subtotal = cartItems.reduce((sum, item) => {
-    return sum + item.price * item.quantity;
-  }, 0);
+function calculateSubtotal() {
+  return cartItems.reduce((sum, item) => sum + item.price * item.qty, 0);
+}
 
+function updateSummary() {
+  const subtotal = calculateSubtotal();
   const tax = subtotal * taxRate;
   const total = subtotal + tax;
 
@@ -118,15 +117,6 @@ function updateSummary() {
 
   placeOrderBtn.disabled = cartItems.length === 0;
 }
-
-placeOrderBtn.addEventListener("click", () => {
-  if (cartItems.length === 0) {
-    alert("Your cart is empty.");
-    return;
-  }
-
-  alert("Order placed successfully!");
-});
 
 async function placeOrder() {
   if (cartItems.length === 0) {
@@ -151,6 +141,8 @@ async function placeOrder() {
     }))
   };
 
+  console.log("Sending payload:", payload);
+
   try {
     const response = await fetch("/api/orders", {
       method: "POST",
@@ -161,6 +153,7 @@ async function placeOrder() {
     });
 
     const data = await response.json();
+    console.log("Server response:", data);
 
     if (!response.ok) {
       throw new Error(data.error || "Failed to place order.");
@@ -183,5 +176,7 @@ async function placeOrder() {
     }
   }
 }
+
+placeOrderBtn.addEventListener("click", placeOrder);
 
 renderCart();
