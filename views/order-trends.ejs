@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Daily Order Trends</title>
+  <link rel="stylesheet" href="/css/reports.css" />
+</head>
+<body>
+  <div class="report-page">
+    <header class="report-header">
+      <div>
+        <p class="eyebrow">Manager Reports</p>
+        <h1>Daily Order Trends</h1>
+        <p class="subtext">Sales summary, peak hours, and item performance.</p>
+      </div>
+      <a class="secondary-btn" href="/">Back</a>
+    </header>
+
+    <section class="report-card filters">
+      <label>
+        Date
+        <input type="date" id="trends-date" />
+      </label>
+      <label>
+        Top / Bottom Count
+        <input type="number" id="trends-limit" min="1" max="20" value="5" />
+      </label>
+      <button id="trends-load-btn" class="primary-btn">Load Trends</button>
+    </section>
+
+    <section class="stats-grid">
+      <article class="stat-card">
+        <span class="stat-label">Total Orders</span>
+        <strong id="trend-total-orders">--</strong>
+      </article>
+      <article class="stat-card">
+        <span class="stat-label">Total Revenue</span>
+        <strong id="trend-total-revenue">--</strong>
+      </article>
+      <article class="stat-card">
+        <span class="stat-label">Busiest Hour</span>
+        <strong id="trend-busiest">--</strong>
+      </article>
+      <article class="stat-card">
+        <span class="stat-label">Slowest Hour</span>
+        <strong id="trend-slowest">--</strong>
+      </article>
+    </section>
+
+    <section class="cards-two-up">
+      <article class="report-card">
+        <div class="card-title-row">
+          <h2>Top Selling Items</h2>
+        </div>
+        <ul id="trend-top-list" class="rank-list">
+          <li>Loading...</li>
+        </ul>
+      </article>
+
+      <article class="report-card">
+        <div class="card-title-row">
+          <h2>Least Selling Items</h2>
+        </div>
+        <ul id="trend-least-list" class="rank-list">
+          <li>Loading...</li>
+        </ul>
+      </article>
+    </section>
+  </div>
+
+  <script src="/js/order-trends.js"></script>
+</body>
+</html>

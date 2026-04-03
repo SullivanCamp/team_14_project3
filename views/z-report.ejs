@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Z Report</title>
+  <link rel="stylesheet" href="/css/reports.css" />
+</head>
+<body>
+  <div class="report-page">
+    <header class="report-header">
+      <div>
+        <p class="eyebrow">Manager Reports</p>
+        <h1>Z Report</h1>
+        <p class="subtext">End-of-day totals and payment breakdown.</p>
+      </div>
+      <a class="secondary-btn" href="/">Back</a>
+    </header>
+
+    <section class="stats-grid">
+      <article class="stat-card">
+        <span class="stat-label">Orders Today</span>
+        <strong id="z-order-count">0</strong>
+      </article>
+      <article class="stat-card">
+        <span class="stat-label">Total Sales</span>
+        <strong id="z-total-sales">$0.00</strong>
+      </article>
+      <article class="stat-card">
+        <span class="stat-label">Average Order</span>
+        <strong id="z-avg-order">$0.00</strong>
+      </article>
+      <article class="stat-card">
+        <span class="stat-label">Status</span>
+        <strong id="z-status">Checking...</strong>
+      </article>
+    </section>
+
+    <section class="report-card">
+      <div class="card-title-row">
+        <h2>Payment Methods</h2>
+        <button id="z-generate-btn" class="primary-btn">Generate Z Report</button>
+      </div>
+
+      <div id="z-message" class="banner"></div>
+
+      <div class="table-wrap">
+        <table class="report-table">
+          <thead>
+            <tr>
+              <th>Payment Method</th>
+              <th>Total</th>
+            </tr>
+          </thead>
+          <tbody id="z-payment-body">
+            <tr>
+              <td colspan="2" class="empty-cell">Loading...</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </div>
+
+  <script src="/js/z-report.js"></script>
+</body>
+</html>
