@@ -1,5 +1,5 @@
 const express = require("express");
-const pool = require("../db");
+const pool = require("../public/js/db");
 
 const router = express.Router();
 
@@ -9,7 +9,7 @@ async function nextId(client, tableName) {
   return Number(result.rows[0].next_id);
 }
 
-async function insertOrder(client, employeeFirstName, totalPrice, paymentMethod) {
+async function insertOrder(client, totalPrice, paymentMethod) {
   const id = await nextId(client, "orders");
 
   const safePaymentMethod =
@@ -32,7 +32,7 @@ async function insertOrder(client, employeeFirstName, totalPrice, paymentMethod)
   await client.query(query, [
     id,
     Number(totalPrice).toFixed(2),
-    employeeFirstName || "Kiosk",
+    "Kiosk",
     safePaymentMethod
   ]);
 
@@ -88,13 +88,8 @@ async function checkAndDecrementInventoryForCart(client, cart) {
       const invId = Number(row.inventory_item_id);
       let used = Number(row.quantity_used) * Number(line.qty);
 
-      if (invId === SUGAR_ID) {
-        used = used * (sugarPct / 100.0);
-      }
-
-      if (invId === ICE_ID) {
-        used = used * (icePct / 100.0);
-      }
+      if (invId === SUGAR_ID) used *= sugarPct / 100.0;
+      if (invId === ICE_ID) used *= icePct / 100.0;
 
       need.set(invId, (need.get(invId) || 0) + used);
     }
@@ -108,9 +103,7 @@ async function checkAndDecrementInventoryForCart(client, cart) {
     }
   }
 
-  if (need.size === 0) {
-    return;
-  }
+  if (need.size === 0) return;
 
   const ids = Array.from(need.keys());
   const placeholders = ids.map((_, index) => `$${index + 1}`).join(", ");
@@ -141,7 +134,7 @@ async function checkAndDecrementInventoryForCart(client, cart) {
 
     if (haveAmt < needAmt) {
       const itemName = names.get(id) || `Item ${id}`;
-      message += `- ${itemName} (need ${needAmt.toFixed(2)}, have ${haveAmt.toFixed(2)})\n`;
+      message += `- ${itemName} is out of stock or does not have enough remaining.\n`;
     }
   }
 
@@ -164,7 +157,9 @@ router.post("/", async (req, res) => {
   const client = await pool.connect();
 
   try {
-    const { employeeFirstName, totalPrice, paymentMethod, cart } = req.body;
+    const { totalPrice, paymentMethod, cart } = req.body;
+
+    console.log("Incoming order payload:", JSON.stringify(req.body, null, 2));
 
     if (!cart || !Array.isArray(cart) || cart.length === 0) {
       return res.status(400).json({
@@ -175,12 +170,7 @@ router.post("/", async (req, res) => {
 
     await client.query("BEGIN");
 
-    const orderId = await insertOrder(
-      client,
-      employeeFirstName,
-      totalPrice,
-      paymentMethod
-    );
+    const orderId = await insertOrder(client, totalPrice, paymentMethod);
 
     for (const line of cart) {
       const orderItemId = await insertOrderItem(
@@ -207,6 +197,8 @@ router.post("/", async (req, res) => {
 
     await client.query("COMMIT");
 
+    console.log("Order committed successfully:", orderId);
+
     res.status(201).json({
       success: true,
       message: "Order submitted successfully.",
@@ -227,7 +219,7 @@ router.post("/", async (req, res) => {
 
     return res.status(500).json({
       success: false,
-      error: "Something went wrong while placing your order."
+      error: message
     });
   } finally {
     client.release();

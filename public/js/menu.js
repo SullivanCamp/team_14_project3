@@ -11,18 +11,76 @@ let currentCategory = "all";
 let cartItems = [];
 let menuItems = [];
 
+function toNumber(value, fallback = 0) {
+  const num = Number(value);
+  return Number.isFinite(num) ? num : fallback;
+}
+
+function percentFromLabel(value, fallback = 100) {
+  if (typeof value === "number") return value;
+  if (typeof value !== "string") return fallback;
+
+  const match = value.match(/\d+/);
+  if (!match) return fallback;
+
+  const num = Number(match[0]);
+  return Number.isFinite(num) ? num : fallback;
+}
+
+function createCartId() {
+  return `cart_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
+}
+
+function normalizeToppings(toppings) {
+  if (!Array.isArray(toppings)) return [];
+
+  return toppings.map((topping) => ({
+    id: toNumber(topping.id, 0),
+    name: topping.name || "Addon",
+    qty: Math.max(1, toNumber(topping.qty, 1))
+  }));
+}
+
+function normalizeCartItem(raw, index = 0) {
+  const qty = Math.max(1, toNumber(raw.qty ?? raw.quantity, 1));
+  const sugar =
+    raw.sugar != null ? toNumber(raw.sugar, 100) : percentFromLabel(raw.sweetness, 100);
+  const ice =
+    raw.ice != null ? toNumber(raw.ice, 100) : percentFromLabel(raw.iceLabel, 100);
+
+  return {
+    cartId: raw.cartId || raw.id || createCartId(),
+    itemId: toNumber(raw.itemId ?? raw.id, index + 1),
+    name: raw.name || "Unnamed Item",
+    price: toNumber(raw.price, 0),
+    qty,
+    size: raw.size || "Regular",
+    sugar,
+    sweetness: raw.sweetness || `${sugar}%`,
+    ice,
+    iceLabel: raw.iceLabel || `${ice}% Ice`,
+    toppings: normalizeToppings(raw.toppings)
+  };
+}
+
 function loadCartFromStorage() {
   const savedCart = localStorage.getItem("cartItems");
 
-  if (savedCart) {
-    try {
-      cartItems = JSON.parse(savedCart);
-    } catch (error) {
-      console.error("Failed to read cart from storage:", error);
-      cartItems = [];
-    }
-  } else {
+  if (!savedCart) {
     cartItems = [];
+    return;
+  }
+
+  try {
+    const parsed = JSON.parse(savedCart);
+    cartItems = Array.isArray(parsed)
+      ? parsed.map((item, index) => normalizeCartItem(item, index))
+      : [];
+    saveCartToStorage();
+  } catch (error) {
+    console.error("Failed to read cart from storage:", error);
+    cartItems = [];
+    saveCartToStorage();
   }
 }
 
@@ -31,12 +89,7 @@ function saveCartToStorage() {
 }
 
 function updateCartCount() {
-  let totalCount = 0;
-
-  cartItems.forEach((item) => {
-    totalCount += Number(item.qty || 1);
-  });
-
+  const totalCount = cartItems.reduce((sum, item) => sum + Math.max(1, toNumber(item.qty, 1)), 0);
   cartCount.textContent = totalCount;
 }
 
@@ -56,7 +109,6 @@ function getImagePathByName(itemName) {
 
 function renderMenuItems() {
   const searchText = searchInput.value.toLowerCase().trim();
-
   menuCardRow.innerHTML = "";
 
   let visibleCount = 0;
@@ -65,13 +117,8 @@ function renderMenuItems() {
     const itemName = item.name.toLowerCase();
     const itemCategory = item.category.toLowerCase();
 
-    let matchCategory = false;
-
-    if (currentCategory === "all") {
-      matchCategory = true;
-    } else if (currentCategory === itemCategory) {
-      matchCategory = true;
-    }
+    const matchCategory =
+      currentCategory === "all" || currentCategory === itemCategory;
 
     const matchSearch = itemName.includes(searchText);
 
@@ -103,11 +150,7 @@ function renderMenuItems() {
     menuCardRow.appendChild(card);
   });
 
-  if (visibleCount === 0) {
-    noResultMessage.style.display = "block";
-  } else {
-    noResultMessage.style.display = "none";
-  }
+  noResultMessage.style.display = visibleCount === 0 ? "block" : "none";
 }
 
 function animatePlusButton(button) {
@@ -120,8 +163,8 @@ function animatePlusButton(button) {
 
 function toppingNameToId(name) {
   const toppingMap = {
-    "Boba": 210,
-    "Jelly": 224,
+    Boba: 210,
+    Jelly: 224,
     "Oat Milk": 218
   };
 
@@ -149,16 +192,21 @@ function addItemToCart(drinkCard, addons) {
     });
   }
 
-  cartItems.push({
+  const newItem = normalizeCartItem({
+    cartId: createCartId(),
     itemId: drinkId,
     name: drinkName,
     price: drinkPrice,
     qty: 1,
+    size: "Regular",
     sugar: 100,
+    sweetness: "100%",
     ice: 100,
+    iceLabel: "100% Ice",
     toppings: toppingObjects
   });
 
+  cartItems.push(newItem);
   saveCartToStorage();
   updateCartCount();
 
@@ -167,7 +215,7 @@ function addItemToCart(drinkCard, addons) {
     animatePlusButton(plusButton);
   }
 
-  console.log(cartItems);
+  console.log("Cart items:", cartItems);
 }
 
 async function loadMenuFromDatabase() {
@@ -189,11 +237,9 @@ async function loadMenuFromDatabase() {
 
 tabButtons.forEach((button) => {
   button.addEventListener("click", () => {
-    tabButtons.forEach((btn) => {
-      btn.classList.remove("active");
-    });
-
+    tabButtons.forEach((btn) => btn.classList.remove("active"));
     button.classList.add("active");
+
     currentCategory = button.dataset.category;
 
     if (currentCategory === "all") {
@@ -202,9 +248,7 @@ tabButtons.forEach((button) => {
       sectionTitle.textContent = "Most Popular";
     } else if (currentCategory === "seasonal") {
       sectionTitle.textContent = "Seasonal";
-    }
-    else
-    {
+    } else {
       sectionTitle.textContent = currentCategory;
     }
 
@@ -237,10 +281,7 @@ addonForm.addEventListener("submit", (event) => {
   event.preventDefault();
 
   const activeDrinkCard = getActiveDrinkCard();
-
-  if (!activeDrinkCard) {
-    return;
-  }
+  if (!activeDrinkCard) return;
 
   const selectedAddons = getSelectedAddons();
   addItemToCart(activeDrinkCard, selectedAddons);
