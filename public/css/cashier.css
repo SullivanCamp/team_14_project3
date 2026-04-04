@@ -356,3 +356,157 @@ body
 {
   transform: translateY(-1px);
 }
+.cashier-tabs
+{
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 18px;
+}
+
+.cashier-tab
+{
+  border: none;
+  border-radius: 14px;
+  background: #f0f3f9;
+  color: #4c5561;
+  padding: 12px 16px;
+  font-size: 0.96rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: 0.18s ease;
+}
+
+.cashier-tab.active
+{
+  background: #111722;
+  color: white;
+  box-shadow: 0 12px 20px rgba(17, 23, 34, 0.2);
+}
+
+.menu-grid
+{
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 16px;
+}
+
+.menu-drink-btn
+{
+  border: none;
+  border-radius: 22px;
+  background: linear-gradient(180deg, #ffffff, #f7f9fc);
+  padding: 16px;
+  text-align: left;
+  cursor: pointer;
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.08);
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+  min-height: 134px;
+}
+
+.menu-drink-btn:hover
+{
+  transform: translateY(-4px);
+  box-shadow: 0 16px 30px rgba(0, 0, 0, 0.11);
+}
+
+.menu-drink-btn h3
+{
+  margin: 0 0 10px;
+  font-size: 1.08rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.menu-drink-btn p
+{
+  margin: 0;
+  color: #6d7785;
+  font-size: 0.9rem;
+}
+
+.menu-drink-btn .menu-price
+{
+  display: inline-block;
+  margin-top: 14px;
+  font-size: 1rem;
+  font-weight: 800;
+  color: #1d2430;
+}
+
+.cashier-no-result
+{
+  color: #707986;
+  font-size: 1rem;
+  margin-top: 18px;
+}
+
+.modal-overlay
+{
+  position: fixed;
+  inset: 0;
+  background: rgba(8, 10, 16, 0.48);
+  display: none;
+  z-index: 100;
+}
+
+.cashier-modal
+{
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: min(520px, calc(100vw - 24px));
+  background: white;
+  border-radius: 24px;
+  padding: 22px;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.28);
+  display: none;
+  z-index: 101;
+}
+
+.modal-header
+{
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.modal-header h3
+{
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 800;
+}
+
+.modal-header p
+{
+  margin: 6px 0 0;
+  color: #5f6876;
+  font-weight: 700;
+}
+
+.close-modal-btn
+{
+  border: none;
+  background: #f2f4f8;
+  border-radius: 14px;
+  width: 42px;
+  height: 42px;
+  font-size: 1.7rem;
+  cursor: pointer;
+}
+
+.modal-grid
+{
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+.modal-section
+{
+  margin-bottom: 16px;
+}
