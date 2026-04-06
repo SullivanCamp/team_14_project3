@@ -4,6 +4,7 @@ require("dotenv").config();
 const ordersRoute = require("./routes/orders");
 const menuDataRoute = require("./routes/menuData");
 const reportsRoute = require("./routes/reports");
+const pool = require("./public/js/db");
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -44,6 +45,19 @@ app.get("/reports/z", (req, res) => {
 
 app.get("/reports/trends", (req, res) => {
   res.render("order-trends");
+});
+
+app.get("/inventoryManagement", (req, res) => {
+  inventory = [];
+  pool
+    .query("SELECT * FROM inventory_item")
+    .then((result) => {
+      inventory = result.rows;
+      res.render("inventoryManagement", { inventory });
+    })
+    .catch(() => {
+      res.status(500).json({ error: "Database query failed" });
+    });
 });
 
 app.use("/menu-data", menuDataRoute);
