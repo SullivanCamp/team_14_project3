@@ -2,19 +2,32 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Popup Example</title>
+  <title>Addon Popup</title>
   <link rel="stylesheet" href="/css/addonpopup.css">
 </head>
 <body>
 
-  <button id="openBtn">Open Popup</button>
+  <button
+    type="button"
+    data-name="Milk Tea"
+    onclick="openAddonPopup(this)"
+  >
+    Open Popup
+  </button>
 
-  <div class="overlay" id="overlay"></div>
+  <div class="overlay" id="popupOverlay"></div>
 
-  <div class="popup" id="popup">
-    <h2>Popup Window</h2>
-    <p>This is the popup content.</p>
-    <button id="closeBtn" class="close-btn">Close</button>
+  <div class="popup" id="addonPopup">
+    <h2 id="popupDrinkName">Customize Drink</h2>
+
+    <form id="addonForm">
+      <div id="addonOptions"></div>
+
+      <div class="popup-buttons">
+        <button type="button" id="cancelPopupBtn" class="close-btn">Cancel</button>
+        <button type="submit">Add to Cart</button>
+      </div>
+    </form>
   </div>
 
   <script src="/js/addonpopup.js"></script>
