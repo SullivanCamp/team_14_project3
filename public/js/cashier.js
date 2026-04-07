@@ -26,7 +26,9 @@ const modalDrinkPrice = document.getElementById("modalDrinkPrice");
 const drinkQtyInput = document.getElementById("drinkQtyInput");
 const sugarSelect = document.getElementById("sugarSelect");
 const iceSelect = document.getElementById("iceSelect");
+const cashierToppingsGrid = document.getElementById("cashierToppingsGrid");
 
+let toppingItems = [];
 let currentCategory = "all";
 let menuItems = [];
 let cashierCart = [];
@@ -40,14 +42,55 @@ function updateClock() {
 setInterval(updateClock, 1000);
 updateClock();
 
-function toppingNameToId(name) {
-  const toppingMap = {
-    "Boba": 202,
-    "Jelly": 210,
-    "Oat Milk": 201
-  };
+function renderToppings() {
+  cashierToppingsGrid.innerHTML = "";
 
-  return toppingMap[name] || null;
+  toppingItems.forEach((item) => {
+    const label = document.createElement("label");
+    label.className = "topping-chip";
+
+    label.innerHTML = `
+      <input type="checkbox" name="cashierAddon" value="${item.item_id}">
+      <span>${item.name}</span>
+    `;
+
+    cashierToppingsGrid.appendChild(label);
+  });
+}
+
+function getSelectedToppings() {
+  const checked = document.querySelectorAll('input[name="cashierAddon"]:checked');
+  const toppings = [];
+
+  checked.forEach((input) => {
+    const toppingId = Number(input.value);
+    const toppingItem = toppingItems.find((item) => Number(item.item_id) === toppingId);
+
+    if (toppingItem) {
+      toppings.push({
+        id: toppingItem.item_id,
+        name: toppingItem.name,
+        qty: 1,
+        price: Number(toppingItem.price)
+      });
+    }
+  });
+
+  return toppings;
+}
+
+function toppingExtraPrice(toppings) {
+  let extra = 0;
+
+  if (!toppings || !Array.isArray(toppings)) {
+    return extra;
+  }
+
+  toppings.forEach((topping) => {
+    extra += Number(topping.price || 0) * Number(topping.qty || 0);
+  });
+
+  return extra;
 }
 
 function toppingExtraPrice(toppings) {
@@ -226,7 +269,7 @@ function renderCart() {
   cashierCart.forEach((item, index) => {
     const extraPrice = toppingExtraPrice(item.toppings);
     const singlePrice = Number(item.price) + extraPrice;
-    const lineTotal = singlePrice * Number(item.qty);
+    const lineTotal = (Number(item.price) + toppingExtraPrice(item.toppings)) * Number(item.qty);
 
     subtotal += lineTotal;
     totalItemCount += Number(item.qty);
@@ -316,7 +359,10 @@ async function loadMenu() {
     }
 
     menuItems = data.items || [];
+    toppingItems = data.toppings || [];
+
     renderMenu();
+    renderToppings();
   } catch (error) {
     console.error("Cashier menu load failed:", error);
     cashierNoResult.style.display = "block";
