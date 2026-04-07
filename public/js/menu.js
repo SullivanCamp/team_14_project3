@@ -115,27 +115,36 @@ function renderAddonOptions() {
   addonOptionsContainer.innerHTML = "";
 
   toppingItems.forEach((item) => {
-    const row = document.createElement("div");
-    row.className = "addon-option";
+    const card = document.createElement("div");
+    card.className = "addon-card";
 
-    row.innerHTML = `
-      <label for="addon-${item.item_id}">
-        ${item.name} (+$${Number(item.price).toFixed(2)})
-      </label>
-      <input
-        type="number"
-        id="addon-${item.item_id}"
-        name="addonQty"
-        data-id="${item.item_id}"
-        data-name="${item.name}"
-        data-price="${item.price}"
-        min="0"
-        max="5"
-        value="0"
-      >
+    card.innerHTML = `
+      <div class="addon-card-top">
+        <div>
+          <p class="addon-name">${item.name}</p>
+          <p class="addon-price">+$${Number(item.price).toFixed(2)}</p>
+        </div>
+      </div>
+
+      <div class="addon-qty-controls">
+        <button type="button" class="addon-qty-btn minus-addon-btn" data-id="${item.item_id}">-</button>
+        <input
+          type="number"
+          class="addon-qty-input"
+          name="addonQty"
+          data-id="${item.item_id}"
+          data-name="${item.name}"
+          data-price="${item.price}"
+          min="0"
+          max="5"
+          value="0"
+          readonly
+        >
+        <button type="button" class="addon-qty-btn plus-addon-btn" data-id="${item.item_id}">+</button>
+      </div>
     `;
 
-    addonOptionsContainer.appendChild(row);
+    addonOptionsContainer.appendChild(card);
   });
 }
 
@@ -269,6 +278,24 @@ addonForm.addEventListener("submit", (event) => {
   const selectedAddons = getSelectedAddons();
   addItemToCart(activeDrinkCard, selectedAddons);
   closeAddonPopup();
+});
+
+addonOptionsContainer.addEventListener("click", (event) => {
+  const minusBtn = event.target.closest(".minus-addon-btn");
+  const plusBtn = event.target.closest(".plus-addon-btn");
+
+  if (minusBtn) {
+    const input = addonOptionsContainer.querySelector(`input[data-id="${minusBtn.dataset.id}"]`);
+    const current = Number(input.value);
+    input.value = Math.max(0, current - 1);
+    return;
+  }
+
+  if (plusBtn) {
+    const input = addonOptionsContainer.querySelector(`input[data-id="${plusBtn.dataset.id}"]`);
+    const current = Number(input.value);
+    input.value = Math.min(5, current + 1);
+  }
 });
 
 loadCartFromStorage();

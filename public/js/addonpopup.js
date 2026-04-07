@@ -56,6 +56,14 @@ function getSelectedAddons()
   return selected;
 }
 
+function resetAddonQuantities()
+{
+  const addonInputs = addonFormPopup.querySelectorAll('input[name="addonQty"]');
+  addonInputs.forEach((input) => {
+    input.value = 0;
+  });
+}
+
 function getActiveDrinkCard()
 {
   return activeDrinkCard;

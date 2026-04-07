@@ -46,27 +46,34 @@ function renderToppings() {
   cashierToppingsGrid.innerHTML = "";
 
   toppingItems.forEach((item) => {
-    const row = document.createElement("div");
-    row.className = "topping-chip";
+    const card = document.createElement("div");
+    card.className = "cashier-topping-card";
 
-    row.innerHTML = `
-      <label for="cashier-addon-${item.item_id}">
-        ${item.name} (+$${Number(item.price).toFixed(2)})
-      </label>
-      <input
-        type="number"
-        id="cashier-addon-${item.item_id}"
-        name="cashierAddonQty"
-        data-id="${item.item_id}"
-        data-name="${item.name}"
-        data-price="${item.price}"
-        min="0"
-        max="5"
-        value="0"
-      >
+    card.innerHTML = `
+      <div class="cashier-topping-info">
+        <p class="cashier-topping-name">${item.name}</p>
+        <p class="cashier-topping-price">+$${Number(item.price).toFixed(2)}</p>
+      </div>
+
+      <div class="cashier-topping-controls">
+        <button type="button" class="cashier-topping-btn minus-cashier-addon-btn" data-id="${item.item_id}">-</button>
+        <input
+          type="number"
+          class="cashier-topping-input"
+          name="cashierAddonQty"
+          data-id="${item.item_id}"
+          data-name="${item.name}"
+          data-price="${item.price}"
+          min="0"
+          max="5"
+          value="0"
+          readonly
+        >
+        <button type="button" class="cashier-topping-btn plus-cashier-addon-btn" data-id="${item.item_id}">+</button>
+      </div>
     `;
 
-    cashierToppingsGrid.appendChild(row);
+    cashierToppingsGrid.appendChild(card);
   });
 }
 
@@ -489,3 +496,21 @@ orderItems.addEventListener("click", (event) => {
 loadCashierCart();
 renderCart();
 loadMenu();
+
+cashierToppingsGrid.addEventListener("click", (event) => {
+  const minusBtn = event.target.closest(".minus-cashier-addon-btn");
+  const plusBtn = event.target.closest(".plus-cashier-addon-btn");
+
+  if (minusBtn) {
+    const input = cashierToppingsGrid.querySelector(`input[data-id="${minusBtn.dataset.id}"]`);
+    const current = Number(input.value);
+    input.value = Math.max(0, current - 1);
+    return;
+  }
+
+  if (plusBtn) {
+    const input = cashierToppingsGrid.querySelector(`input[data-id="${plusBtn.dataset.id}"]`);
+    const current = Number(input.value);
+    input.value = Math.min(5, current + 1);
+  }
+});

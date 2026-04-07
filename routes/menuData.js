@@ -15,44 +15,55 @@ const pool = new Pool({
 
 router.get("/", async (req, res) => {
   try {
-    const query = `
+    const drinksQuery = `
       SELECT item_id, name, price, description
       FROM menu_item
+      WHERE item_id < 200
       ORDER BY item_id
     `;
 
-    const result = await pool.query(query);
+    const toppingsQuery = `
+      SELECT DISTINCT m.item_id, m.name, m.price, m.description
+      FROM menu_item m
+      JOIN menu_item_topping mt
+        ON mt.menu_item_id = m.item_id
+      WHERE mt.is_topping = true
+      ORDER BY m.item_id
+    `;
 
-    const drinks = [];
-    const toppings = [];
+    const drinksResult = await pool.query(drinksQuery);
+    const toppingsResult = await pool.query(toppingsQuery);
 
-    result.rows.forEach((row, index) => {
-      const item = {
+    const items = drinksResult.rows.map((row, index) => {
+      let category = "all";
+
+      if (index < 4) {
+        category = "popular";
+      } else if (index < 8) {
+        category = "seasonal";
+      }
+
+      return {
         item_id: Number(row.item_id),
         name: row.name,
         price: Number(row.price),
-        description: row.description || "Freshly made and ready to customize."
+        description: row.description || "Freshly made and ready to customize.",
+        category: category
       };
+    });
 
-      if (Number(row.item_id) < 200) {
-        let category = "all";
-
-        if (drinks.length < 4) {
-          category = "popular";
-        } else if (drinks.length < 8) {
-          category = "seasonal";
-        }
-
-        item.category = category;
-        drinks.push(item);
-      } else {
-        toppings.push(item);
-      }
+    const toppings = toppingsResult.rows.map((row) => {
+      return {
+        item_id: Number(row.item_id),
+        name: row.name,
+        price: Number(row.price),
+        description: row.description || ""
+      };
     });
 
     res.json({
       success: true,
-      items: drinks,
+      items: items,
       toppings: toppings
     });
   } catch (error) {
