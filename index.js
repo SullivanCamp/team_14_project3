@@ -13,9 +13,9 @@ app.set("view engine", "ejs");
 app.use(express.static("public"));
 app.use(express.json());
 
-// app.get("/", (req, res) => {
-//   res.render("customerhome");
-// });
+app.get("/", (req, res) => {
+  res.render("customerhome");
+});
 
 app.get("/weather", (req, res) => {
   const apiKey = process.env.WEATHER_API_KEY;
@@ -48,7 +48,7 @@ app.get("/reports/trends", (req, res) => {
 });
 
 
-app.get("/"/*inventoryManagement*/, (req, res) => {
+app.get("/inventoryManagement", (req, res) => {
   inventory = [];
   lowStockItems = [];
   pool

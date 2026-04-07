@@ -36,7 +36,7 @@
                     <td><%= inventory[i].current_amount %> / <%= inventory[i].max_amount %></td>
                     <td><%= inventory[i].measurement_units %></td>
                     <td><%= inventory[i].cost_per_unit %></td>
-                    <td><button type="button" onclick="alert('Edit entry for item <%= inventory[i].inventory_item_id %>')"> Edit </button></td>
+                    <td style ="text-align: center;"><button type="button" onclick="alert('Edit entry for item <%= inventory[i].inventory_item_id %>')"> Edit </button></td>
                 </tr>
             <% } %>
         </table>

@@ -3,8 +3,12 @@ table, th, td {
   border-collapse: collapse;
 }
 
+tr:nth-child(even) {
+  background-color: #ececec;
+}
+
 th, td {
-  padding: 15px;
+  padding: 10px;
 }
 
 table {
