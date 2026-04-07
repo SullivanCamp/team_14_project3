@@ -6,7 +6,9 @@ const searchInput = document.getElementById("searchInput");
 const cartCount = document.getElementById("cartCount");
 const sectionTitle = document.getElementById("sectionTitle");
 const noResultMessage = document.getElementById("noResultMessage");
+const addonOptionsContainer = document.getElementById("addonOptionsContainer");
 
+let toppingItems = [];
 let currentCategory = "all";
 let cartItems = [];
 let menuItems = [];
@@ -109,14 +111,32 @@ function animatePlusButton(button) {
   }, 150);
 }
 
-function toppingNameToId(name) {
-  const toppingMap = {
-    "Boba": 210,
-    "Jelly": 224,
-    "Oat Milk": 218
-  };
+function renderAddonOptions() {
+  addonOptionsContainer.innerHTML = "";
 
-  return toppingMap[name] || null;
+  toppingItems.forEach((item) => {
+    const row = document.createElement("div");
+    row.className = "addon-option";
+
+    row.innerHTML = `
+      <label for="addon-${item.item_id}">
+        ${item.name} (+$${Number(item.price).toFixed(2)})
+      </label>
+      <input
+        type="number"
+        id="addon-${item.item_id}"
+        name="addonQty"
+        data-id="${item.item_id}"
+        data-name="${item.name}"
+        data-price="${item.price}"
+        min="0"
+        max="5"
+        value="0"
+      >
+    `;
+
+    addonOptionsContainer.appendChild(row);
+  });
 }
 
 function addItemToCart(drinkCard, addons) {
@@ -127,16 +147,13 @@ function addItemToCart(drinkCard, addons) {
   const toppingObjects = [];
 
   if (addons && Array.isArray(addons)) {
-    addons.forEach((addonName) => {
-      const toppingId = toppingNameToId(addonName);
-
-      if (toppingId !== null) {
-        toppingObjects.push({
-          id: toppingId,
-          name: addonName,
-          qty: 1
-        });
-      }
+    addons.forEach((addon) => {
+      toppingObjects.push({
+        id: Number(addon.id),
+        name: addon.name,
+        qty: Number(addon.qty),
+        price: Number(addon.price)
+      });
     });
   }
 
@@ -171,11 +188,27 @@ async function loadMenuFromDatabase() {
     }
 
     menuItems = data.items || [];
+    toppingItems = data.toppings || [];
     renderMenuItems();
+    renderAddonOptions();
   } catch (error) {
     console.error("Menu load failed:", error);
     menuCardRow.innerHTML = `<p class="no-result">Failed to load menu items.</p>`;
   }
+}
+
+function toppingExtraPrice(toppings) {
+  let extra = 0;
+
+  if (!toppings || !Array.isArray(toppings)) {
+    return extra;
+  }
+
+  toppings.forEach((t) => {
+    extra += Number(t.price || 0) * Number(t.qty || 0);
+  });
+
+  return extra;
 }
 
 tabButtons.forEach((button) => {

@@ -46,32 +46,43 @@ function renderToppings() {
   cashierToppingsGrid.innerHTML = "";
 
   toppingItems.forEach((item) => {
-    const label = document.createElement("label");
-    label.className = "topping-chip";
+    const row = document.createElement("div");
+    row.className = "topping-chip";
 
-    label.innerHTML = `
-      <input type="checkbox" name="cashierAddon" value="${item.item_id}">
-      <span>${item.name}</span>
+    row.innerHTML = `
+      <label for="cashier-addon-${item.item_id}">
+        ${item.name} (+$${Number(item.price).toFixed(2)})
+      </label>
+      <input
+        type="number"
+        id="cashier-addon-${item.item_id}"
+        name="cashierAddonQty"
+        data-id="${item.item_id}"
+        data-name="${item.name}"
+        data-price="${item.price}"
+        min="0"
+        max="5"
+        value="0"
+      >
     `;
 
-    cashierToppingsGrid.appendChild(label);
+    cashierToppingsGrid.appendChild(row);
   });
 }
 
 function getSelectedToppings() {
-  const checked = document.querySelectorAll('input[name="cashierAddon"]:checked');
+  const inputs = document.querySelectorAll('input[name="cashierAddonQty"]');
   const toppings = [];
 
-  checked.forEach((input) => {
-    const toppingId = Number(input.value);
-    const toppingItem = toppingItems.find((item) => Number(item.item_id) === toppingId);
+  inputs.forEach((input) => {
+    const qty = Number(input.value);
 
-    if (toppingItem) {
+    if (qty > 0) {
       toppings.push({
-        id: toppingItem.item_id,
-        name: toppingItem.name,
-        qty: 1,
-        price: Number(toppingItem.price)
+        id: Number(input.dataset.id),
+        name: input.dataset.name,
+        qty: qty,
+        price: Number(input.dataset.price)
       });
     }
   });
@@ -189,14 +200,28 @@ function getSelectedToppings() {
   return toppings;
 }
 
+function toppingExtraPrice(toppings) {
+  let extra = 0;
+
+  if (!toppings || !Array.isArray(toppings)) {
+    return extra;
+  }
+
+  toppings.forEach((topping) => {
+    extra += Number(topping.price || 0) * Number(topping.qty || 0);
+  });
+
+  return extra;
+}
+
 function resetModal() {
   drinkQtyInput.value = 1;
   sugarSelect.value = "100";
   iceSelect.value = "100";
 
-  const checks = document.querySelectorAll('input[name="cashierAddon"]');
-  checks.forEach((input) => {
-    input.checked = false;
+  const inputs = document.querySelectorAll('input[name="cashierAddonQty"]');
+  inputs.forEach((input) => {
+    input.value = 0;
   });
 }
 
