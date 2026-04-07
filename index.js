@@ -13,9 +13,9 @@ app.set("view engine", "ejs");
 app.use(express.static("public"));
 app.use(express.json());
 
-app.get("/", (req, res) => {
-  res.render("customerhome");
-});
+// app.get("/", (req, res) => {
+//   res.render("customerhome");
+// });
 
 app.get("/weather", (req, res) => {
   const apiKey = process.env.WEATHER_API_KEY;
@@ -47,18 +47,22 @@ app.get("/reports/trends", (req, res) => {
   res.render("order-trends");
 });
 
-app.get("/inventoryManagement", (req, res) => {
+
+app.get("/"/*inventoryManagement*/, (req, res) => {
   inventory = [];
+  lowStockItems = [];
   pool
-    .query("SELECT * FROM inventory_item")
+    .query("SELECT * FROM inventory_item ORDER BY inventory_item_id ASC")
     .then((result) => {
       inventory = result.rows;
-      res.render("inventoryManagement", { inventory });
+      lowStockItems = inventory.filter((item) => item.current_amount / item.max_amount <= .3);
+      res.render("inventoryManagement", {inventory, lowStockItems});
     })
     .catch(() => {
       res.status(500).json({ error: "Database query failed" });
     });
 });
+
 
 app.use("/menu-data", menuDataRoute);
 app.use("/api/orders", ordersRoute);

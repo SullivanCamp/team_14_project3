@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css/managementPages.css">
+
+    <title>Inventory Management</title>
+</head>
+<body>
+    <table>
+        <tr>
+            <th>Total Items: <%= inventory.length %></th>
+            <th> Total Low Stock Items: <%= lowStockItems.length %></th>
+
+        </tr>
+    </table>
+    <div class="inventory-container">
+        <table>
+            <tr>
+                <th> Item ID </th>
+                <th> Item Name </th>
+                <th> Current/Max Quantity </th>
+                <th> Units </th>
+                <th> Cost Per Unit </th>
+                <th><button type="button" onclick="alert('Add new entry')"> Add </button></th>
+            </tr>
+            <% for (var i in inventory) {%>
+                <% if (inventory[i].current_amount / inventory[i].max_amount <= .3) { %>
+                    <tr style="background-color: #f37c7c">
+                <% } else { %>
+                    <tr>
+                <% } %>
+                    <td><%= inventory[i].inventory_item_id %></td>
+                    <td><%= inventory[i].name %></td>
+                    <td><%= inventory[i].current_amount %> / <%= inventory[i].max_amount %></td>
+                    <td><%= inventory[i].measurement_units %></td>
+                    <td><%= inventory[i].cost_per_unit %></td>
+                    <td><button type="button" onclick="alert('Edit entry for item <%= inventory[i].inventory_item_id %>')"> Edit </button></td>
+                </tr>
+            <% } %>
+        </table>
+    </div>
+</body>
+</html>
