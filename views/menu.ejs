@@ -1,6 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Team 14 Menu</title>
@@ -20,12 +23,16 @@
           placeholder="Search drinks..."
         />
 
+        <div class="header-actions">
+        <button class="rewards-btn" type="button">Rewards</button>
+
         <a href="/checkout" class="cart-link">
           <button class="cart-btn" id="cartBtn" type="button">
             View Cart
             <span id="cartCount" class="cart-count">0</span>
           </button>
         </a>
+      </div>
 
         <nav class="top-tabs" aria-label="Menu Categories">
           <button class="tab-btn active" data-category="all" type="button">All</button>
@@ -49,39 +56,7 @@
       <h2 id="popupDrinkName">Customize Drink</h2>
 
       <form id="addonForm">
-        <label class="addon-option">
-          <input
-            type="checkbox"
-            name="addon"
-            value="Boba"
-            data-id="301"
-            data-qty="1"
-          >
-          Boba
-        </label>
-
-        <label class="addon-option">
-          <input
-            type="checkbox"
-            name="addon"
-            value="Jelly"
-            data-id="302"
-            data-qty="1"
-          >
-          Jelly
-        </label>
-
-        <label class="addon-option">
-          <input
-            type="checkbox"
-            name="addon"
-            value="Oat Milk"
-            data-id="303"
-            data-qty="1"
-          >
-          Oat Milk
-        </label>
-
+        <div id="addonOptionsContainer" class="addon-grid"></div>
         <div class="popup-actions">
           <button type="button" class="popup-button cancel-button" id="cancelPopupBtn">Cancel</button>
           <button type="submit" class="popup-button done-button">Done</button>
