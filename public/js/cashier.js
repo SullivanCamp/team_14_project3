@@ -42,12 +42,68 @@ updateClock();
 
 function toppingNameToId(name) {
   const toppingMap = {
-    "Boba": 210,
-    "Jelly": 224,
-    "Oat Milk": 218
+    "Boba": 202,
+    "Jelly": 210,
+    "Oat Milk": 201
   };
 
   return toppingMap[name] || null;
+}
+
+function toppingExtraPrice(toppings) {
+  let extra = 0;
+
+  if (!toppings || !Array.isArray(toppings)) {
+    return extra;
+  }
+
+  toppings.forEach((topping) => {
+    extra += 0.50 * Number(topping.qty || 0);
+  });
+
+  return extra;
+}
+
+function sameToppings(a, b) {
+  const aa = Array.isArray(a) ? a : [];
+  const bb = Array.isArray(b) ? b : [];
+
+  if (aa.length !== bb.length) {
+    return false;
+  }
+
+  const left = aa
+    .map((t) => `${t.id}|${t.name}|${t.qty}`)
+    .sort();
+
+  const right = bb
+    .map((t) => `${t.id}|${t.name}|${t.qty}`)
+    .sort();
+
+  for (let i = 0; i < left.length; i++) {
+    if (left[i] !== right[i]) {
+      return false;
+    }
+  }
+
+  return true;
+}
+
+function findMatchingCartItem(newItem) {
+  for (let i = 0; i < cashierCart.length; i++) {
+    const item = cashierCart[i];
+
+    if (
+      Number(item.itemId) === Number(newItem.itemId) &&
+      Number(item.sugar) === Number(newItem.sugar) &&
+      Number(item.ice) === Number(newItem.ice) &&
+      sameToppings(item.toppings, newItem.toppings)
+    ) {
+      return i;
+    }
+  }
+
+  return -1;
 }
 
 function loadCashierCart() {
@@ -168,7 +224,10 @@ function renderCart() {
   let totalItemCount = 0;
 
   cashierCart.forEach((item, index) => {
-    const lineTotal = Number(item.price) * Number(item.qty);
+    const extraPrice = toppingExtraPrice(item.toppings);
+    const singlePrice = Number(item.price) + extraPrice;
+    const lineTotal = singlePrice * Number(item.qty);
+
     subtotal += lineTotal;
     totalItemCount += Number(item.qty);
 
@@ -223,16 +282,25 @@ function addActiveDrinkToOrder() {
   }
 
   const quantity = Math.max(1, Number(drinkQtyInput.value) || 1);
+  const toppings = getSelectedToppings();
 
-  cashierCart.push({
+  const newItem = {
     itemId: Number(activeDrink.item_id),
     name: activeDrink.name,
     price: Number(activeDrink.price),
     qty: quantity,
     sugar: Number(sugarSelect.value),
     ice: Number(iceSelect.value),
-    toppings: getSelectedToppings()
-  });
+    toppings: toppings
+  };
+
+  const existingIndex = findMatchingCartItem(newItem);
+
+  if (existingIndex >= 0) {
+    cashierCart[existingIndex].qty += quantity;
+  } else {
+    cashierCart.push(newItem);
+  }
 
   renderCart();
   closeCashierModal();
@@ -268,7 +336,7 @@ async function payNow() {
   }
 
   const subtotal = cashierCart.reduce((sum, item) => {
-    return sum + Number(item.price) * Number(item.qty);
+    return sum + (Number(item.price) + toppingExtraPrice(item.toppings)) * Number(item.qty);
   }, 0);
 
   try {
@@ -279,7 +347,7 @@ async function payNow() {
       },
       body: JSON.stringify({
         employeeFirstName: "Lam",
-        totalPrice: subtotal,
+        totalPrice: subtotal + (subtotal * TAX_RATE),
         paymentMethod: paymentMethodSelect.value,
         cart: cashierCart
       })

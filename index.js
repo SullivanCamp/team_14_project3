@@ -25,6 +25,7 @@ process.on('SIGINT', function() {
 	 	 	 	
 app.set("view engine", "ejs");
 app.use(express.static('public'));
+app.use(express.json());
 
 
 // default to customer home page
@@ -49,25 +50,20 @@ app.get('/weather', (req, res) => {
 const menuDataRoute = require("./routes/menuData");
 app.use("/menu-data", menuDataRoute);
 
+// Orders route
+const ordersRoute = require("./routes/orders");
+app.use("/orders", ordersRoute);
 
 app.get('/order', (req, res) => {
-    // add whatever data is needed from db
-    // teammembers = []
-    // pool
-    //     .query('SELECT * FROM teammembers;')
-    //     .then(query_res => {
-    //         for (let i = 0; i < query_res.rowCount; i++){
-    //             teammembers.push(query_res.rows[i]);
-    //         }
-    //         const data = {teammembers: teammembers};
-    //         console.log(teammembers);
-    //         res.render('order', data);
-    //     });
     res.render('menu');
 });
 
 app.get('/checkout', (req, res) => {
     res.render('CheckoutPage');
+});
+
+app.get('/cashier', (req, res) => {
+    res.render('cashier');
 });
 
 app.listen(port, () => {
