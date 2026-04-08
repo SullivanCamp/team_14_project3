@@ -191,7 +191,7 @@ function renderAddonOptions() {
   });
 }
 
-function addItemToCart(drinkCard, addons) {
+function addItemToCart(drinkCard, addons, customization = {}) {
   const drinkId = Number(drinkCard.dataset.id);
   const drinkName = drinkCard.dataset.name;
   const drinkPrice = Number(drinkCard.dataset.price);
@@ -209,6 +209,9 @@ function addItemToCart(drinkCard, addons) {
     });
   }
 
+  const sugar = toNumber(customization.sugar, 100);
+  const ice = toNumber(customization.ice, 100);
+
   const newItem = normalizeCartItem({
     cartId: createCartId(),
     itemId: drinkId,
@@ -216,10 +219,10 @@ function addItemToCart(drinkCard, addons) {
     price: drinkPrice,
     qty: 1,
     size: "Regular",
-    sugar: 100,
-    sweetness: "100%",
-    ice: 100,
-    iceLabel: "100% Ice",
+    sugar: sugar,
+    sweetness: customization.sweetness || `${sugar}%`,
+    ice: ice,
+    iceLabel: customization.iceLabel || `${ice}% Ice`,
     toppings: toppingObjects
   });
 
@@ -317,7 +320,9 @@ addonForm.addEventListener("submit", (event) => {
   if (!activeDrinkCard) return;
 
   const selectedAddons = getSelectedAddons();
-  addItemToCart(activeDrinkCard, selectedAddons);
+  const customization = getCustomizationSelections();
+
+  addItemToCart(activeDrinkCard, selectedAddons, customization);
   closeAddonPopup();
 });
 

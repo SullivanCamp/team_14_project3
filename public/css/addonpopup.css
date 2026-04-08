@@ -17,7 +17,7 @@
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: 340px;
+  width: 380px;
   max-width: calc(100% - 32px);
   max-height: 80vh;
   background: white;
@@ -150,4 +150,35 @@
   background: white;
   text-align: center;
   font-weight: 700;
+}
+
+.custom-section {
+  margin-bottom: 14px;
+}
+
+.custom-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.custom-field {
+  display: flex;
+  flex-direction: column;
+}
+
+.custom-field label {
+  font-weight: 600;
+  font-size: 0.9rem;
+  margin-bottom: 4px;
+  color: #1f2937;
+}
+
+.custom-field select {
+  width: 100%;
+  padding: 8px;
+  border-radius: 10px;
+  border: none;
+  background: #f3f6fa;
+  font-size: 0.9rem;
 }

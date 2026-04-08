@@ -5,6 +5,9 @@ const addonFormPopup = document.getElementById("addonForm");
 const cancelPopupBtn = document.getElementById("cancelPopupBtn");
 const addonOptions = document.getElementById("addonOptions");
 
+const sugarLevelSelect = document.getElementById("sugarLevel");
+const iceLevelSelect = document.getElementById("iceLevel");
+
 let activeDrinkCard = null;
 let toppingsData = [];
 
@@ -65,10 +68,25 @@ async function openAddonPopup(drinkCard)
   renderToppings();
   addonFormPopup.reset();
 
+  if (sugarLevelSelect) {
+    sugarLevelSelect.value = "100";
+  }
+
+  if (iceLevelSelect) {
+    iceLevelSelect.value = "100";
+  }
+
   const addonInputs = addonFormPopup.querySelectorAll('input[name="addonQty"]');
   addonInputs.forEach((input) => {
     input.value = 0;
   });
+}
+
+function openAddonPopup(drinkCard)
+{
+  activeDrinkCard = drinkCard;
+  popupDrinkName.textContent = "Customize " + drinkCard.dataset.name;
+  resetPopupFields();
 
   popupOverlay.style.display = "block";
   addonPopup.style.display = "block";
@@ -78,13 +96,7 @@ function closeAddonPopup()
 {
   popupOverlay.style.display = "none";
   addonPopup.style.display = "none";
-  addonFormPopup.reset();
-
-  const addonInputs = addonFormPopup.querySelectorAll('input[name="addonQty"]');
-  addonInputs.forEach((input) => {
-    input.value = 0;
-  });
-
+  resetPopupFields();
   activeDrinkCard = null;
 }
 
@@ -109,12 +121,16 @@ function getSelectedAddons()
   return selected;
 }
 
-function resetAddonQuantities()
-{
-  const addonInputs = addonFormPopup.querySelectorAll('input[name="addonQty"]');
-  addonInputs.forEach((input) => {
-    input.value = 0;
-  });
+function getCustomizationSelections() {
+  const sugar = Number(sugarLevelSelect?.value || 100);
+  const ice = Number(iceLevelSelect?.value || 100);
+
+  return {
+    sugar,
+    sweetness: `${sugar}%`,
+    ice,
+    iceLabel: `${ice}% Ice`
+  };
 }
 
 function getActiveDrinkCard() {
@@ -134,4 +150,5 @@ loadToppings();
 window.openAddonPopup = openAddonPopup;
 window.closeAddonPopup = closeAddonPopup;
 window.getSelectedAddons = getSelectedAddons;
+window.getCustomizationSelections = getCustomizationSelections;
 window.getActiveDrinkCard = getActiveDrinkCard;

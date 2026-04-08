@@ -30,10 +30,15 @@ const menuMgmtRoute = require("./routes/menuMgmt");
 app.set("view engine", "ejs");
 app.use(express.static("public"));
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 // Pages
 app.get("/", (req, res) => {
-  res.render("customerhome");
+  res.render("auth");
+});
+
+app.get("/auth", (req, res) => {
+  res.render("auth");
 });
 
 app.get("/order", (req, res) => {
@@ -130,5 +135,6 @@ app.use("/api/menuMgmt", menuMgmtRoute);
 
 app.listen(port, () => {
   console.log(`Example app listening at http://localhost:${port}`);
+  console.log(`Kiosk auth page: http://localhost:${port}/auth`);
   console.log(`Order page: http://localhost:${port}/order`);
 });
