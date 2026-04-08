@@ -4,6 +4,7 @@ require("dotenv").config();
 const ordersRoute = require("./routes/orders");
 const menuDataRoute = require("./routes/menuData");
 const reportsRoute = require("./routes/reports");
+const inventoryRoute = require("./routes/inventory");
 const pool = require("./public/js/db");
 
 const app = express();
@@ -67,6 +68,7 @@ app.get("/inventoryManagement", (req, res) => {
 app.use("/menu-data", menuDataRoute);
 app.use("/api/orders", ordersRoute);
 app.use("/api/reports", reportsRoute);
+app.use("/api/inventory", inventoryRoute);
 
 app.listen(port, () => {
   console.log(`Example app listening at http://localhost:${port}`);

@@ -28,6 +28,16 @@ th, td {
   padding: 10px;
 }
 
+table{
+  background: white;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 1);
+}
+
+th {
+  background: #4ea2f5;
+  color: white;
+}
+
 table {
   width: 80%;
   margin-bottom: 20px;
@@ -42,7 +52,7 @@ table {
   padding: 10px;
 }
 
-.edit{
+.edit, .add{
   width: 40%;
   height: auto;
   background: #fff;
@@ -56,6 +66,8 @@ table {
   color: #333;
   border: 1px solid #333;
 }
+
+
 
 h2 {
   text-align: center;
@@ -72,4 +84,8 @@ label {
     gap: 10px;  
     margin-top: 20px;     
     width: 100%; 
+}
+
+tr:has(td):hover{
+  filter: brightness(85%);
 }
