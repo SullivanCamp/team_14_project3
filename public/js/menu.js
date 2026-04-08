@@ -8,6 +8,13 @@ const sectionTitle = document.getElementById("sectionTitle");
 const noResultMessage = document.getElementById("noResultMessage");
 const addonOptionsContainer = document.getElementById("addonOptionsContainer");
 
+const customerChip = document.getElementById("customerChip");
+const customerChipName = document.getElementById("customerChipName");
+const customerDropdown = document.getElementById("customerDropdown");
+const customerDropdownName = document.getElementById("customerDropdownName");
+const switchAccountBtn = document.getElementById("switchAccountBtn");
+const logoutBtn = document.getElementById("logoutBtn");
+
 let toppingItems = [];
 let currentCategory = "all";
 let cartItems = [];
@@ -31,6 +38,45 @@ function percentFromLabel(value, fallback = 100) {
 
 function createCartId() {
   return `cart_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
+}
+
+function getActiveCustomer() {
+  try {
+    const raw = localStorage.getItem("activeCustomer");
+    if (!raw) return null;
+    return JSON.parse(raw);
+  } catch (error) {
+    console.error("Failed to read active customer:", error);
+    return null;
+  }
+}
+
+function ensureActiveCustomer() {
+  const customer = getActiveCustomer();
+
+  if (!customer) {
+    window.location.href = "/auth";
+    return null;
+  }
+
+  return customer;
+}
+
+function renderActiveCustomer() {
+  const customer = ensureActiveCustomer();
+  if (!customer) return;
+
+  const name = customer.first_name || "Guest";
+  customerChipName.textContent = name;
+  customerDropdownName.textContent = name;
+}
+
+function toggleCustomerDropdown() {
+  customerDropdown.classList.toggle("open");
+}
+
+function closeCustomerDropdown() {
+  customerDropdown.classList.remove("open");
 }
 
 function normalizeToppings(toppings) {
@@ -257,20 +303,6 @@ async function loadMenuFromDatabase() {
   }
 }
 
-function toppingExtraPrice(toppings) {
-  let extra = 0;
-
-  if (!toppings || !Array.isArray(toppings)) {
-    return extra;
-  }
-
-  toppings.forEach((t) => {
-    extra += Number(t.price || 0) * Number(t.qty || 0);
-  });
-
-  return extra;
-}
-
 tabButtons.forEach((button) => {
   button.addEventListener("click", () => {
     tabButtons.forEach((btn) => btn.classList.remove("active"));
@@ -344,6 +376,27 @@ addonOptionsContainer.addEventListener("click", (event) => {
   }
 });
 
+customerChip.addEventListener("click", (event) => {
+  event.stopPropagation();
+  toggleCustomerDropdown();
+});
+
+document.addEventListener("click", () => {
+  closeCustomerDropdown();
+});
+
+switchAccountBtn.addEventListener("click", () => {
+  window.location.href = "/auth";
+});
+
+logoutBtn.addEventListener("click", () => {
+  localStorage.removeItem("activeCustomer");
+  localStorage.removeItem("cartItems");
+  window.location.href = "/auth";
+});
+
+ensureActiveCustomer();
+renderActiveCustomer();
 loadCartFromStorage();
 updateCartCount();
 loadMenuFromDatabase();

@@ -24,15 +24,29 @@
         />
 
         <div class="header-actions">
-        <button class="rewards-btn" type="button">Rewards</button>
+          <div class="customer-menu-wrapper" id="customerMenuWrapper">
+            <button class="customer-chip" id="customerChip" type="button">
+              <span id="customerChipName">Guest</span>
+              <span class="customer-chip-arrow">▾</span>
+            </button>
 
-        <a href="/checkout" class="cart-link">
-          <button class="cart-btn" id="cartBtn" type="button">
-            View Cart
-            <span id="cartCount" class="cart-count">0</span>
-          </button>
-        </a>
-      </div>
+            <div class="customer-dropdown" id="customerDropdown">
+              <p class="customer-dropdown-title">Signed in as</p>
+              <p class="customer-dropdown-name" id="customerDropdownName">Guest</p>
+              <button class="customer-dropdown-btn" id="switchAccountBtn" type="button">Change Account</button>
+              <button class="customer-dropdown-btn logout" id="logoutBtn" type="button">Log Out</button>
+            </div>
+          </div>
+
+          <button class="rewards-btn" type="button">Rewards</button>
+
+          <a href="/checkout" class="cart-link">
+            <button class="cart-btn" id="cartBtn" type="button">
+              View Cart
+              <span id="cartCount" class="cart-count">0</span>
+            </button>
+          </a>
+        </div>
 
         <nav class="top-tabs" aria-label="Menu Categories">
           <button class="tab-btn active" data-category="all" type="button">All</button>
@@ -59,8 +73,8 @@
         <div class="custom-section">
           <div class="custom-row">
             <div class="custom-field">
-              <label>Sugar Level</label>
-              <select id="sugarLevel">
+              <label for="sugarLevel">Sugar Level</label>
+              <select id="sugarLevel" name="sugarLevel">
                 <option value="0">0%</option>
                 <option value="25">25%</option>
                 <option value="50">50%</option>
@@ -70,8 +84,8 @@
             </div>
 
             <div class="custom-field">
-              <label>Ice Level</label>
-              <select id="iceLevel">
+              <label for="iceLevel">Ice Level</label>
+              <select id="iceLevel" name="iceLevel">
                 <option value="0">0% Ice</option>
                 <option value="25">25% Ice</option>
                 <option value="50">50% Ice</option>
