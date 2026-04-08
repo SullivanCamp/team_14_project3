@@ -23,9 +23,7 @@ process.on("SIGINT", function () {
 const ordersRoute = require("./routes/orders");
 const menuDataRoute = require("./routes/menuData");
 const reportsRoute = require("./routes/reports");
-const inventoryMgmtRoute = require("./routes/inventoryMgmt");
-const employeesMgmtRoute = require("./routes/employeesMgmt");
-const menuMgmtRoute = require("./routes/menuMgmt");
+const userAuthRoute = require("./routes/userauth");
 
 app.set("view engine", "ejs");
 app.use(express.static("public"));
@@ -34,31 +32,11 @@ app.use(express.urlencoded({ extended: true }));
 
 // Pages
 app.get("/", (req, res) => {
-  res.render("login");
+  res.render("auth");
 });
 
-app.get("/reports", (req, res) => {
-  res.render("reportshome");
-});
-
-app.get("/reports/product-usage", (req, res) => {
-  res.render("productUsage");
-});
-
-app.get("/customerhome", (req, res) => {
-  res.render("menu");
-});
-
-// app.get("/auth", (req, res) => {
-//   res.render("auth");
-// });
-
-app.get("/managerhome", (req, res) => {
-  res.render("managerhome");
-});
-
-app.get("/management", (req, res) => {
-  res.render("managementhome");
+app.get("/auth", (req, res) => {
+  res.render("auth");
 });
 
 app.get("/order", (req, res) => {
@@ -153,12 +131,10 @@ app.use("/menu-data", menuDataRoute);
 app.use("/orders", ordersRoute);
 app.use("/api/orders", ordersRoute);
 app.use("/api/reports", reportsRoute);
-app.use("/api/inventoryMgmt", inventoryMgmtRoute);
-app.use("/api/employeesMgmt", employeesMgmtRoute);
-app.use("/api/menuMgmt", menuMgmtRoute);
+app.use("/api/userauth", userAuthRoute);
 
 app.listen(port, () => {
   console.log(`Example app listening at http://localhost:${port}`);
-  console.log(`Kiosk auth page: http://localhost:${port}/login`);
+  console.log(`Kiosk auth page: http://localhost:${port}/auth`);
   console.log(`Order page: http://localhost:${port}/order`);
 });
