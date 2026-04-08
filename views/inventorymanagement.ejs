@@ -40,17 +40,53 @@
                     <td><%= inventory[i].current_amount %> / <%= inventory[i].max_amount %></td>
                     <td><%= inventory[i].measurement_units %></td>
                     <td><%= inventory[i].cost_per_unit %></td>
+
                     <td style ="text-align: center;">
-                        <button type="button" onclick="alert('Edit entry for item <%= inventory[i].inventory_item_id %>')"> Edit </button>
+                        <button 
+                            type="button" 
+                            onclick="openEditForm(this)"
+                            data-id="<%= inventory[i].inventory_item_id %>"
+                            data-name="<%= inventory[i].name %>"
+                            data-current="<%= inventory[i].current_amount %>"
+                            data-max="<%= inventory[i].max_amount %>"
+                            data-units="<%= inventory[i].measurement_units %>"
+                            data-cost="<%= inventory[i].cost_per_unit %>">
+                            Edit
+                        </button>
                     </td>
+
                 </tr>
             <% } %>
         </table>
     </div>
-    <div class = "edit">
+    <div class="edit">
+        <h2 id="edit-header"> Edit Entry</h2>
+        <form id="inventory-form">
+            <label for="edit-name">Item Name:</label>
+            <input type="text" id="edit-name" name="name"><br>
 
+            <label for="edit-current">Current Amount:</label>
+            <input type="number" id="edit-current" name="current_amount"><br>
+
+            <label for="edit-max">Max Amount:</label>
+            <input type="number" id="edit-max" name="max_amount"><br>
+
+            <label for="edit-units">Measurement Units:</label>
+            <input type="text" id="edit-units" name="measurement_units"><br>
+
+            <label for="edit-cost">Cost Per Unit:</label>
+            <input type="number" id="edit-cost" name="cost_per_unit"><br>
+            
+            <div class="button-group">
+                <input type="submit" value="Submit" class="btn-save">
+                <input type="button" value="Cancel" class="btn-cancel" onclick="hideEditForm()">
+                <input type="button" value="Delete" class="btn-delete" onclick="deleteEntry()">
+        </div>
+            </div>
+        </form>
     </div>
     <div class = "add">
     </div>
+    <script src="js/inventoryManagement.js"></script>
 </body>
 </html>

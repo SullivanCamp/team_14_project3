@@ -43,15 +43,33 @@ table {
 }
 
 .edit{
-  width: 400px;
+  width: 40%;
+  height: auto;
   background: #fff;
   border-radius: 6px;
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%) scale(.1);
-  text-align: center;
+  position: fixed;
+  display: none;
+  top: 30%;
+  left: 30%;
+  text-align: left;
   padding: 0 30px 30px;
   color: #333;
+  border: 1px solid #333;
+}
 
+h2 {
+  text-align: center;
+}
+
+label {
+  width: 200px;
+  display: inline-block;
+}
+
+.button-group {
+    display: flex;
+    justify-content: center; 
+    gap: 10px;  
+    margin-top: 20px;     
+    width: 100%; 
 }
