@@ -8,6 +8,10 @@
     <title>Inventory Management</title>
 </head>
 <body>
+    <div class="header">
+        <button type="button" class = "back" onclick="alert('Go back to main menu')"> Back </button>
+        <h1> User:  LOGIN NOT IMPLEMENTED YET</h1>
+    </div>
     <table>
         <tr>
             <th>Total Items: <%= inventory.length %></th>
@@ -36,10 +40,17 @@
                     <td><%= inventory[i].current_amount %> / <%= inventory[i].max_amount %></td>
                     <td><%= inventory[i].measurement_units %></td>
                     <td><%= inventory[i].cost_per_unit %></td>
-                    <td style ="text-align: center;"><button type="button" onclick="alert('Edit entry for item <%= inventory[i].inventory_item_id %>')"> Edit </button></td>
+                    <td style ="text-align: center;">
+                        <button type="button" onclick="alert('Edit entry for item <%= inventory[i].inventory_item_id %>')"> Edit </button>
+                    </td>
                 </tr>
             <% } %>
         </table>
+    </div>
+    <div class = "edit">
+
+    </div>
+    <div class = "add">
     </div>
 </body>
 </html>
