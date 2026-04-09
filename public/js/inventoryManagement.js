@@ -13,9 +13,9 @@ function SearchFunction() {
     if (td) {
       txtValue = td.textContent || td.innerText;
       if (txtValue.toUpperCase().indexOf(filter) > -1) {
-        tr[i].style.visibility = "visible"; 
+        tr[i].style.visibility = "visible"; // same as below
       } else {
-        tr[i].style.visibility = "collapse"; // hides row but keeps table layout
+        tr[i].style.visibility = "collapse"; // changed from display none to collapse to keep table layout
       }
     }
   }
