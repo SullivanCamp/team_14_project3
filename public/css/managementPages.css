@@ -1,3 +1,18 @@
+/* Modified from W3 Schools */
+#Search {
+  background-image: url('../images/searchicon.png'); /* Add a search icon to input */
+  background-size: contain;
+  background-repeat: no-repeat; /* Do not repeat the icon image */
+  background-position: right 10px center; 
+  width: 80%; /* Full-width */
+  margin-left: 10%; /* Center the input */
+  font-size: 16px; /* Increase font-size */
+  padding: 12px 0px 12px 0px; /* Add some padding */
+  border: 1px solid #ddd; /* Add a grey border */
+  margin-bottom: 12px; /* Add some space below the input */
+}
+
+
 table, th, td {
   border: 1px solid black;
   border-collapse: collapse;
