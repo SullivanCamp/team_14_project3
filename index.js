@@ -5,7 +5,7 @@ const ordersRoute = require("./routes/orders");
 const menuDataRoute = require("./routes/menuData");
 const reportsRoute = require("./routes/reports");
 const inventoryRoute = require("./routes/inventory");
-// const employeesRoute = require("./routes/employees");
+const employeesRoute = require("./routes/employees");
 const pool = require("./public/js/db");
 
 const app = express();
@@ -83,7 +83,7 @@ app.use("/menu-data", menuDataRoute);
 app.use("/api/orders", ordersRoute);
 app.use("/api/reports", reportsRoute);
 app.use("/api/inventory", inventoryRoute);
-// app.use("/api/employees", employeesRoute);
+app.use("/api/employees", employeesRoute);
 
 app.listen(port, () => {
   console.log(`Example app listening at http://localhost:${port}`);

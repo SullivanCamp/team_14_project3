@@ -37,7 +37,7 @@ function hideAddForm() {
     document.querySelector('.add').style.display = 'none';
     document.getElementById('add-first-name').value = "";
     document.getElementById('add-last-name').value = "";
-    document.getElementById('add-position').value = "";
+    document.getElementById('add-position').value = "Manager";
     document.getElementById('add-salary').value = "";
     document.getElementById('add-password').value = "";
 }
@@ -56,13 +56,13 @@ function submitAdd() {
         employee: {
             first_name: firstName,
             last_name: lastName,
-            position: position,
-            salary: salary,
+            access_level: position,
+            pay_rate: salary,
             password: password
         }
     };
 
-    fetch('/api/inventory', {
+    fetch('/api/employees', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
@@ -97,13 +97,13 @@ function submitEdits() {
             employee_id: id,
             first_name: firstName,
             last_name: lastName,
-            position: position,
-            salary: salary,
+            access_level: position,
+            pay_rate: salary,
             password: password
         }
     };
 
-    fetch('/api/inventory', {
+    fetch('/api/employees', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
@@ -127,12 +127,12 @@ function deleteEntry() {
 
     const entry = {
         submissionType: "Delete",
-        item: {
-            itemId: id
+        employee: {
+            employee_id: id
         }
     };
 
-    fetch('/api/inventory', {
+    fetch('/api/employees', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
