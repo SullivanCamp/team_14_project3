@@ -54,7 +54,7 @@ function submitAdd() {
     const cost = document.getElementById('add-cost').value;
     const category = document.getElementById('add-category').value;
 
-    hideAddForm();
+
 
     const entry = {
         submissionType: "Add",
@@ -78,6 +78,7 @@ function submitAdd() {
     .then(response => response.json())
     .then(data => {
         if (data.success) {
+            hideAddForm();
             location.reload();
         } else {
             alert('Add failed');
@@ -96,7 +97,6 @@ function submitEdits() {
     const cost = document.getElementById('edit-cost').value;
     const category = document.getElementById('edit-category').value;
 
-    hideEditForm();
 
     const entry = {
         submissionType: "Edit",
@@ -121,6 +121,7 @@ function submitEdits() {
     .then(response => response.json())
     .then(data => {
         if (data.success) {
+            hideEditForm();
             location.reload();
         } else {
             alert('Update failed');
@@ -131,8 +132,6 @@ function submitEdits() {
 
 function deleteEntry() {
     const id = document.getElementById('edit-header').innerText.split(" ")[4];
-
-    hideEditForm();
 
     const entry = {
         submissionType: "Delete",
@@ -151,6 +150,7 @@ function deleteEntry() {
     .then(response => response.json())
     .then(data => {
         if (data.success) {
+            hideEditForm();
             location.reload();
         } else {
             alert('Delete failed');
