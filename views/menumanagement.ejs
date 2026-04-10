@@ -55,7 +55,7 @@
             <input type="number" id="edit-price" name="price"><br>
 
             <label for="edit-description">Description:</label>
-            <input type="text" id="edit-description" name="description"><br>
+            <textarea id="edit-description" name="description" rows=2></textarea><br>
 
             <div class="button-group">
                 <input type="submit" value="Submit" class="btn-save" onclick="submitEdits()">
@@ -76,11 +76,10 @@
             <input type="number" id="add-price" name="price"><br>
 
             <label for="add-description">Description:</label>
-            <input type="text" id="add-description" name="description"><br>
+            <textarea id="add-description" name="description" rows=2></textarea><br>
 
             <div class="button-group">
                 <input type="submit" value="Submit" class="btn-save" onclick="submitAdd()">
-                <input type="button" value="Add Recipe" class="btn-recipe" onclick="showRecipeForm()">
                 <input type="button" value="Cancel" class="btn-cancel" onclick="hideAddForm()">
             </div>
         </form>
@@ -130,7 +129,7 @@
                         <% if (ingredients && ingredients.length > 0) { %>
                             <% for (let i = 0; i < ingredients.length; i++) { 
                                 const itemData = inventoryLookup[ingredients[i].inventory_item_id];%>
-                                <tr>
+                                <tr class="recipe-row" data-menu-id="<%= ingredients[i].menu_item_id %>">
                                     <td><%= itemData ? itemData.name : 'Unknown' %></td>
                                     <td><%= ingredients[i].quantity_used %></td>
                                     <td><%= itemData ? itemData.units : 'N/A' %></td>
@@ -148,24 +147,8 @@
             </div>
         </div>
         <div class="button-group">
-            <input type="submit" value="Submit" class="btn-save" onclick="submitRecipe()">
-            <input type="button" value="Cancel" class="btn-cancel" onclick="hideRecipeForm()">
+            <input type="submit" value="Exit" class="btn-save" onclick="hideRecipeForm()">
         </div>
-    </div>
-    <div class="ingredient-edit">
-        <h2 id="ingredient-edit-header"> Edit Ingredient </h2>
-        <form>
-            <label for="edit-ingredient-name">Ingredient Name:</label>
-            <input type="text" id="edit-ingredient-name" name="name"><br>
-
-            <label for="edit-ingredient-quantity">Quantity:</label>
-            <input type="text" id="edit-ingredient-quantity" name="quantity"><br>
-
-            <div class="button-group">
-                <input type="submit" value="Submit" class="btn-save" onclick="submitIngredientEdit()">
-                <input type="button" value="Cancel" class="btn-cancel" onclick="hideIngredientEditForm()">
-            </div>
-        </form>
     </div>
 
     <script src="js/menuManagement.js"></script>

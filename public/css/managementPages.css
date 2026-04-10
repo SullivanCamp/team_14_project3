@@ -60,6 +60,10 @@ table {
   margin-left: 0%;
 }
 
+.recipe .table-wrapper th, .recipe .table-wrapper td{
+  border: none;
+}
+
 
 table, th, td {
   border: 1px solid black;
@@ -142,4 +146,13 @@ label {
 
 tr:has(td):hover{
   filter: brightness(85%);
+}
+
+td:last-child {
+  text-align: center;
+}
+textarea, input, select{
+    font-family: inherit;
+    font-size: inherit;
+    color: inherit;
 }

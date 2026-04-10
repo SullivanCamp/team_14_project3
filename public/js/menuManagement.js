@@ -28,19 +28,13 @@ function openEditForm(button) {
 
     const id = button.getAttribute('data-id');
     const name = button.getAttribute('data-name');
-    const current = button.getAttribute('data-current');
-    const max = button.getAttribute('data-max');
-    const units = button.getAttribute('data-units');
-    const cost = button.getAttribute('data-cost');
-    const category = button.getAttribute('data-category');
+    const price = button.getAttribute('data-price');
+    const description = button.getAttribute('data-description');
 
     document.getElementById('edit-header').innerText = "Edit Entry for Item " + id;
     document.getElementById('edit-name').value = name;
-    document.getElementById('edit-current').value = current;
-    document.getElementById('edit-max').value = max;
-    document.getElementById('edit-units').value = units;
-    document.getElementById('edit-cost').value = cost;
-    document.getElementById('edit-category').value = category;
+    document.getElementById('edit-price').value = price;
+    document.getElementById('edit-description').value = description;
 }
 
 function openAddForm() {
@@ -53,30 +47,21 @@ function hideEditForm() {
     document.querySelector('.edit').style.display = 'none';
     document.getElementById('edit-header').innerText = "Edit Entry for Item ";
     document.getElementById('edit-name').value = "";
-    document.getElementById('edit-current').value = "";
-    document.getElementById('edit-max').value = "";
-    document.getElementById('edit-units').value = "";
-    document.getElementById('edit-cost').value = "";
-    document.getElementById('edit-category').value = "";
+    document.getElementById('edit-price').value = "";
+    document.getElementById('edit-description').value = "";
 }
 
 function hideAddForm() {
     document.querySelector('.add').style.display = 'none';
     document.getElementById('add-name').value = "";
-    document.getElementById('add-current').value = "";
-    document.getElementById('add-max').value = "";
-    document.getElementById('add-units').value = "";
-    document.getElementById('add-cost').value = "";
-    document.getElementById('add-category').value = "";
+    document.getElementById('add-price').value = "";
+    document.getElementById('add-description').value = "";
 }
 
 function submitAdd() {
     const name = document.getElementById('add-name').value;
-    const current = document.getElementById('add-current').value;
-    const max = document.getElementById('add-max').value;
-    const units = document.getElementById('add-units').value;
-    const cost = document.getElementById('add-cost').value;
-    const category = document.getElementById('add-category').value;
+    const price = document.getElementById('add-price').value;
+    const description = document.getElementById('add-description').value;
 
 
 
@@ -84,15 +69,12 @@ function submitAdd() {
         submissionType: "Add",
         item: {
             name: name,
-            current: current,
-            max: max,
-            units: units,
-            cost: cost,
-            category: category
+            price: price,
+            description: description
         }
     };
 
-    fetch('/api/inventory', {
+    fetch('/api/menuMgmt', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
@@ -115,11 +97,8 @@ function submitAdd() {
 function submitEdits() {
     const id = document.getElementById('edit-header').innerText.split(" ")[4];
     const name = document.getElementById('edit-name').value;
-    const current = document.getElementById('edit-current').value;
-    const max = document.getElementById('edit-max').value;
-    const units = document.getElementById('edit-units').value;
-    const cost = document.getElementById('edit-cost').value;
-    const category = document.getElementById('edit-category').value;
+    const price = document.getElementById('edit-price').value;
+    const description = document.getElementById('edit-description').value;
 
 
     const entry = {
@@ -127,15 +106,12 @@ function submitEdits() {
         item: {
             itemId: id,
             name: name,
-            current: current,
-            max: max,
-            units: units,
-            cost: cost,
-            category: category
+            price: price,
+            description: description
         }
     };
 
-    fetch('/api/inventory', {
+    fetch('/api/menuMgmt', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
@@ -183,4 +159,89 @@ function deleteEntry() {
     .catch(() => alert('Delete failed'));
 }
 
+function showRecipeForm() {
+    const recipeform = document.querySelector('.recipe');
+    recipeform.style.display = 'block';
+    const id = document.getElementById('edit-header').innerText.split(" ")[4];
 
+    filterRecipeTable(id);
+}
+
+function filterRecipeTable(id) {
+    const rows = document.querySelectorAll('#ingredient-list tbody tr');
+    
+    // same as search function
+    for (i = 0; i < rows.length; i++) {
+        rowId = rows[i].getAttribute('data-menu-id');
+        if (id === rowId) {
+            rows[i].style.visibility = "visible"; 
+        } else {
+            rows[i].style.visibility = "collapse";
+        }
+    }
+}
+
+function hideRecipeForm() {
+    document.querySelector('.recipe').style.display = 'none';
+    const rows = document.querySelectorAll('#ingredient-list tbody tr');
+    for (i = 0; i < rows.length; i++) {
+        rows[i].style.visibility = "visible"; 
+    }
+}
+
+function addIngredient() {
+    const menuId = document.getElementById('edit-header').innerText.split(" ")[4];
+    const inventoryId = document.getElementById('ingredient-select').value;
+    const quantity = document.getElementById('ingredient-quantity').value;
+
+    const entry = {
+        menu_item_id: menuId,
+        inventory_item_id: inventoryId,
+        quantity_used: quantity
+    };
+
+    fetch('/api/recipeMgmt', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(entry)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            hideRecipeForm();
+            location.reload();
+        } else {
+            alert('Add ingredient failed');
+        }
+    })
+    .catch(() => alert('Add ingredient failed'));
+}
+
+function deleteIngredient(button) {
+    const inventoryId = button.getAttribute('data-id');
+    const menuId = button.getAttribute('data-menu-id');
+
+    const entry = {
+        menu_item_id: menuId,
+        inventory_item_id: inventoryId
+    };
+
+    fetch('/api/recipeMgmt', {
+        method: 'DELETE',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(entry)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            location.reload();
+        } else {
+            alert('Delete ingredient failed');
+        }
+    })
+    .catch(() => alert('Delete ingredient failed'));
+}
