@@ -13,6 +13,15 @@
   
 }
 
+table {
+  width: 80%;
+  margin-bottom: 20px;
+  margin-left: 10%;
+  background: white;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 1);
+  table-layout: auto;
+}
+
 .recipe .form-and-table {
   display: flex;
   flex-direction: row; /* Change from column to row */
@@ -21,6 +30,7 @@
 }
 
 .recipe {
+  display: none;
   width: 80%;
   height: 60%;
   background: #fff;
@@ -44,7 +54,7 @@
   margin-right: 10%;
 }
 
-.recipe .table-wrapper table, th, td { 
+.recipe .table-wrapper table{ 
   border-collapse: collapse;
   width: 100%; 
   margin-left: 0%;
@@ -81,21 +91,12 @@ th, td {
   padding: 10px;
 }
 
-table{
-  background: white;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 1);
-}
-
 th {
   background: #4ea2f5;
   color: white;
 }
 
-table {
-  width: 80%;
-  margin-bottom: 20px;
-  margin-left: 10%;
-}
+
 
 .header {
   display: flex;
