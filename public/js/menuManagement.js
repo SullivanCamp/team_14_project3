@@ -195,12 +195,15 @@ function addIngredient() {
     const quantity = document.getElementById('ingredient-quantity').value;
 
     const entry = {
-        menu_item_id: menuId,
-        inventory_item_id: inventoryId,
-        quantity_used: quantity
+        submissionType: "AddIngredient",
+        item: {
+            menu_item_id: menuId,
+            inventory_item_id: inventoryId,
+            quantity_used: quantity
+        }
     };
 
-    fetch('/api/recipeMgmt', {
+    fetch('/api/menuMgmt', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
@@ -224,12 +227,15 @@ function deleteIngredient(button) {
     const menuId = button.getAttribute('data-menu-id');
 
     const entry = {
-        menu_item_id: menuId,
-        inventory_item_id: inventoryId
+        submissionType: "DeleteIngredient",
+        item: {
+            menu_item_id: menuId,
+            inventory_item_id: inventoryId
+        }
     };
 
-    fetch('/api/recipeMgmt', {
-        method: 'DELETE',
+    fetch('/api/menuMgmt', {
+        method: 'POST',
         headers: {
             'Content-Type': 'application/json'
         },
