@@ -97,10 +97,10 @@
                 </select><br>
 
                 <label for="quantity">Quantity:</label>
-                <input type="number" id="quantity" name="quantity"><br>
+                <input type="number" id="ingredient-quantity" name="ingredient_quantity"><br>
 
                 <div class="button-group">
-                    <input type="submit" value="Add Ingredient" class="btn-save" onclick="addIngredient()">
+                    <input type="button" value="Add Ingredient" class="btn-save" onclick="addIngredient()">
                 </div>
             </form>
             <div class = table-wrapper>
@@ -135,7 +135,8 @@
                                     <td><%= itemData ? itemData.units : 'N/A' %></td>
                                     <td>
                                         <button type="button" class="delete-ingredient" onclick="deleteIngredient(this)"
-                                                data-id="<%= ingredients[i].inventory_item_id %>">
+                                                data-id="<%= ingredients[i].inventory_item_id %>"
+                                                data-menu-id="<%= ingredients[i].menu_item_id %>">
                                             Delete
                                         </button>                        
                                     </td>

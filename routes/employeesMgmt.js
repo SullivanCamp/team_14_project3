@@ -5,8 +5,8 @@ const router = express.Router();
 
 router.post("/", async (req, res) => {
   const client = await pool.connect();
-  await client.query('BEGIN');
   try {
+    await client.query('BEGIN');
     const { submissionType, employee } = req.body;
     if (submissionType === "Edit") {
       const query = `

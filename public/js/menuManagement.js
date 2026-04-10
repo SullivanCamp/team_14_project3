@@ -1,3 +1,5 @@
+let currentEditingMenuId = null;
+
 // From W3 Schools
 function SearchFunction() {
   // Declare variables
@@ -132,7 +134,7 @@ function submitEdits() {
 
 function deleteEntry() {
     const id = document.getElementById('edit-header').innerText.split(" ")[4];
-
+    
     const entry = {
         submissionType: "Delete",
         item: {
@@ -140,7 +142,7 @@ function deleteEntry() {
         }
     };
 
-    fetch('/api/inventory', {
+    fetch('/api/menuMgmt', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
@@ -153,7 +155,7 @@ function deleteEntry() {
             hideEditForm();
             location.reload();
         } else {
-            alert('Delete failed');
+            alert('Delete failed item '+ id);
         }
     })
     .catch(() => alert('Delete failed'));
@@ -163,7 +165,7 @@ function showRecipeForm() {
     const recipeform = document.querySelector('.recipe');
     recipeform.style.display = 'block';
     const id = document.getElementById('edit-header').innerText.split(" ")[4];
-
+    currentEditingMenuId = id;
     filterRecipeTable(id);
 }
 
@@ -173,7 +175,7 @@ function filterRecipeTable(id) {
     // same as search function
     for (i = 0; i < rows.length; i++) {
         rowId = rows[i].getAttribute('data-menu-id');
-        if (id === rowId) {
+        if (id == rowId) {
             rows[i].style.visibility = "visible"; 
         } else {
             rows[i].style.visibility = "collapse";
@@ -187,11 +189,13 @@ function hideRecipeForm() {
     for (i = 0; i < rows.length; i++) {
         rows[i].style.visibility = "visible"; 
     }
+    document.getElementById('ingredient-id').value = "";
+    document.getElementById('ingredient-quantity').value = "";
 }
 
 function addIngredient() {
-    const menuId = document.getElementById('edit-header').innerText.split(" ")[4];
-    const inventoryId = document.getElementById('ingredient-select').value;
+    const menuId = currentEditingMenuId;
+    const inventoryId = document.getElementById('ingredient-id').value;
     const quantity = document.getElementById('ingredient-quantity').value;
 
     const entry = {
@@ -213,7 +217,7 @@ function addIngredient() {
     .then(response => response.json())
     .then(data => {
         if (data.success) {
-            hideRecipeForm();
+            sessionStorage.setItem('reopenRecipe', menuId); // save before reload
             location.reload();
         } else {
             alert('Add ingredient failed');
@@ -224,7 +228,7 @@ function addIngredient() {
 
 function deleteIngredient(button) {
     const inventoryId = button.getAttribute('data-id');
-    const menuId = button.getAttribute('data-menu-id');
+    const menuId = currentEditingMenuId;
 
     const entry = {
         submissionType: "DeleteIngredient",
@@ -244,6 +248,7 @@ function deleteIngredient(button) {
     .then(response => response.json())
     .then(data => {
         if (data.success) {
+            sessionStorage.setItem('reopenRecipe', menuId); // save before reload
             location.reload();
         } else {
             alert('Delete ingredient failed');
@@ -251,3 +256,18 @@ function deleteIngredient(button) {
     })
     .catch(() => alert('Delete ingredient failed'));
 }
+
+// to keep recipe form open on reload after adding/deleting ingredient
+document.addEventListener('DOMContentLoaded', () => {
+    const reopenId = sessionStorage.getItem('reopenRecipe');
+    if (reopenId) {
+        sessionStorage.removeItem('reopenRecipe');
+        // Find the edit button for that menu item and open the forms
+        const editButton = document.querySelector(`button[data-id="${reopenId}"]`);
+        if (editButton) {
+            openEditForm(editButton);
+            currentEditingMenuId = reopenId;
+            showRecipeForm();
+        }
+    }
+});
