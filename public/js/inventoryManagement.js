@@ -92,7 +92,7 @@ function submitAdd() {
         }
     };
 
-    fetch('/api/inventory', {
+    fetch('/api/inventoryMgmt', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
@@ -135,7 +135,7 @@ function submitEdits() {
         }
     };
 
-    fetch('/api/inventory', {
+    fetch('/api/inventoryMgmt', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
@@ -164,7 +164,7 @@ function deleteEntry() {
         }
     };
 
-    fetch('/api/inventory', {
+    fetch('/api/inventoryMgmt', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'

@@ -85,7 +85,7 @@ function submitAdd() {
         }
     };
 
-    fetch('/api/employees', {
+    fetch('/api/employeesMgmt', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
@@ -126,7 +126,7 @@ function submitEdits() {
         }
     };
 
-    fetch('/api/employees', {
+    fetch('/api/employeesMgmt', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
@@ -155,7 +155,7 @@ function deleteEntry() {
         }
     };
 
-    fetch('/api/employees', {
+    fetch('/api/employeesMgmt', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
