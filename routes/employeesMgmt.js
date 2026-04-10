@@ -5,6 +5,7 @@ const router = express.Router();
 
 router.post("/", async (req, res) => {
   const client = await pool.connect();
+  await client.query('BEGIN');
   try {
     const { submissionType, employee } = req.body;
     if (submissionType === "Edit") {
@@ -43,10 +44,13 @@ router.post("/", async (req, res) => {
         ]);
     }
 
+    await client.query('COMMIT');
+
     res.json({ success: true });
   } catch (error) {
+    await client.query('ROLLBACK');
     console.error("Error processing employee request:", error);
-    res.json({ success: false });
+    res.status(500).json({ success: false, message: "Internal server error" });
   } finally {
     client.release();
   }

@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css/managementPages.css">
+
+    <title>Menu Management</title>
+</head>
+<body>
+    <div class="header">
+        <button type="button" class = "back" onclick="alert('Go back to main menu')"> Back </button>
+        <h1> User:  LOGIN NOT IMPLEMENTED YET</h1>
+    </div>
+    <div class="menu-container">
+        <input type="text" id="Search" onkeyup="SearchFunction()" placeholder="Search by name..">
+        <table id = "menu-table">
+            <tr>
+                <th> Item ID </th>
+                <th> Item Name </th>
+                <th> Price </th>
+                <th> Description </th>
+                <th><button type="button" onclick="openAddForm()"> Add </button></th>
+            </tr>
+            <% for (var i in menuItems) {%>
+                <tr>
+                    <td><%= menuItems[i].item_id %></td>
+                    <td><%= menuItems[i].name %></td>
+                    <td><%= menuItems[i].price %></td>
+                    <td><%= menuItems[i].description %></td>
+                    <td style ="text-align: center;">
+                        <button 
+                            type="button" 
+                            onclick="openEditForm(this)"
+                            data-id="<%= menuItems[i].item_id %>"
+                            data-name="<%= menuItems[i].name %>"
+                            data-price="<%= menuItems[i].price %>"
+                            data-description="<%= menuItems[i].description %>">
+                            
+                            Edit
+                        </button>
+                    </td>
+                </tr>
+            <% } %>
+        </table>
+    </div>
+
+    <div class="edit">
+        <h2 id="edit-header"> Edit Entry</h2>
+        <form id="inventory-form">
+            <label for="edit-name">Item Name:</label>
+            <input type="text" id="edit-name" name="name"><br>
+
+            <label for="edit-price">Price:</label>
+            <input type="number" id="edit-price" name="price"><br>
+
+            <label for="edit-description">Description:</label>
+            <input type="text" id="edit-description" name="description"><br>
+
+            <div class="button-group">
+                <input type="submit" value="Submit" class="btn-save" onclick="submitEdits()">
+                <input type="button" value="Cancel" class="btn-cancel" onclick="hideEditForm()">
+                <input type="button" value="Edit Recipe" class="btn-recipe" onclick="showRecipeForm()">
+                <input type="button" value="Delete" class="btn-delete" onclick="deleteEntry()">
+            </div>
+        </form>
+    </div>
+
+    <div class = "add">
+        <h2 id="add-header"> Add Entry</h2>
+        <form id="inventory-form">
+            <label for="add-name">Item Name:</label>
+            <input type="text" id="add-name" name="name"><br>
+
+            <label for="add-price">Price:</label>
+            <input type="number" id="add-price" name="price"><br>
+
+            <label for="add-description">Description:</label>
+            <input type="text" id="add-description" name="description"><br>
+
+            <div class="button-group">
+                <input type="submit" value="Submit" class="btn-save" onclick="submitAdd()">
+                <input type="button" value="Add Recipe" class="btn-recipe" onclick="showRecipeForm()">
+                <input type="button" value="Cancel" class="btn-cancel" onclick="hideAddForm()">
+            </div>
+        </form>
+    </div>
+
+    <div class="recipe">
+        <h2 id="recipe-header"> Edit Recipe </h2>
+        <div class="form-and-table">
+            <form>
+                <label for="ingredient-id">Ingredient:</label>
+                <select id="ingredient-id" name="ingredient_id">
+                    <% for (var i in inventory) {%>
+                        <option value="<%= inventory[i].inventory_item_id %>"><%= inventory[i].name %></option>
+                    <% } %>
+                </select><br>
+
+                <label for="quantity">Quantity:</label>
+                <input type="number" id="quantity" name="quantity"><br>
+
+                <div class="button-group">
+                    <input type="submit" value="Add Ingredient" class="btn-save" onclick="addIngredient()">
+                </div>
+            </form>
+            <div class = table-wrapper>
+            
+                <table id="ingredient-list">
+                    <thead>
+                        <tr>
+                            <th> Ingredient Name </th>
+                            <th> Quantity </th>
+                            <th> Units </th>
+                            <th> Remove Ingredient </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% 
+                        // 1. Create a lookup map for inventory units so we don't guess indices
+                        const inventoryLookup = {};
+                        inventory.forEach(item => {
+                            inventoryLookup[item.inventory_item_id] = {
+                                name: item.name,
+                                units: item.measurement_units
+                            };
+                        });
+                        %>
+
+                        <% if (ingredients && ingredients.length > 0) { %>
+                            <% for (let i = 0; i < ingredients.length; i++) { 
+                                const itemData = inventoryLookup[ingredients[i].inventory_item_id];%>
+                                <tr>
+                                    <td><%= itemData ? itemData.name : 'Unknown' %></td>
+                                    <td><%= ingredients[i].quantity_used %></td>
+                                    <td><%= itemData ? itemData.units : 'N/A' %></td>
+                                    <td>
+                                        <button type="button" class="delete-ingredient" onclick="deleteIngredient(this)"
+                                                data-id="<%= ingredients[i].inventory_item_id %>">
+                                            Delete
+                                        </button>                        
+                                    </td>
+                                </tr>
+                            <% } %>
+                        <% } %>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="button-group">
+            <input type="submit" value="Submit" class="btn-save" onclick="submitRecipe()">
+            <input type="button" value="Cancel" class="btn-cancel" onclick="hideRecipeForm()">
+        </div>
+    </div>
+    <div class="ingredient-edit">
+        <h2 id="ingredient-edit-header"> Edit Ingredient </h2>
+        <form>
+            <label for="edit-ingredient-name">Ingredient Name:</label>
+            <input type="text" id="edit-ingredient-name" name="name"><br>
+
+            <label for="edit-ingredient-quantity">Quantity:</label>
+            <input type="text" id="edit-ingredient-quantity" name="quantity"><br>
+
+            <div class="button-group">
+                <input type="submit" value="Submit" class="btn-save" onclick="submitIngredientEdit()">
+                <input type="button" value="Cancel" class="btn-cancel" onclick="hideIngredientEditForm()">
+            </div>
+        </form>
+    </div>
+
+    <script src="js/menuManagement.js"></script>
+</body>
+</html>

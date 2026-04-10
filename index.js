@@ -4,8 +4,9 @@ require("dotenv").config();
 const ordersRoute = require("./routes/orders");
 const menuDataRoute = require("./routes/menuData");
 const reportsRoute = require("./routes/reports");
-const inventoryRoute = require("./routes/inventory");
-const employeesRoute = require("./routes/employees");
+const inventoryMgmtRoute = require("./routes/inventoryMgmt");
+const employeesMgmtRoute = require("./routes/employeesMgmt");
+const menuMgmtRoute = require("./routes/menuMgmt");
 const pool = require("./public/js/db");
 
 const app = express();
@@ -78,12 +79,31 @@ app.get("/employeeManagement", (req, res) => {
     });
 });
 
+app.get("/menuManagement", async (req, res) => {
+    try {
+        const [menuRes, inventoryRes, ingredientsRes] = await Promise.all([
+            pool.query(`SELECT * FROM menu_item WHERE item_id < 200 ORDER BY item_id ASC`),
+            pool.query(`SELECT * FROM inventory_item WHERE inventory_item_id < 500 ORDER BY inventory_item_id ASC`),
+            pool.query(`SELECT * FROM inventory_menu ORDER BY menu_item_id ASC`)
+        ]);
+
+        res.render("menuManagement", {
+            menuItems: menuRes.rows,
+            inventory: inventoryRes.rows,
+            ingredients: ingredientsRes.rows
+        });
+    } catch (err) {
+        res.status(500).json({ error: "Database query failed" });
+    }
+});
+
 
 app.use("/menu-data", menuDataRoute);
 app.use("/api/orders", ordersRoute);
 app.use("/api/reports", reportsRoute);
-app.use("/api/inventory", inventoryRoute);
-app.use("/api/employees", employeesRoute);
+app.use("/api/inventoryMgmt", inventoryMgmtRoute);
+app.use("/api/employeesMgmt", employeesMgmtRoute);
+app.use("/api/menuMgmt", menuMgmtRoute);
 
 app.listen(port, () => {
   console.log(`Example app listening at http://localhost:${port}`);

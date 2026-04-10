@@ -11,7 +11,7 @@ function SearchFunction() {
   for (i = 0; i < tr.length; i++) {
     td = tr[i].getElementsByTagName("td")[1];
     if (td) {
-      txtValue = td.textContent || td.innerText;
+      txtValue = td.textContent;
       if (txtValue.toUpperCase().indexOf(filter) > -1) {
         tr[i].style.visibility = "visible"; // same as below
       } else {

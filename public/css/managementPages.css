@@ -13,6 +13,43 @@
   
 }
 
+.recipe .form-and-table {
+  display: flex;
+  flex-direction: row; /* Change from column to row */
+  justify-content: space-between; /* Spreads form and table apart */
+  align-items: flex-start; /* Aligns them to the top */
+}
+
+.recipe {
+  width: 80%;
+  height: 60%;
+  background: #fff;
+  border-radius: 6px;
+  position: fixed;
+  top: 20%;
+  left: 10%;
+  color: #333;
+  border: 1px solid #333;
+}
+
+.recipe form {
+  width: 40%; /* Adjusted for spacing */
+  margin-left: 10%;
+}
+
+/* 1. Create a wrapper for the table to enable scrolling */
+.table-wrapper {
+  height: 300px; /* Set a fixed height for the table */
+  overflow-y: auto; /* Enables vertical scrolling */
+  margin-right: 10%;
+}
+
+.recipe .table-wrapper table, th, td { 
+  border-collapse: collapse;
+  width: 100%; 
+  margin-left: 0%;
+}
+
 
 table, th, td {
   border: 1px solid black;
