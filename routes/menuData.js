@@ -15,16 +15,26 @@ const pool = new Pool({
 
 router.get("/", async (req, res) => {
   try {
-    const query = `
-      SELECT item_id, name, price
+    const drinksQuery = `
+      SELECT item_id, name, price, description
       FROM menu_item
       WHERE item_id < 200
       ORDER BY item_id
     `;
 
-    const result = await pool.query(query);
+    const toppingsQuery = `
+      SELECT DISTINCT m.item_id, m.name, m.price, m.description
+      FROM menu_item m
+      JOIN menu_item_topping mt
+        ON mt.menu_item_id = m.item_id
+      WHERE mt.is_topping = true
+      ORDER BY m.item_id
+    `;
 
-    const items = result.rows.map((row, index) => {
+    const drinksResult = await pool.query(drinksQuery);
+    const toppingsResult = await pool.query(toppingsQuery);
+
+    const items = drinksResult.rows.map((row, index) => {
       let category = "all";
 
       if (index < 4) {
@@ -37,13 +47,24 @@ router.get("/", async (req, res) => {
         item_id: Number(row.item_id),
         name: row.name,
         price: Number(row.price),
+        description: row.description || "Freshly made and ready to customize.",
         category: category
+      };
+    });
+
+    const toppings = toppingsResult.rows.map((row) => {
+      return {
+        item_id: Number(row.item_id),
+        name: row.name,
+        price: Number(row.price),
+        description: row.description || ""
       };
     });
 
     res.json({
       success: true,
-      items: items
+      items: items,
+      toppings: toppings
     });
   } catch (error) {
     console.error("Failed to load menu items:", error);
