@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css/managementPages.css">
+
+    <title>Employee Management</title>
+</head>
+<body>
+    <div class="header">
+        <button type="button" class = "back" onclick="alert('Go back to main menu')"> Back </button>
+        <h1> User:  LOGIN NOT IMPLEMENTED YET</h1>
+    </div>
+    <div class="employee-container">
+        <input type="text" id="Search" onkeyup="SearchFunction()" placeholder="Search by name..">
+        <table id = "employee-table">
+            <tr>
+                <th> Employee ID </th>
+                <th> Employee Name </th>
+                <th> Position </th>
+                <th> Salary </th>
+                <th><button type="button" onclick="openAddForm()"> Add </button></th>
+            </tr>
+            <% for (var i in employees) {%>
+                <tr>
+                    <td><%= employees[i].employee_id %></td>
+                    <td><%= employees[i].first_name %> <%= employees[i].last_name %></td>
+                    <td><%if (employees[i].access_level === 1) { %>Manager<% } else { %>Worker<% } %></td>
+                    <td><%= employees[i].pay_rate %></td>
+
+                    <td style ="text-align: center;">
+                        <button 
+                            type="button" 
+                            onclick="openEditForm(this)"
+                            data-id="<%= employees[i].employee_id %>"
+                            data-first-name="<%= employees[i].first_name %>"
+                            data-last-name="<%= employees[i].last_name %>"
+                            data-position="<%= employees[i].access_level %>"
+                            data-salary="<%= employees[i].pay_rate %>"
+                            data-password="<%= employees[i].password %>">
+                            
+                            Edit
+                        </button>
+                    </td>
+                </tr>
+            <% } %>
+        </table>
+    </div>
+
+    <div class="edit">
+        <h2 id="edit-header"> Edit Entry</h2>
+        <form id="inventory-form">
+            <label for="edit-first-name">First Name:</label>
+            <input type="text" id="edit-first-name" name="first_name"><br>
+
+            <label for="edit-last-name">Last Name:</label>
+            <input type="text" id="edit-last-name" name="last_name"><br>
+
+            <label for="edit-position">Position:</label>
+            <select id="edit-position" name="position">
+                <option value="1">Manager</option>
+                <option value="0">Worker</option>
+            </select><br>
+
+            <label for="edit-salary">Salary:</label>
+            <input type="number" id="edit-salary" name="salary"><br>
+
+            <label for="edit-password">Password:</label>
+            <input type="text" id="edit-password" name="password"><br>
+
+            <div class="button-group">
+                <input type="submit" value="Submit" class="btn-save" onclick="submitEdits()">
+                <input type="button" value="Cancel" class="btn-cancel" onclick="hideEditForm()">
+                <input type="button" value="Delete" class="btn-delete" onclick="deleteEntry()">
+            </div>
+        </form>
+    </div>
+
+    <div class = "add">
+        <h2 id="add-header"> Add Entry</h2>
+        <form id="inventory-form">
+            <label for="add-first-name">First Name:</label>
+            <input type="text" id="add-first-name" name="first_name"><br>
+
+            <label for="add-last-name">Last Name:</label>
+            <input type="text" id="add-last-name" name="last_name"><br>
+
+            <label for="add-position">Position:</label>
+            <select id="add-position" name="position">
+                <option value="1">Manager</option>
+                <option value="0">Worker</option>
+            </select><br>
+
+            <label for="add-salary">Salary:</label>
+            <input type="number" id="add-salary" name="salary"><br>
+
+            <label for="add-password">Password:</label>
+            <input type="text" id="add-password" name="password"><br>
+
+            <div class="button-group">
+                <input type="submit" value="Submit" class="btn-save" onclick="submitAdd()">
+                <input type="button" value="Cancel" class="btn-cancel" onclick="hideAddForm()">
+            </div>
+        </form>
+    </div>
+    <script src="js/employeeManagement.js"></script>
+</body>
+</html>

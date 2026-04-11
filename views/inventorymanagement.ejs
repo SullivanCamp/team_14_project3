@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css/managementPages.css">
+
+    <title>Inventory Management</title>
+</head>
+<body>
+    <div class="header">
+        <button type="button" class = "back" onclick="alert('Go back to main menu')"> Back </button>
+        <h1> User:  LOGIN NOT IMPLEMENTED YET</h1>
+    </div>
+    <table>
+        <tr>
+            <th>Total Items: <%= inventory.length %></th>
+            <th> Total Low Stock Items: <%= lowStockItems.length %></th>
+
+        </tr>
+    </table>
+    <div class="inventory-container">
+        <input type="text" id="Search" onkeyup="SearchFunction()" placeholder="Search by name..">
+        <table id = "inventory-table">
+            <tr>
+                <th> Item ID </th>
+                <th> Item Name </th>
+                <th> Current/Max Quantity </th>
+                <th> Units </th>
+                <th> Cost Per Unit </th>
+                <th> Category </th>
+                <th><button type="button" onclick="openAddForm()"> Add </button></th>
+            </tr>
+            <% for (var i in inventory) {%>
+                <% if (inventory[i].current_amount / inventory[i].max_amount <= .3) { %>
+                    <tr style="background-color: #f37c7c">
+                <% } else { %>
+                    <tr>
+                <% } %>
+                    <td><%= inventory[i].inventory_item_id %></td>
+                    <td><%= inventory[i].name %></td>
+                    <td><%= inventory[i].current_amount %> / <%= inventory[i].max_amount %></td>
+                    <td><%= inventory[i].measurement_units %></td>
+                    <td><%= inventory[i].cost_per_unit %></td>
+                    <td><%= inventory[i].category %></td>
+
+                    <td style ="text-align: center;">
+                        <button 
+                            type="button" 
+                            onclick="openEditForm(this)"
+                            data-id="<%= inventory[i].inventory_item_id %>"
+                            data-name="<%= inventory[i].name %>"
+                            data-current="<%= inventory[i].current_amount %>"
+                            data-max="<%= inventory[i].max_amount %>"
+                            data-units="<%= inventory[i].measurement_units %>"
+                            data-cost="<%= inventory[i].cost_per_unit %>"
+                            data-category="<%= inventory[i].category %>">
+                            
+                            Edit
+                        </button>
+                    </td>
+
+                </tr>
+            <% } %>
+        </table>
+    </div>
+
+    <div class="edit">
+        <h2 id="edit-header"> Edit Entry</h2>
+        <form id="inventory-form">
+            <label for="edit-name">Item Name:</label>
+            <input type="text" id="edit-name" name="name"><br>
+
+            <label for="edit-current">Current Amount:</label>
+            <input type="number" id="edit-current" name="current_amount"><br>
+
+            <label for="edit-max">Max Amount:</label>
+            <input type="number" id="edit-max" name="max_amount"><br>
+
+            <label for="edit-units">Measurement Units:</label>
+            <input type="text" id="edit-units" name="measurement_units"><br>
+
+            <label for="edit-cost">Cost Per Unit:</label>
+            <input type="number" id="edit-cost" name="cost_per_unit"><br>
+
+            <label for="edit-category">Category:</label>
+            <input type="text" id="edit-category" name="category"><br>
+            
+            <div class="button-group">
+                <input type="submit" value="Submit" class="btn-save" onclick="submitEdits()">
+                <input type="button" value="Cancel" class="btn-cancel" onclick="hideEditForm()">
+                <input type="button" value="Delete" class="btn-delete" onclick="deleteEntry()">
+            </div>
+        </form>
+    </div>
+
+    <div class = "add">
+        <h2 id="add-header"> Add Entry</h2>
+        <form id="inventory-form">
+            <label for="add-name">Item Name:</label>
+            <input type="text" id="add-name" name="name"><br>
+
+            <label for="add-current">Current Amount:</label>
+            <input type="number" id="add-current" name="current_amount"><br>
+
+            <label for="add-max">Max Amount:</label>
+            <input type="number" id="add-max" name="max_amount"><br>
+
+            <label for="add-units">Measurement Units:</label>
+            <input type="text" id="add-units" name="measurement_units"><br>
+
+            <label for="add-cost">Cost Per Unit:</label>
+            <input type="number" id="add-cost" name="cost_per_unit"><br>
+
+            <label for="add-category">Category:</label>
+            <input type="text" id="add-category" name="category"><br>
+
+            <div class="button-group">
+                <input type="submit" value="Submit" class="btn-save" onclick="submitAdd()">
+                <input type="button" value="Cancel" class="btn-cancel" onclick="hideAddForm()">
+            </div>
+        </form>
+    </div>
+    <script src="js/inventoryManagement.js"></script>
+</body>
+</html>

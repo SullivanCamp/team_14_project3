@@ -1,0 +1,158 @@
+/* Modified from W3 Schools */
+#Search {
+  background-image: url('../images/searchicon.png'); /* Add a search icon to input */
+  background-size: contain;
+  background-repeat: no-repeat; /* Do not repeat the icon image */
+  background-position: right 10px center; 
+  width: 80%; /* Full-width */
+  margin-left: 10%; /* Center the input */
+  font-size: 16px; /* Increase font-size */
+  padding: 12px 0px 12px 0px; /* Add some padding */
+  border: 1px solid #ddd; /* Add a grey border */
+  margin-bottom: 12px; /* Add some space below the input */
+  
+}
+
+table {
+  width: 80%;
+  margin-bottom: 20px;
+  margin-left: 10%;
+  background: white;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 1);
+  table-layout: auto;
+}
+
+.recipe .form-and-table {
+  display: flex;
+  flex-direction: row; /* Change from column to row */
+  justify-content: space-between; /* Spreads form and table apart */
+  align-items: flex-start; /* Aligns them to the top */
+}
+
+.recipe {
+  display: none;
+  width: 80%;
+  height: 60%;
+  background: #fff;
+  border-radius: 6px;
+  position: fixed;
+  top: 20%;
+  left: 10%;
+  color: #333;
+  border: 1px solid #333;
+}
+
+.recipe form {
+  width: 40%; /* Adjusted for spacing */
+  margin-left: 10%;
+}
+
+/* 1. Create a wrapper for the table to enable scrolling */
+.table-wrapper {
+  height: 300px; /* Set a fixed height for the table */
+  overflow-y: auto; /* Enables vertical scrolling */
+  margin-right: 10%;
+}
+
+.recipe .table-wrapper table{ 
+  border-collapse: collapse;
+  width: 100%; 
+  margin-left: 0%;
+}
+
+.recipe .table-wrapper th, .recipe .table-wrapper td{
+  border: none;
+}
+
+
+table, th, td {
+  border: 1px solid black;
+  border-collapse: collapse;
+}
+body {
+  background-color: #edffe2;
+  font-family: Verdana, Geneva, Tahoma, sans-serif;
+}
+tr:nth-child(even) {
+  background-color: #ececec;
+}
+tr:nth-child(odd) {
+  background-color: #ffffff;
+}
+.back {
+  border: none;
+  background: #4ea2f5;
+  color: white;
+  font-size: 1rem;
+  padding: 12px 20px;
+  border-radius: 20px;
+  cursor: pointer;
+  font-weight: 600;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+th, td {
+  padding: 10px;
+}
+
+th {
+  background: #4ea2f5;
+  color: white;
+}
+
+
+
+.header {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px;
+}
+
+.edit, .add{
+  width: 40%;
+  height: auto;
+  background: #fff;
+  border-radius: 6px;
+  position: fixed;
+  display: none;
+  top: 30%;
+  left: 30%;
+  text-align: left;
+  padding: 0 30px 30px;
+  color: #333;
+  border: 1px solid #333;
+}
+
+
+
+h2 {
+  text-align: center;
+}
+
+label {
+  width: 200px;
+  display: inline-block;
+}
+
+.button-group {
+    display: flex;
+    justify-content: center; 
+    gap: 10px;  
+    margin-top: 20px;     
+    width: 100%; 
+}
+
+tr:has(td):hover{
+  filter: brightness(85%);
+}
+
+td:last-child {
+  text-align: center;
+}
+textarea, input, select{
+    font-family: inherit;
+    font-size: inherit;
+    color: inherit;
+}

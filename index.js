@@ -23,6 +23,10 @@ process.on("SIGINT", function () {
 const ordersRoute = require("./routes/orders");
 const menuDataRoute = require("./routes/menuData");
 const reportsRoute = require("./routes/reports");
+const inventoryMgmtRoute = require("./routes/inventoryMgmt");
+const employeesMgmtRoute = require("./routes/employeesMgmt");
+const menuMgmtRoute = require("./routes/menuMgmt");
+const pool = require("./public/js/db");
 
 app.set("view engine", "ejs");
 app.use(express.static("public"));
@@ -57,6 +61,54 @@ app.get("/reports/trends", (req, res) => {
   res.render("order-trends");
 });
 
+
+app.get("/inventoryManagement", (req, res) => {
+  inventory = [];
+  lowStockItems = [];
+  pool
+    .query("SELECT * FROM inventory_item ORDER BY inventory_item_id ASC")
+    .then((result) => {
+      inventory = result.rows;
+      lowStockItems = inventory.filter((item) => item.current_amount / item.max_amount <= .3);
+      res.render("inventoryManagement", {inventory, lowStockItems});
+    })
+    .catch(() => {
+      res.status(500).json({ error: "Database query failed" });
+    });
+});
+
+app.get("/employeeManagement", (req, res) => {
+  employees = [];
+  pool
+    .query("SELECT * FROM employee ORDER BY employee_id ASC")
+    .then((result) => {
+      employees = result.rows;
+      res.render("employeeManagement", {employees});
+    })
+    .catch(() => {
+      res.status(500).json({ error: "Database query failed" });
+    });
+});
+
+app.get("/menuManagement", async (req, res) => {
+    try {
+        const [menuRes, inventoryRes, ingredientsRes] = await Promise.all([
+            pool.query(`SELECT * FROM menu_item WHERE item_id < 200 ORDER BY item_id ASC`),
+            pool.query(`SELECT * FROM inventory_item WHERE inventory_item_id < 500 ORDER BY inventory_item_id ASC`),
+            pool.query(`SELECT * FROM inventory_menu ORDER BY menu_item_id ASC`)
+        ]);
+
+        res.render("menuManagement", {
+            menuItems: menuRes.rows,
+            inventory: inventoryRes.rows,
+            ingredients: ingredientsRes.rows
+        });
+    } catch (err) {
+        res.status(500).json({ error: "Database query failed" });
+    }
+});
+
+
 // Weather
 app.get("/weather", (req, res) => {
   const apiKey = process.env.WEATHER_API_KEY;
@@ -73,6 +125,9 @@ app.use("/menu-data", menuDataRoute);
 app.use("/orders", ordersRoute);
 app.use("/api/orders", ordersRoute);
 app.use("/api/reports", reportsRoute);
+app.use("/api/inventoryMgmt", inventoryMgmtRoute);
+app.use("/api/employeesMgmt", employeesMgmtRoute);
+app.use("/api/menuMgmt", menuMgmtRoute);
 
 app.listen(port, () => {
   console.log(`Example app listening at http://localhost:${port}`);
