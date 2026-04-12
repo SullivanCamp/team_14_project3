@@ -10,11 +10,14 @@ function getDayBounds(dateString) {
   const date = String(day.getDate()).padStart(2, "0");
 
   const start = `${year}-${month}-${date} 00:00:00`;
+
   const endDate = new Date(day);
   endDate.setDate(endDate.getDate() + 1);
+
   const endYear = endDate.getFullYear();
   const endMonth = String(endDate.getMonth() + 1).padStart(2, "0");
   const endDay = String(endDate.getDate()).padStart(2, "0");
+
   const end = `${endYear}-${endMonth}-${endDay} 00:00:00`;
 
   return {
@@ -67,11 +70,9 @@ router.get("/x", async (req, res) => {
       (acc, row) => {
         acc.sales += row.sales;
         acc.voids += row.voids;
-        acc.returns += row.returns;
-        acc.discards += row.discards;
         return acc;
       },
-      { sales: 0, voids: 0, returns: 0, discards: 0 }
+      { sales: 0, voids: 0 }
     );
 
     res.json({
@@ -82,24 +83,16 @@ router.get("/x", async (req, res) => {
     });
   } catch (error) {
     console.error("Failed to load X report:", error);
-    res.status(500).json({
-      success: false,
-      error: "Failed to load X report."
-    });
+    res.status(500).json({ success: false, error: "Failed to load X report." });
   }
 });
 
 router.get("/z/today", async (req, res) => {
   try {
-    const alreadyGeneratedQuery =
-      "SELECT 1 FROM z_report_log WHERE report_date = CURRENT_DATE";
-    const generatedResult = await pool.query(alreadyGeneratedQuery);
-
     const totalsSql = `
-      SELECT
-        COUNT(*) AS c,
-        COALESCE(SUM(total_price), 0) AS s,
-        COALESCE(AVG(total_price), 0) AS a
+      SELECT COUNT(*) AS c,
+             COALESCE(SUM(total_price), 0) AS s,
+             COALESCE(AVG(total_price), 0) AS a
       FROM orders
       WHERE DATE(order_datetime) = CURRENT_DATE
         AND is_complete = true
@@ -108,262 +101,87 @@ router.get("/z/today", async (req, res) => {
     const totalsResult = await pool.query(totalsSql);
     const totalsRow = totalsResult.rows[0] || { c: 0, s: 0, a: 0 };
 
-    const paymentsSql = `
-      SELECT
-        COALESCE(NULLIF(TRIM(payment_method), ''), 'Unknown') AS method,
-        COALESCE(SUM(total_price), 0) AS total
-      FROM orders
-      WHERE DATE(order_datetime) = CURRENT_DATE
-        AND is_complete = true
-      GROUP BY method
-      ORDER BY total DESC
-    `;
-
-    const paymentResult = await pool.query(paymentsSql);
-
     res.json({
       success: true,
-      alreadyGenerated: generatedResult.rowCount > 0,
       report: {
         orderCount: Number(totalsRow.c),
         totalSales: Number(totalsRow.s),
-        avgOrder: Number(totalsRow.a),
-        paymentTotals: paymentResult.rows.map((row) => ({
-          method: row.method,
-          total: Number(row.total)
-        }))
+        avgOrder: Number(totalsRow.a)
       }
     });
   } catch (error) {
     console.error("Failed to load Z report:", error);
-    res.status(500).json({
-      success: false,
-      error: "Failed to load Z report."
-    });
-  }
-});
-
-router.post("/z/generate", async (req, res) => {
-  const generatedBy =
-    req.body.generatedBy && String(req.body.generatedBy).trim() !== ""
-      ? String(req.body.generatedBy).trim()
-      : "Manager";
-
-  const client = await pool.connect();
-
-  try {
-    await client.query("BEGIN");
-
-    const alreadyGeneratedQuery =
-      "SELECT 1 FROM z_report_log WHERE report_date = CURRENT_DATE FOR UPDATE";
-    const alreadyGeneratedResult = await client.query(alreadyGeneratedQuery);
-
-    if (alreadyGeneratedResult.rowCount > 0) {
-      await client.query("ROLLBACK");
-      return res.status(409).json({
-        success: false,
-        error: "Z Report already generated today."
-      });
-    }
-
-    const totalsSql = `
-      SELECT
-        COUNT(*) AS c,
-        COALESCE(SUM(total_price), 0) AS s,
-        COALESCE(AVG(total_price), 0) AS a
-      FROM orders
-      WHERE DATE(order_datetime) = CURRENT_DATE
-        AND is_complete = true
-    `;
-
-    const totalsResult = await client.query(totalsSql);
-    const totalsRow = totalsResult.rows[0] || { c: 0, s: 0, a: 0 };
-
-    const paymentsSql = `
-      SELECT
-        COALESCE(NULLIF(TRIM(payment_method), ''), 'Unknown') AS method,
-        COALESCE(SUM(total_price), 0) AS total
-      FROM orders
-      WHERE DATE(order_datetime) = CURRENT_DATE
-        AND is_complete = true
-      GROUP BY method
-      ORDER BY total DESC
-    `;
-
-    const paymentsResult = await client.query(paymentsSql);
-
-    const insertLogSql = `
-      INSERT INTO z_report_log (report_date, generated_by)
-      VALUES (CURRENT_DATE, $1)
-    `;
-    await client.query(insertLogSql, [generatedBy]);
-
-    await client.query("COMMIT");
-
-    res.json({
-      success: true,
-      message: "Z Report generated successfully.",
-      report: {
-        orderCount: Number(totalsRow.c),
-        totalSales: Number(totalsRow.s),
-        avgOrder: Number(totalsRow.a),
-        paymentTotals: paymentsResult.rows.map((row) => ({
-          method: row.method,
-          total: Number(row.total)
-        }))
-      }
-    });
-  } catch (error) {
-    await client.query("ROLLBACK");
-    console.error("Failed to generate Z report:", error);
-    res.status(500).json({
-      success: false,
-      error: error.message || "Failed to generate Z report."
-    });
-  } finally {
-    client.release();
+    res.status(500).json({ success: false, error: "Failed to load Z report." });
   }
 });
 
 router.get("/trends", async (req, res) => {
   try {
-    const limit = Math.max(1, Number(req.query.limit) || 5);
-    const { start, end, dayString } = getDayBounds(req.query.date);
-
-    const busiestSql = `
-      SELECT
-        date_trunc('hour', o.order_datetime::timestamp) AS hour_bucket,
-        COUNT(*) AS cnt
-      FROM orders o
-      WHERE o.order_datetime::timestamp >= $1
-        AND o.order_datetime::timestamp < $2
-      GROUP BY hour_bucket
-      ORDER BY cnt DESC
-      LIMIT 1
-    `;
-
-    const slowestSql = `
-      SELECT
-        date_trunc('hour', o.order_datetime::timestamp) AS hour_bucket,
-        COUNT(*) AS cnt
-      FROM orders o
-      WHERE o.order_datetime::timestamp >= $1
-        AND o.order_datetime::timestamp < $2
-      GROUP BY hour_bucket
-      ORDER BY cnt ASC
-      LIMIT 1
-    `;
+    const { start, end } = getDayBounds(req.query.date);
 
     const totalsSql = `
-      SELECT
-        COUNT(*) AS total_orders,
-        COALESCE(SUM(total_price), 0) AS total_revenue
-      FROM orders o
-      WHERE o.order_datetime::timestamp >= $1
-        AND o.order_datetime::timestamp < $2
+      SELECT COUNT(*) AS total_orders,
+             COALESCE(SUM(total_price), 0) AS total_revenue
+      FROM orders
+      WHERE order_datetime >= $1 AND order_datetime < $2
     `;
 
-    const topSellingSql = `
-      SELECT
-        oi.menu_id,
-        SUM(oi.quantity) AS qty
-      FROM orders o
-      JOIN order_item oi ON oi.order_id = o.id
-      WHERE o.order_datetime::timestamp >= $1
-        AND o.order_datetime::timestamp < $2
-      GROUP BY oi.menu_id
-      ORDER BY qty DESC
-      LIMIT $3
-    `;
-
-    const leastSellingSql = `
-      SELECT
-        oi.menu_id,
-        SUM(oi.quantity) AS qty
-      FROM orders o
-      JOIN order_item oi ON oi.order_id = o.id
-      WHERE o.order_datetime::timestamp >= $1
-        AND o.order_datetime::timestamp < $2
-      GROUP BY oi.menu_id
-      ORDER BY qty ASC
-      LIMIT $3
-    `;
-
-    const [
-      busiestResult,
-      slowestResult,
-      totalsResult,
-      topSellingResult,
-      leastSellingResult
-    ] = await Promise.all([
-      pool.query(busiestSql, [start, end]),
-      pool.query(slowestSql, [start, end]),
-      pool.query(totalsSql, [start, end]),
-      pool.query(topSellingSql, [start, end, limit]),
-      pool.query(leastSellingSql, [start, end, limit])
-    ]);
-
-    function formatHourRange(value) {
-      if (!value) return "--";
-
-      const startDate = new Date(value);
-      const endDate = new Date(startDate);
-      endDate.setHours(endDate.getHours() + 1);
-
-      const options = {
-        hour: "numeric",
-        minute: "2-digit",
-        hour12: true
-      };
-
-      const startLabel = startDate.toLocaleTimeString("en-US", options);
-      const endLabel = endDate.toLocaleTimeString("en-US", options);
-
-      return `${startLabel}–${endLabel}`;
-    }
-
-    const busiest =
-      busiestResult.rows.length > 0
-        ? formatHourRange(busiestResult.rows[0].hour_bucket)
-        : "--";
-
-    const slowest =
-      slowestResult.rows.length > 0
-        ? formatHourRange(slowestResult.rows[0].hour_bucket)
-        : "--";
-
-    const totalsRow = totalsResult.rows[0] || {
-      total_orders: 0,
-      total_revenue: 0
-    };
-
-    const totalOrders = Number(totalsRow.total_orders || 0);
-    const totalRevenue = Math.round(Number(totalsRow.total_revenue || 0) * 100) / 100;
-
-    const topSelling = topSellingResult.rows.map((row) => {
-      return `Menu ID: ${Number(row.menu_id)} (qty: ${Number(row.qty)})`;
-    });
-
-    const leastSelling = leastSellingResult.rows.map((row) => {
-      return `Menu ID: ${Number(row.menu_id)} (qty: ${Number(row.qty)})`;
-    });
+    const result = await pool.query(totalsSql, [start, end]);
 
     res.json({
       success: true,
-      date: dayString,
-      totalOrders,
-      totalRevenue,
-      busiest,
-      slowest,
-      topSelling,
-      leastSelling
+      totalOrders: Number(result.rows[0].total_orders),
+      totalRevenue: Number(result.rows[0].total_revenue)
     });
   } catch (error) {
-    console.error("Failed to load order trends:", error);
-    res.status(500).json({
-      success: false,
-      error: "Failed to load order trends."
-    });
+    console.error("Failed to load trends:", error);
+    res.status(500).json({ success: false });
+  }
+});
+
+router.get("/product-usage", (req, res) => {
+  res.render("productUsage");
+});
+
+router.get("/api/product-usage", async (req, res) => {
+  const { startDate, endDate } = req.query;
+
+  if (!startDate || !endDate) {
+    return res.status(400).json({ error: "Start and end dates required." });
+  }
+
+  const startTimestamp = `${startDate} 00:00:00`;
+
+  const endPlusOne = new Date(endDate);
+  endPlusOne.setDate(endPlusOne.getDate() + 1);
+
+  const endTimestamp = `${endPlusOne.getFullYear()}-${
+    String(endPlusOne.getMonth() + 1).padStart(2, "0")
+  }-${String(endPlusOne.getDate()).padStart(2, "0")} 00:00:00`;
+
+  const query = `
+    SELECT 
+      ii.inventory_item_id,
+      ii.name,
+      ii.measurement_units,
+      SUM(oi.quantity * im.quantity_used) AS total_used
+    FROM orders o
+    JOIN order_item oi ON oi.order_id = o.id
+    JOIN inventory_menu im ON im.menu_item_id = oi.menu_id
+    JOIN inventory_item ii ON ii.inventory_item_id = im.inventory_item_id
+    WHERE o.order_datetime >= $1
+      AND o.order_datetime < $2
+      AND o.is_complete = TRUE
+    GROUP BY ii.inventory_item_id, ii.name, ii.measurement_units
+    ORDER BY total_used DESC;
+  `;
+
+  try {
+    const result = await pool.query(query, [startTimestamp, endTimestamp]);
+    res.json(result.rows);
+  } catch (error) {
+    console.error("Product usage error:", error);
+    res.status(500).json({ error: "Database error" });
   }
 });
 
