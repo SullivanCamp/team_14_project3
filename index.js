@@ -26,7 +26,6 @@ const reportsRoute = require("./routes/reports");
 const inventoryMgmtRoute = require("./routes/inventoryMgmt");
 const employeesMgmtRoute = require("./routes/employeesMgmt");
 const menuMgmtRoute = require("./routes/menuMgmt");
-const pool = require("./public/js/db");
 
 app.set("view engine", "ejs");
 app.use(express.static("public"));
