@@ -37,8 +37,28 @@ app.get("/", (req, res) => {
   res.render("login");
 });
 
-app.get("/auth", (req, res) => {
-  res.render("auth");
+app.get("/reports", (req, res) => {
+  res.render("reportshome");
+});
+
+app.get("/reports/product-usage", (req, res) => {
+  res.render("productUsage");
+});
+
+app.get("/customerhome", (req, res) => {
+  res.render("menu");
+});
+
+// app.get("/auth", (req, res) => {
+//   res.render("auth");
+// });
+
+app.get("/managerhome", (req, res) => {
+  res.render("managerhome");
+});
+
+app.get("/management", (req, res) => {
+  res.render("managementhome");
 });
 
 app.get("/order", (req, res) => {
@@ -65,8 +85,12 @@ app.get("/reports/trends", (req, res) => {
   res.render("order-trends");
 });
 
+app.get("/login", (req, res) => {
+  res.render("login");
+});
 
-app.get("/inventoryManagement", (req, res) => {
+
+app.get("/inventorymanagement", (req, res) => {
   inventory = [];
   lowStockItems = [];
   pool
@@ -74,27 +98,27 @@ app.get("/inventoryManagement", (req, res) => {
     .then((result) => {
       inventory = result.rows;
       lowStockItems = inventory.filter((item) => item.current_amount / item.max_amount <= .3);
-      res.render("inventoryManagement", {inventory, lowStockItems});
+      res.render("inventorymanagement", {inventory, lowStockItems});
     })
     .catch(() => {
       res.status(500).json({ error: "Database query failed" });
     });
 });
 
-app.get("/employeeManagement", (req, res) => {
+app.get("/employeemanagement", (req, res) => {
   employees = [];
   pool
     .query("SELECT * FROM employee ORDER BY employee_id ASC")
     .then((result) => {
       employees = result.rows;
-      res.render("employeeManagement", {employees});
+      res.render("employeemanagement", {employees});
     })
     .catch(() => {
       res.status(500).json({ error: "Database query failed" });
     });
 });
 
-app.get("/menuManagement", async (req, res) => {
+app.get("/menumanagement", async (req, res) => {
     try {
         const [menuRes, inventoryRes, ingredientsRes] = await Promise.all([
             pool.query(`SELECT * FROM menu_item WHERE item_id < 200 ORDER BY item_id ASC`),
@@ -102,7 +126,7 @@ app.get("/menuManagement", async (req, res) => {
             pool.query(`SELECT * FROM inventory_menu ORDER BY menu_item_id ASC`)
         ]);
 
-        res.render("menuManagement", {
+        res.render("menumanagement", {
             menuItems: menuRes.rows,
             inventory: inventoryRes.rows,
             ingredients: ingredientsRes.rows

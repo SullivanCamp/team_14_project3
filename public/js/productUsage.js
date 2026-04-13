@@ -48,7 +48,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     try {
       const response = await fetch(
-        `/reports/api/product-usage?startDate=${encodeURIComponent(startDate)}&endDate=${encodeURIComponent(endDate)}`
+        `/api/reports/product-usage?startDate=${encodeURIComponent(startDate)}&endDate=${encodeURIComponent(endDate)}`
       );
 
       const data = await response.json();

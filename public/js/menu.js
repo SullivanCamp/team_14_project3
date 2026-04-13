@@ -53,12 +53,6 @@ function getActiveCustomer() {
 
 function ensureActiveCustomer() {
   const customer = getActiveCustomer();
-
-  if (!customer) {
-    window.location.href = "/auth";
-    return null;
-  }
-
   return customer;
 }
 

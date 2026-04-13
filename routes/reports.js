@@ -1,7 +1,15 @@
 const express = require("express");
-const pool = require("../public/js/db");
-
 const router = express.Router();
+const { Pool } = require("pg");
+
+const pool = new Pool({
+  user: process.env.PSQL_USER,
+  host: process.env.PSQL_HOST,
+  database: process.env.PSQL_DATABASE,
+  password: process.env.PSQL_PASSWORD,
+  port: Number(process.env.PSQL_PORT),
+  ssl: { rejectUnauthorized: false }
+});
 
 function getDayBounds(dateString) {
   const day = dateString ? new Date(`${dateString}T00:00:00`) : new Date();
@@ -139,49 +147,40 @@ router.get("/trends", async (req, res) => {
   }
 });
 
-router.get("/product-usage", (req, res) => {
-  res.render("productUsage");
-});
-
-router.get("/api/product-usage", async (req, res) => {
+router.get("/product-usage", async (req, res) => {
   const { startDate, endDate } = req.query;
 
   if (!startDate || !endDate) {
-    return res.status(400).json({ error: "Start and end dates required." });
+    return res.status(400).json({ error: "Missing dates" });
   }
 
-  const startTimestamp = `${startDate} 00:00:00`;
-
-  const endPlusOne = new Date(endDate);
-  endPlusOne.setDate(endPlusOne.getDate() + 1);
-
-  const endTimestamp = `${endPlusOne.getFullYear()}-${
-    String(endPlusOne.getMonth() + 1).padStart(2, "0")
-  }-${String(endPlusOne.getDate()).padStart(2, "0")} 00:00:00`;
-
-  const query = `
-    SELECT 
-      ii.inventory_item_id,
-      ii.name,
-      ii.measurement_units,
-      SUM(oi.quantity * im.quantity_used) AS total_used
-    FROM orders o
-    JOIN order_item oi ON oi.order_id = o.id
-    JOIN inventory_menu im ON im.menu_item_id = oi.menu_id
-    JOIN inventory_item ii ON ii.inventory_item_id = im.inventory_item_id
-    WHERE o.order_datetime >= $1
+  try {
+    const query = `
+      SELECT 
+        ii.inventory_item_id, 
+        ii.name, 
+        ii.measurement_units, 
+        SUM(oi.quantity * im.quantity_used) AS total_used
+      FROM orders o
+      JOIN order_item oi ON oi.order_id = o.id
+      JOIN inventory_menu im ON im.menu_item_id = oi.menu_id
+      JOIN inventory_item ii ON ii.inventory_item_id = im.inventory_item_id
+      WHERE o.order_datetime >= $1
       AND o.order_datetime < $2
       AND o.is_complete = TRUE
-    GROUP BY ii.inventory_item_id, ii.name, ii.measurement_units
-    ORDER BY total_used DESC;
-  `;
+      GROUP BY ii.inventory_item_id, ii.name, ii.measurement_units
+      ORDER BY total_used DESC;
+    `;
 
-  try {
-    const result = await pool.query(query, [startTimestamp, endTimestamp]);
+    const result = await pool.query(query, [
+      `${startDate} 00:00:00`,
+      `${endDate} 23:59:59`
+    ]);
+
     res.json(result.rows);
-  } catch (error) {
-    console.error("Product usage error:", error);
-    res.status(500).json({ error: "Database error" });
+  } catch (err) {
+    console.error("Product usage error:", err);
+    res.status(500).json({ error: "Database query failed" });
   }
 });
 
