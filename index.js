@@ -26,6 +26,7 @@ const reportsRoute = require("./routes/reports");
 const inventoryMgmtRoute = require("./routes/inventoryMgmt");
 const employeesMgmtRoute = require("./routes/employeesMgmt");
 const menuMgmtRoute = require("./routes/menuMgmt");
+const userAuthRoute = require("./routes/userauth");
 
 app.set("view engine", "ejs");
 app.use(express.static("public"));
@@ -49,9 +50,9 @@ app.get("/customerhome", (req, res) => {
   res.render("customerhome");
 });
 
-// app.get("/auth", (req, res) => {
-//   res.render("auth");
-// });
+app.get("/auth", (req, res) => {
+  res.render("auth");
+});
 
 app.get("/managerhome", (req, res) => {
   res.render("managerhome");
@@ -88,7 +89,6 @@ app.get("/reports/trends", (req, res) => {
 app.get("/login", (req, res) => {
   res.render("login");
 });
-
 
 app.get("/inventorymanagement", (req, res) => {
   inventory = [];
@@ -136,7 +136,6 @@ app.get("/menumanagement", async (req, res) => {
     }
 });
 
-
 // Weather
 app.get("/weather", (req, res) => {
   const apiKey = process.env.WEATHER_API_KEY;
@@ -156,9 +155,10 @@ app.use("/api/reports", reportsRoute);
 app.use("/api/inventoryMgmt", inventoryMgmtRoute);
 app.use("/api/employeesMgmt", employeesMgmtRoute);
 app.use("/api/menuMgmt", menuMgmtRoute);
+app.use("/api/userauth", userAuthRoute);
 
 app.listen(port, () => {
   console.log(`Example app listening at http://localhost:${port}`);
-  console.log(`Kiosk auth page: http://localhost:${port}/login`);
+  console.log(`Kiosk auth page: http://localhost:${port}/auth`);
   console.log(`Order page: http://localhost:${port}/order`);
 });
