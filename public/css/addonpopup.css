@@ -17,13 +17,16 @@
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: 340px;
+  width: 380px;
   max-width: calc(100% - 32px);
+  max-height: 80vh;
   background: white;
   border-radius: 20px;
   padding: 24px;
   box-shadow: 0 18px 40px rgba(0, 0, 0, 0.22);
   z-index: 1001;
+  overflow: hidden;
+  box-sizing: border-box;
 }
 
 .addon-popup h2
@@ -31,6 +34,21 @@
   margin: 0 0 18px;
   font-size: 1.4rem;
   font-weight: 600;
+}
+
+#addonForm
+{
+  display: flex;
+  flex-direction: column;
+  max-height: calc(80vh - 80px);
+}
+
+#addonOptions
+{
+  overflow-y: auto;
+  max-height: 400px;
+  padding-right: 8px;
+  margin-bottom: 16px;
 }
 
 .addon-option
@@ -54,9 +72,10 @@
   display: flex;
   justify-content: flex-end;
   gap: 12px;
-  margin-top: 22px;
+  margin-top: auto;
+  padding-top: 10px;
+  background: white;
 }
-
 .popup-button
 {
   border: none;
@@ -131,4 +150,35 @@
   background: white;
   text-align: center;
   font-weight: 700;
+}
+
+.custom-section {
+  margin-bottom: 14px;
+}
+
+.custom-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.custom-field {
+  display: flex;
+  flex-direction: column;
+}
+
+.custom-field label {
+  font-weight: 600;
+  font-size: 0.9rem;
+  margin-bottom: 4px;
+  color: #1f2937;
+}
+
+.custom-field select {
+  width: 100%;
+  padding: 8px;
+  border-radius: 10px;
+  border: none;
+  background: #f3f6fa;
+  font-size: 0.9rem;
 }

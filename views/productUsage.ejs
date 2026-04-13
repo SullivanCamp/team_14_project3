@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Product Usage Report</title>
+  <link rel="stylesheet" href="/css/reports.css" />
+</head>
+<body>
+  <main class="report-page">
+    <header class="report-header">
+      <div>
+        <p class="eyebrow">Reports</p>
+        <h1>Product Usage Report</h1>
+        <p class="subtext">
+          View inventory usage for completed orders in a selected date range.
+        </p>
+      </div>
+
+      <a href="/reports" class="secondary-btn">Back</a>
+    </header>
+
+    <div id="messageBanner" class="banner"></div>
+
+    <section class="report-card">
+      <div class="filters">
+        <label for="startDate">
+          Start Date
+          <input type="date" id="startDate" />
+        </label>
+
+        <label for="endDate">
+          End Date
+          <input type="date" id="endDate" />
+        </label>
+
+        <button id="generateBtn" class="primary-btn">Generate Table</button>
+      </div>
+    </section>
+
+    <section class="report-card">
+      <div class="card-title-row">
+        <h2>Usage Results</h2>
+        <span class="pill" id="resultCount">0 items</span>
+      </div>
+
+      <div class="table-wrap">
+        <table class="report-table" id="productUsageTable">
+          <thead>
+            <tr>
+              <th>Inventory ID</th>
+              <th>Item Name</th>
+              <th>Total Used</th>
+              <th>Units</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td colspan="4" class="empty-cell">
+                Select a date range and generate the report.
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <script src="/js/productUsage.js"></script>
+</body>
+</html>

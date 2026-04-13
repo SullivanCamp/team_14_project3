@@ -8,6 +8,13 @@ const sectionTitle = document.getElementById("sectionTitle");
 const noResultMessage = document.getElementById("noResultMessage");
 const addonOptionsContainer = document.getElementById("addonOptionsContainer");
 
+const customerChip = document.getElementById("customerChip");
+const customerChipName = document.getElementById("customerChipName");
+const customerDropdown = document.getElementById("customerDropdown");
+const customerDropdownName = document.getElementById("customerDropdownName");
+const switchAccountBtn = document.getElementById("switchAccountBtn");
+const logoutBtn = document.getElementById("logoutBtn");
+
 let toppingItems = [];
 let currentCategory = "all";
 let cartItems = [];
@@ -31,6 +38,39 @@ function percentFromLabel(value, fallback = 100) {
 
 function createCartId() {
   return `cart_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
+}
+
+function getActiveCustomer() {
+  try {
+    const raw = localStorage.getItem("activeCustomer");
+    if (!raw) return null;
+    return JSON.parse(raw);
+  } catch (error) {
+    console.error("Failed to read active customer:", error);
+    return null;
+  }
+}
+
+function ensureActiveCustomer() {
+  const customer = getActiveCustomer();
+  return customer;
+}
+
+function renderActiveCustomer() {
+  const customer = ensureActiveCustomer();
+  if (!customer) return;
+
+  const name = customer.first_name || "Guest";
+  customerChipName.textContent = name;
+  customerDropdownName.textContent = name;
+}
+
+function toggleCustomerDropdown() {
+  customerDropdown.classList.toggle("open");
+}
+
+function closeCustomerDropdown() {
+  customerDropdown.classList.remove("open");
 }
 
 function normalizeToppings(toppings) {
@@ -191,7 +231,7 @@ function renderAddonOptions() {
   });
 }
 
-function addItemToCart(drinkCard, addons) {
+function addItemToCart(drinkCard, addons, customization = {}) {
   const drinkId = Number(drinkCard.dataset.id);
   const drinkName = drinkCard.dataset.name;
   const drinkPrice = Number(drinkCard.dataset.price);
@@ -209,6 +249,9 @@ function addItemToCart(drinkCard, addons) {
     });
   }
 
+  const sugar = toNumber(customization.sugar, 100);
+  const ice = toNumber(customization.ice, 100);
+
   const newItem = normalizeCartItem({
     cartId: createCartId(),
     itemId: drinkId,
@@ -216,10 +259,10 @@ function addItemToCart(drinkCard, addons) {
     price: drinkPrice,
     qty: 1,
     size: "Regular",
-    sugar: 100,
-    sweetness: "100%",
-    ice: 100,
-    iceLabel: "100% Ice",
+    sugar: sugar,
+    sweetness: customization.sweetness || `${sugar}%`,
+    ice: ice,
+    iceLabel: customization.iceLabel || `${ice}% Ice`,
     toppings: toppingObjects
   });
 
@@ -252,20 +295,6 @@ async function loadMenuFromDatabase() {
     console.error("Menu load failed:", error);
     menuCardRow.innerHTML = `<p class="no-result">Failed to load menu items.</p>`;
   }
-}
-
-function toppingExtraPrice(toppings) {
-  let extra = 0;
-
-  if (!toppings || !Array.isArray(toppings)) {
-    return extra;
-  }
-
-  toppings.forEach((t) => {
-    extra += Number(t.price || 0) * Number(t.qty || 0);
-  });
-
-  return extra;
 }
 
 tabButtons.forEach((button) => {
@@ -317,7 +346,9 @@ addonForm.addEventListener("submit", (event) => {
   if (!activeDrinkCard) return;
 
   const selectedAddons = getSelectedAddons();
-  addItemToCart(activeDrinkCard, selectedAddons);
+  const customization = getCustomizationSelections();
+
+  addItemToCart(activeDrinkCard, selectedAddons, customization);
   closeAddonPopup();
 });
 
@@ -339,6 +370,27 @@ addonOptionsContainer.addEventListener("click", (event) => {
   }
 });
 
+customerChip.addEventListener("click", (event) => {
+  event.stopPropagation();
+  toggleCustomerDropdown();
+});
+
+document.addEventListener("click", () => {
+  closeCustomerDropdown();
+});
+
+switchAccountBtn.addEventListener("click", () => {
+  window.location.href = "/auth";
+});
+
+logoutBtn.addEventListener("click", () => {
+  localStorage.removeItem("activeCustomer");
+  localStorage.removeItem("cartItems");
+  window.location.href = "/auth";
+});
+
+ensureActiveCustomer();
+renderActiveCustomer();
 loadCartFromStorage();
 updateCartCount();
 loadMenuFromDatabase();
