@@ -1,6 +1,7 @@
 let cartItems = [];
 
 const taxRate = 0.0825;
+const addonPrice = 0.5;
 
 const cartList = document.getElementById("cart-list");
 const subtotalElement = document.getElementById("subtotal");
@@ -93,17 +94,65 @@ function iceLabel(item) {
   return item.iceLabel || `${item.ice}% Ice`;
 }
 
-function toppingsLabel(item) {
+function calculateAddonTotalForItem(item) {
   if (!item.toppings || item.toppings.length === 0) {
-    return "";
+    return 0;
   }
 
-  const names = item.toppings.map((topping) => topping.name).join(", ");
-  return `<p class="item-toppings">Add-ons: ${names}</p>`;
+  const totalAddonQty = item.toppings.reduce(
+    (sum, topping) => sum + Math.max(0, toNumber(topping.qty, 0)),
+    0
+  );
+
+  return totalAddonQty * addonPrice * item.qty;
+}
+
+function toppingsLabel(item) {
+  if (!item.toppings || item.toppings.length === 0) {
+    return `<p class="item-toppings">Add-ons: None</p>`;
+  }
+
+  const toppingControls = item.toppings
+    .map(
+      (topping) => `
+        <div class="addon-row">
+          <span>${topping.name} ($${addonPrice.toFixed(2)} each)</span>
+          <div class="addon-controls">
+            <button
+              class="qty-btn"
+              type="button"
+              onclick="decreaseAddonQuantity('${item.cartId}', '${topping.id}')"
+            >
+              -
+            </button>
+            <span class="quantity">${topping.qty}</span>
+            <button
+              class="qty-btn"
+              type="button"
+              onclick="increaseAddonQuantity('${item.cartId}', '${topping.id}')"
+            >
+              +
+            </button>
+          </div>
+        </div>
+      `
+    )
+    .join("");
+
+  return `
+    <div class="item-toppings">
+      <p>Add-ons:</p>
+      ${toppingControls}
+    </div>
+  `;
 }
 
 function calculateSubtotal() {
-  return cartItems.reduce((sum, item) => sum + item.price * item.qty, 0);
+  return cartItems.reduce((sum, item) => {
+    const baseTotal = item.price * item.qty;
+    const addonTotal = calculateAddonTotalForItem(item);
+    return sum + baseTotal + addonTotal;
+  }, 0);
 }
 
 function updateSummary() {
@@ -131,6 +180,10 @@ function renderCart() {
     const itemDiv = document.createElement("div");
     itemDiv.classList.add("cart-item");
 
+    const baseTotal = item.price * item.qty;
+    const addonTotal = calculateAddonTotalForItem(item);
+    const lineTotal = baseTotal + addonTotal;
+
     itemDiv.innerHTML = `
       <div class="item-info">
         <h3>${item.name}</h3>
@@ -140,14 +193,14 @@ function renderCart() {
       </div>
 
       <div class="item-controls">
-        <button class="qty-btn" onclick="decreaseQuantity('${item.cartId}')">-</button>
+        <button class="qty-btn" type="button" onclick="decreaseQuantity('${item.cartId}')">-</button>
         <span class="quantity">${item.qty}</span>
-        <button class="qty-btn" onclick="increaseQuantity('${item.cartId}')">+</button>
+        <button class="qty-btn" type="button" onclick="increaseQuantity('${item.cartId}')">+</button>
       </div>
 
       <div class="item-total">
-        <p>$${(item.price * item.qty).toFixed(2)}</p>
-        <button class="remove-btn" onclick="removeItem('${item.cartId}')">Remove</button>
+        <p>$${lineTotal.toFixed(2)}</p>
+        <button class="remove-btn" type="button" onclick="removeItem('${item.cartId}')">Remove</button>
       </div>
     `;
 
@@ -176,6 +229,45 @@ function decreaseQuantity(cartId) {
 
   if (item.qty <= 0) {
     cartItems = cartItems.filter((cartItem) => cartItem.cartId !== cartId);
+  }
+
+  saveCart();
+  renderCart();
+}
+
+function increaseAddonQuantity(cartId, toppingId) {
+  const item = cartItems.find((cartItem) => cartItem.cartId === cartId);
+
+  if (!item || !Array.isArray(item.toppings)) return;
+
+  const topping = item.toppings.find(
+    (cartTopping) => String(cartTopping.id) === String(toppingId)
+  );
+
+  if (!topping) return;
+
+  topping.qty += 1;
+  saveCart();
+  renderCart();
+}
+
+function decreaseAddonQuantity(cartId, toppingId) {
+  const item = cartItems.find((cartItem) => cartItem.cartId === cartId);
+
+  if (!item || !Array.isArray(item.toppings)) return;
+
+  const topping = item.toppings.find(
+    (cartTopping) => String(cartTopping.id) === String(toppingId)
+  );
+
+  if (!topping) return;
+
+  topping.qty -= 1;
+
+  if (topping.qty <= 0) {
+    item.toppings = item.toppings.filter(
+      (cartTopping) => String(cartTopping.id) !== String(toppingId)
+    );
   }
 
   saveCart();
@@ -232,6 +324,7 @@ async function placeOrder() {
     cartItems = [];
     saveCart();
     renderCart();
+    window.location.href = "/";
   } catch (error) {
     console.error("Order placement error:", error);
 
@@ -248,6 +341,8 @@ async function placeOrder() {
 
 window.increaseQuantity = increaseQuantity;
 window.decreaseQuantity = decreaseQuantity;
+window.increaseAddonQuantity = increaseAddonQuantity;
+window.decreaseAddonQuantity = decreaseAddonQuantity;
 window.removeItem = removeItem;
 
 placeOrderBtn.addEventListener("click", placeOrder);
