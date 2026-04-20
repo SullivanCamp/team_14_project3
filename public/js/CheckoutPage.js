@@ -9,6 +9,17 @@ const taxElement = document.getElementById("tax");
 const totalElement = document.getElementById("total");
 const placeOrderBtn = document.getElementById("place-order-btn");
 
+function getActiveCustomer() {
+  try {
+    const raw = localStorage.getItem("activeCustomer");
+    if (!raw) return null;
+    return JSON.parse(raw);
+  } catch (error) {
+    console.error("Failed to read active customer:", error);
+    return null;
+  }
+}
+
 function toNumber(value, fallback = 0) {
   const num = Number(value);
   return Number.isFinite(num) ? num : fallback;
@@ -289,10 +300,12 @@ async function placeOrder() {
   const subtotal = calculateSubtotal();
   const tax = subtotal * taxRate;
   const total = subtotal + tax;
+  const activeCustomer = getActiveCustomer();
 
   const payload = {
     totalPrice: Number(total.toFixed(2)),
     paymentMethod: "Card",
+    customerId: activeCustomer && activeCustomer.id ? Number(activeCustomer.id) : null,
     cart: cartItems.map((item) => ({
       itemId: item.itemId,
       qty: item.qty,
@@ -319,12 +332,20 @@ async function placeOrder() {
       throw new Error(data.error || "Failed to place order.");
     }
 
-    alert(`Order placed successfully. Order ID: ${data.orderId}`);
+    if (data.rewards) {
+      alert(
+        `Order placed successfully. Order ID: ${data.orderId}\n` +
+        `Earned ${data.rewards.earnedPoints} point(s).\n` +
+        `New total: ${data.rewards.totalPoints} point(s).`
+      );
+    } else {
+      alert(`Order placed successfully. Order ID: ${data.orderId}`);
+    }
 
     cartItems = [];
     saveCart();
     renderCart();
-    window.location.href = "/";
+    window.location.href = "/customerhome";
   } catch (error) {
     console.error("Order placement error:", error);
 
