@@ -41,18 +41,22 @@
   cursor: pointer;
 }
 
-.msg-container{
+.msg-container {
   padding: 12px 10px;
   height: 300px;
   margin: 10px 0;
   overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 
-.msg{
+.msg {
   background-color: #e4e3e4EE;
   padding: 10px 16px;
   border-radius: 50px;
   width: fit-content;
+  max-width: 80%;
   display: flex;
   flex-direction: column;
 }
@@ -67,10 +71,10 @@
   padding: 10px 16px;
   border-radius: 50px;
   align-self: flex-end; 
-  margin-left: auto;
   width: fit-content;
   display: flex;
   flex-direction: column;
+  max-width: 80%;
 }
 
 .user-msg p{

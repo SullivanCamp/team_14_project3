@@ -16,7 +16,8 @@ router.post('/', async (req, res) => {
         const response = await ai.models.generateContent({
             model: model,
             contents: `Context: ${JSON.stringify(menuResult.rows)}. Only respond with knowledge from context.
-             If you don't know, say you're not sure. Be friendly! Your responses go into a text message, only include texts.
+             If you don't know, say you're not sure. Be friendly, but match the customer's vibe. 
+             Your responses go into a text message, keep it short, simple, and sweet. No Emoji's please.
              Customer asks: <BEGIN<<${question}>>END>`,
             config: {
                 thinkingConfig: { thinkingLevel: ThinkingLevel.MINIMAL},
