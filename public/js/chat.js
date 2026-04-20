@@ -7,13 +7,17 @@ async function askAI() {
 
     const userMsg = document.createElement("div");
     userMsg.className = "user-msg";
-    userMsg.textContent = question;
+    const pUser = document.createElement("p");
+    pUser.textContent = question;
+    userMsg.appendChild(pUser);
     chatlog.append(userMsg);
 
     // Thinking indicator
     const thinkingMsg = document.createElement("div");
     thinkingMsg.className = "msg";
-    thinkingMsg.textContent = "Tapi is thinking...";
+    const pThink = document.createElement("p");
+    pThink.textContent = "Tapi is thinking...";
+    thinkingMsg.append(pThink)
     chatlog.append(thinkingMsg);
     chatlog.scrollTop = chatlog.scrollHeight;
 
@@ -29,16 +33,18 @@ async function askAI() {
 
         const aiMsg = document.createElement("div");
         aiMsg.className = "msg";
-        aiMsg.textContent = result.success
-            ? result.advice
-            : "Sorry, something went wrong. Please try again.";
+        const pTapi = document.createElement("p");
+        pTapi.textContent = result.success ? result.advice : "Sorry, something went wrong.";
+        aiMsg.appendChild(pTapi);
         chatlog.append(aiMsg);
 
     } catch (err) {
         thinkingMsg.remove();
         const errMsg = document.createElement("div");
         errMsg.className = "msg";
-        errMsg.textContent = "Network error. Please try again.";
+        const pErr = document.createElement("p");
+        pErr.textContent = "Network error. Please try again.";
+        errMsg.append(pErr);
         chatlog.append(errMsg);
     }
 
