@@ -6,6 +6,10 @@ const { GoogleGenAI, ThinkingLevel } = require('@google/genai');
 const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 const model = 'gemini-3-flash-preview';
 
+// TODO: Store chatlogs and make a continuous converstation(multi-turn conversation)
+// const chat = ai.chats.create({
+// model: "gemini-3-flash-preview",
+// history: [ ....etc
 
 router.post('/', async (req, res) => {
     const { question } = req.body;
