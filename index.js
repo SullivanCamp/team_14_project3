@@ -26,6 +26,7 @@ const reportsRoute = require("./routes/reports");
 const inventoryMgmtRoute = require("./routes/inventoryMgmt");
 const employeesMgmtRoute = require("./routes/employeesMgmt");
 const menuMgmtRoute = require("./routes/menuMgmt");
+const aiRoute = require("./routes/chatbot");
 
 app.set("view engine", "ejs");
 app.use(express.static("public"));
@@ -156,6 +157,7 @@ app.use("/api/reports", reportsRoute);
 app.use("/api/inventoryMgmt", inventoryMgmtRoute);
 app.use("/api/employeesMgmt", employeesMgmtRoute);
 app.use("/api/menuMgmt", menuMgmtRoute);
+app.use("/api/ask-ai", aiRoute);
 
 app.listen(port, () => {
   console.log(`Example app listening at http://localhost:${port}`);
