@@ -15,6 +15,9 @@ const customerDropdownName = document.getElementById("customerDropdownName");
 const switchAccountBtn = document.getElementById("switchAccountBtn");
 const logoutBtn = document.getElementById("logoutBtn");
 
+const rewardsPoints = document.getElementById("rewardsPoints");
+const rewardsTier = document.getElementById("rewardsTier");
+
 let toppingItems = [];
 let currentCategory = "all";
 let cartItems = [];
@@ -297,6 +300,40 @@ async function loadMenuFromDatabase() {
   }
 }
 
+async function loadRewardsForActiveCustomer() {
+  const customer = getActiveCustomer();
+
+  if (!customer || !customer.id) {
+    if (rewardsPoints) rewardsPoints.textContent = "0";
+    if (rewardsTier) rewardsTier.textContent = "Guest";
+    return;
+  }
+
+  try {
+    const response = await fetch(`/api/userauth/rewards/${customer.id}`);
+    const data = await response.json();
+
+    if (!data.success) {
+      throw new Error(data.error || "Failed to load rewards.");
+    }
+
+    if (rewardsPoints) rewardsPoints.textContent = data.customer.points ?? 0;
+    if (rewardsTier) rewardsTier.textContent = data.customer.tier ?? "Standard";
+
+    const updatedCustomer = {
+      ...customer,
+      points: Number(data.customer.points || 0),
+      tier: data.customer.tier || "Standard"
+    };
+
+    localStorage.setItem("activeCustomer", JSON.stringify(updatedCustomer));
+  } catch (error) {
+    console.error("Failed to load customer rewards:", error);
+    if (rewardsPoints) rewardsPoints.textContent = "0";
+    if (rewardsTier) rewardsTier.textContent = "Standard";
+  }
+}
+
 tabButtons.forEach((button) => {
   button.addEventListener("click", () => {
     tabButtons.forEach((btn) => btn.classList.remove("active"));
@@ -394,3 +431,4 @@ renderActiveCustomer();
 loadCartFromStorage();
 updateCartCount();
 loadMenuFromDatabase();
+loadRewardsForActiveCustomer();

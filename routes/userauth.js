@@ -4,6 +4,18 @@ const pool = require('../db');
 
 const router = express.Router();
 
+function normalizePhone(phone) {
+  return String(phone || "").replace(/\D/g, "");
+}
+
+function getTierFromPoints(points) {
+  const pts = Number(points) || 0;
+
+  if (pts >= 300) return "Gold";
+  if (pts >= 150) return "Silver";
+  return "Standard";
+}
+
 router.post("/signup", async (req, res) => {
   try {
     const { firstName, lastName, email, phone, password } = req.body;
@@ -150,6 +162,95 @@ router.post("/skip", async (req, res) => {
       authType: "guest"
     }
   });
+});
+
+router.get("/rewards/:customerId", async (req, res) => {
+  try {
+    const customerId = Number(req.params.customerId);
+
+    if (!customerId) {
+      return res.status(400).json({
+        success: false,
+        error: "Valid customer ID is required."
+      });
+    }
+
+    const result = await pool.query(
+      `
+      SELECT ca.id, ca.first_name, ca.last_name, ca.email, ca.phone,
+             COALESCE(cr.points, 0) AS points,
+             COALESCE(cr.tier, 'Standard') AS tier
+      FROM customer_account ca
+      LEFT JOIN customer_rewards cr
+        ON cr.customer_id = ca.id
+      WHERE ca.id = $1
+      `,
+      [customerId]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({
+        success: false,
+        error: "Customer not found."
+      });
+    }
+
+    return res.json({
+      success: true,
+      customer: result.rows[0]
+    });
+  } catch (error) {
+    console.error("Rewards lookup failed:", error);
+    return res.status(500).json({
+      success: false,
+      error: "Rewards lookup failed."
+    });
+  }
+});
+
+router.get("/find-by-phone", async (req, res) => {
+  try {
+    const rawPhone = req.query.phone || "";
+    const digits = normalizePhone(rawPhone);
+
+    if (!digits) {
+      return res.status(400).json({
+        success: false,
+        error: "Phone number is required."
+      });
+    }
+
+    const result = await pool.query(
+      `
+      SELECT ca.id, ca.first_name, ca.last_name, ca.email, ca.phone,
+             COALESCE(cr.points, 0) AS points,
+             COALESCE(cr.tier, 'Standard') AS tier
+      FROM customer_account ca
+      LEFT JOIN customer_rewards cr
+        ON cr.customer_id = ca.id
+      WHERE regexp_replace(COALESCE(ca.phone, ''), '\D', '', 'g') = $1
+      `,
+      [digits]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({
+        success: false,
+        error: "No customer found with that phone number."
+      });
+    }
+
+    return res.json({
+      success: true,
+      customer: result.rows[0]
+    });
+  } catch (error) {
+    console.error("Phone lookup failed:", error);
+    return res.status(500).json({
+      success: false,
+      error: "Phone lookup failed."
+    });
+  }
 });
 
 module.exports = router;

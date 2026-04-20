@@ -3,6 +3,70 @@ const pool = require('../db');
 
 const router = express.Router();
 
+function calculatePointsFromTotal(totalPrice) {
+  return Math.floor(Number(totalPrice) || 0);
+}
+
+function getTierFromPoints(points) {
+  const pts = Number(points) || 0;
+
+  if (pts >= 300) return "Gold";
+  if (pts >= 150) return "Silver";
+  return "Standard";
+}
+
+async function applyRewards(client, customerId, totalPrice) {
+  if (!customerId) return null;
+
+  const earnedPoints = calculatePointsFromTotal(totalPrice);
+
+  const existing = await client.query(
+    `
+    SELECT customer_id, points
+    FROM customer_rewards
+    WHERE customer_id = $1
+    FOR UPDATE
+    `,
+    [customerId]
+  );
+
+  if (existing.rows.length === 0) {
+    const tier = getTierFromPoints(earnedPoints);
+
+    await client.query(
+      `
+      INSERT INTO customer_rewards (customer_id, points, tier)
+      VALUES ($1, $2, $3)
+      `,
+      [customerId, earnedPoints, tier]
+    );
+
+    return {
+      earnedPoints,
+      totalPoints: earnedPoints,
+      tier
+    };
+  }
+
+  const newPoints = Number(existing.rows[0].points) + earnedPoints;
+  const newTier = getTierFromPoints(newPoints);
+
+  await client.query(
+    `
+    UPDATE customer_rewards
+    SET points = $1, tier = $2
+    WHERE customer_id = $3
+    `,
+    [newPoints, newTier, customerId]
+  );
+
+  return {
+    earnedPoints,
+    totalPoints: newPoints,
+    tier: newTier
+  };
+}
+
 async function nextId(client, tableName) {
   const query = `SELECT COALESCE(MAX(id), 0) + 1 AS next_id FROM ${tableName}`;
   const result = await client.query(query);
@@ -157,7 +221,7 @@ router.post("/", async (req, res) => {
   const client = await pool.connect();
 
   try {
-    const { totalPrice, paymentMethod, cart } = req.body;
+    const { totalPrice, paymentMethod, cart, customerId } = req.body;
 
     console.log("Incoming order payload:", JSON.stringify(req.body, null, 2));
 
@@ -194,6 +258,7 @@ router.post("/", async (req, res) => {
     }
 
     await checkAndDecrementInventoryForCart(client, cart);
+    const rewardsResult = await applyRewards(client, customerId, totalPrice);
 
     await client.query("COMMIT");
 
@@ -202,7 +267,8 @@ router.post("/", async (req, res) => {
     res.status(201).json({
       success: true,
       message: "Order submitted successfully.",
-      orderId
+      orderId,
+      rewards: rewardsResult
     });
   } catch (error) {
     await client.query("ROLLBACK");
