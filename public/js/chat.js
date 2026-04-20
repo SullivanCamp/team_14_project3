@@ -1,7 +1,21 @@
+const history = [
+    {
+        role: "model",
+        parts: [{ text: "How can I help?" }],
+    },
+];
+
 async function askAI() {
     const question = document.getElementById("chatQuestion").value;
     if (!question) return;
     document.getElementById("chatQuestion").value = "";
+
+    const userLog = {
+        role: "user",
+        parts: [{text: question}],
+    };
+    history.push(userLog);
+
 
     const chatlog = document.getElementById("msgContainer");
 
@@ -25,7 +39,7 @@ async function askAI() {
         const aiRes = await fetch('/api/ask-ai', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ question })
+            body: JSON.stringify({ question, history })
         });
 
         const result = await aiRes.json();
@@ -37,6 +51,12 @@ async function askAI() {
         pTapi.textContent = result.success ? result.advice : "Sorry, something went wrong.";
         aiMsg.appendChild(pTapi);
         chatlog.append(aiMsg);
+
+        const aiLog = {
+            role: "model",
+            parts: [{text: pTapi.textContent}],
+        };
+        history.push(aiLog);
 
     } catch (err) {
         thinkingMsg.remove();

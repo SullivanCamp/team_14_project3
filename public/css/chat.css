@@ -54,7 +54,7 @@
 .msg {
   background-color: #e4e3e4EE;
   padding: 10px 16px;
-  border-radius: 50px;
+  border-radius: 25px;
   width: fit-content;
   max-width: 80%;
   display: flex;
@@ -69,13 +69,14 @@
 .user-msg{
   background: rgb(111, 193, 73, .5);
   padding: 10px 16px;
-  border-radius: 50px;
+  border-radius: 25px;
   align-self: flex-end; 
   width: fit-content;
   display: flex;
   flex-direction: column;
   max-width: 80%;
 }
+
 
 .user-msg p{
   font-size: 12px;
