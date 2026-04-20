@@ -1,0 +1,31 @@
+const express = require('express');
+const router = express.Router();
+const pool = require('../db'); 
+const { GoogleGenAI, ThinkingLevel } = require('@google/genai');
+
+const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+const model = 'gemini-3-flash-preview';
+
+
+router.post('/', async (req, res) => {
+    const { question } = req.body;
+    
+    try {
+        const menuResult = await pool.query('SELECT * FROM menu_item WHERE item_id < 200');
+
+        const response = await ai.models.generateContent({
+            model: model,
+            contents: `Context: ${JSON.stringify(menuResult.rows)}. Only respond with knowledge from context.
+             If you don't know, say you're not sure. Be friendly! Your responses go into a text message, only include texts.
+             Customer asks: <BEGIN<<${question}>>END>`,
+            config: {
+                thinkingConfig: { thinkingLevel: ThinkingLevel.MINIMAL},
+            }
+        });
+        res.json({ success: true, advice: response.text });
+    } catch (error) {
+        res.status(500).json({ success: false, error: error.message });
+    }
+});
+
+module.exports = router;
