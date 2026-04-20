@@ -4,6 +4,8 @@ const history = [
         parts: [{ text: "How can I help?" }],
     },
 ];
+// TODO: add quick wuestions to html js and css(Optional)
+// TODO: add ability to add to order(Optional, disgusting)
 
 async function askAI() {
     const question = document.getElementById("chatQuestion").value;
