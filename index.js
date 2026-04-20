@@ -27,6 +27,7 @@ const inventoryMgmtRoute = require("./routes/inventoryMgmt");
 const employeesMgmtRoute = require("./routes/employeesMgmt");
 const menuMgmtRoute = require("./routes/menuMgmt");
 const userAuthRoute = require("./routes/userauth");
+const aiRoute = require("./routes/chatbot");
 
 app.set("view engine", "ejs");
 app.use(express.static("public"));
@@ -156,6 +157,7 @@ app.use("/api/inventoryMgmt", inventoryMgmtRoute);
 app.use("/api/employeesMgmt", employeesMgmtRoute);
 app.use("/api/menuMgmt", menuMgmtRoute);
 app.use("/api/userauth", userAuthRoute);
+app.use("/api/ask-ai", aiRoute);
 
 app.listen(port, () => {
   console.log(`Example app listening at http://localhost:${port}`);

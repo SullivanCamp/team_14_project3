@@ -1,5 +1,5 @@
 const express = require("express");
-const pool = require("../public/js/db");
+const pool = require('../db'); 
 
 const router = express.Router();
 
@@ -26,7 +26,7 @@ async function insertOrder(client, totalPrice, paymentMethod) {
       is_complete,
       payment_method
     )
-    VALUES ($1, $2, $3, NOW(), TRUE, $4)
+    VALUES ($1, $2, $3, NOW() AT TIME ZONE 'America/Chicago', TRUE, $4)
   `;
 
   await client.query(query, [

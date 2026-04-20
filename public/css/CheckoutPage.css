@@ -4,6 +4,9 @@
   font-family: Arial, sans-serif;
   color: #222;
   padding: 24px;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
 }
 
 .checkout-header {
@@ -134,9 +137,15 @@
   margin-top: 16px;
 }
 
+.checkout-footer {
+  margin-top: auto;
+  padding-top: 24px;
+  display: flex;
+  justify-content: flex-start;
+}
+
 .back-link {
   display: inline-block;
-  margin-top: 24px;
   padding: 12px 20px;
   font-size: 1rem;
   font-weight: 600;
@@ -192,5 +201,9 @@
 
   .item-total {
     text-align: center;
+  }
+
+  .checkout-footer {
+    justify-content: center;
   }
 }
