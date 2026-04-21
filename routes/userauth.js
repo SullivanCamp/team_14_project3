@@ -243,4 +243,55 @@ router.get("/rewards/:customerId", async (req, res) => {
   }
 });
 
+router.get("/find-by-phone", async (req, res) => {
+  try {
+    const rawPhone = req.query.phone || "";
+    const cleanPhone = normalizePhone(rawPhone);
+
+    if (!cleanPhone) {
+      return res.status(400).json({
+        success: false,
+        error: "Phone number is required."
+      });
+    }
+
+    const result = await pool.query(
+      `
+      SELECT
+        ca.id,
+        ca.first_name,
+        ca.last_name,
+        ca.email,
+        ca.phone,
+        COALESCE(cr.points, 0) AS points,
+        COALESCE(cr.tier, 'Standard') AS tier
+      FROM customer_account ca
+      LEFT JOIN customer_rewards cr
+        ON cr.customer_id = ca.id
+      WHERE regexp_replace(COALESCE(ca.phone, ''), '\D', '', 'g') = $1
+      LIMIT 1
+      `,
+      [cleanPhone]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({
+        success: false,
+        error: "No customer found with that phone number."
+      });
+    }
+
+    return res.json({
+      success: true,
+      customer: result.rows[0]
+    });
+  } catch (error) {
+    console.error("Find by phone failed:", error);
+    return res.status(500).json({
+      success: false,
+      error: "Find by phone failed."
+    });
+  }
+});
+
 module.exports = router;
