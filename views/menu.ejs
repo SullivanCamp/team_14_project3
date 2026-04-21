@@ -4,11 +4,14 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title data-i18n="pageTitleMenu">Team 14 Menu</title>
   <link rel="stylesheet" href="/css/menu.css">
   <link rel="stylesheet" href="/css/addonpopup.css">
+  <link rel="stylesheet" href="/css/chat.css">
+  
 </head>
 <body>
   <div class="page-shell">
@@ -32,7 +35,10 @@
             <option value="zh-CN">中文</option>
           </select>
 
+          <button class="chat-btn" id="chatBtn" onclick="openChatWindow()">Ask Tapi!</button>
+
           <div class="customer-menu-wrapper" id="customerMenuWrapper">
+
             <button class="customer-chip" id="customerChip" type="button">
               <span id="customerChipName" data-i18n="guest">Guest</span>
               <span class="customer-chip-arrow">▾</span>
@@ -112,10 +118,36 @@
         </div>
       </form>
     </div>
+
+
+    <div class = "chat-window" id="chatWindow">
+      <form action="#" class="form-container">
+        <div class="chat-window-head">
+          <h4><i class="fa fa-comment"></i> Talk to Tapi</h4>
+          <span class="close-btn" onclick="closeChatWindow()">  
+            <i class="fa fa-times"></i>          
+          </span>
+        </div>
+
+        <div class="msg-container" id="msgContainer">
+          <div class="msg">
+            <p>How can I help?</p>
+          </div>
+        </div>
+
+        <div class="chat-box-container">
+          <div class="chat-box">
+            <input type="text" placeholder="Type your message.." name="msg" requred id="chatQuestion">
+            <button type="button" class="send-btn" onclick="askAI()"><i class="fa fa-chevron-circle-right"></i></button>
+          </div>
+        </div>
+      </form>
+    </div>
   </div>
 
   <script src="/js/addonpopup.js"></script>
   <script src="/js/menu.js"></script>
   <script src="/js/translate.js"></script>
+  <script src="/js/chat.js"></script>
 </body>
 </html>
