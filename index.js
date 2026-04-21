@@ -2,6 +2,16 @@ const express = require("express");
 const { Pool } = require("pg");
 require("dotenv").config();
 
+const { TranslationServiceClient } = require("@google-cloud/translate").v3;
+
+const credentials = JSON.parse(process.env.GOOGLE_SERVICE_ACCOUNT_JSON);
+credentials.private_key = credentials.private_key.replace(/\\n/g, "\n");
+
+const translationClient = new TranslationServiceClient({
+  credentials,
+  projectId: process.env.GOOGLE_CLOUD_PROJECT_ID
+});
+
 const app = express();
 const port = process.env.PORT || 3000;
 
@@ -156,6 +166,42 @@ app.use("/api/reports", reportsRoute);
 app.use("/api/inventoryMgmt", inventoryMgmtRoute);
 app.use("/api/employeesMgmt", employeesMgmtRoute);
 app.use("/api/menuMgmt", menuMgmtRoute);
+
+app.post("/api/translate", async (req, res) => {
+  try {
+    const { texts, targetLanguage, sourceLanguage } = req.body;
+
+    if (!Array.isArray(texts) || texts.length === 0) {
+      return res.status(400).json({ error: "texts must be a non-empty array" });
+    }
+
+    if (!targetLanguage) {
+      return res.status(400).json({ error: "targetLanguage is required" });
+    }
+
+    const parent = `projects/${process.env.GOOGLE_CLOUD_PROJECT_ID}/locations/global`;
+
+    const request = {
+      parent,
+      contents: texts,
+      mimeType: "text/plain",
+      targetLanguageCode: targetLanguage
+    };
+
+    if (sourceLanguage) {
+      request.sourceLanguageCode = sourceLanguage;
+    }
+
+    const [response] = await translationClient.translateText(request);
+
+    res.json({
+      translatedTexts: (response.translations || []).map(t => t.translatedText || "")
+    });
+  } catch (error) {
+    console.error("Translation error:", error);
+    res.status(500).json({ error: "Translation failed" });
+  }
+});
 
 app.listen(port, () => {
   console.log(`Example app listening at http://localhost:${port}`);

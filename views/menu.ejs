@@ -6,7 +6,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Team 14 Menu</title>
+  <title data-i18n="pageTitleMenu">Team 14 Menu</title>
   <link rel="stylesheet" href="/css/menu.css">
   <link rel="stylesheet" href="/css/addonpopup.css">
 </head>
@@ -14,66 +14,74 @@
   <div class="page-shell">
     <main class="menu-container">
       <header class="menu-header">
-        <h1>Team 14</h1>
+        <h1 data-i18n="brandName">Team 14</h1>
 
         <input
           type="text"
           id="searchInput"
           class="search-bar"
           placeholder="Search drinks..."
+          data-i18n-placeholder="searchDrinks"
         />
 
         <div class="header-actions">
+          <select id="languageSelect" class="language-select" aria-label="Language selector">
+            <option value="en">English</option>
+            <option value="es">Español</option>
+            <option value="fr">Français</option>
+            <option value="zh-CN">中文</option>
+          </select>
+
           <div class="customer-menu-wrapper" id="customerMenuWrapper">
             <button class="customer-chip" id="customerChip" type="button">
-              <span id="customerChipName">Guest</span>
+              <span id="customerChipName" data-i18n="guest">Guest</span>
               <span class="customer-chip-arrow">▾</span>
             </button>
 
             <div class="customer-dropdown" id="customerDropdown">
-              <p class="customer-dropdown-title">Signed in as</p>
-              <p class="customer-dropdown-name" id="customerDropdownName">Guest</p>
-              <button class="customer-dropdown-btn" id="switchAccountBtn" type="button">Change Account</button>
-              <button class="customer-dropdown-btn logout" id="logoutBtn" type="button">Log Out</button>
+              <p class="customer-dropdown-title" data-i18n="signedInAs">Signed in as</p>
+              <p class="customer-dropdown-name" id="customerDropdownName" data-i18n="guest">Guest</p>
+              <button class="customer-dropdown-btn" id="switchAccountBtn" type="button" data-i18n="changeAccount">Change Account</button>
+              <button class="customer-dropdown-btn logout" id="logoutBtn" type="button" data-i18n="logOut">Log Out</button>
             </div>
           </div>
 
-          <button class="rewards-btn" type="button">Rewards</button>
+          <button class="rewards-btn" type="button" data-i18n="rewards">Rewards</button>
 
           <a href="/checkout" class="cart-link">
             <button class="cart-btn" id="cartBtn" type="button">
-              View Cart
+              <span data-i18n="viewCart">View Cart</span>
               <span id="cartCount" class="cart-count">0</span>
             </button>
           </a>
         </div>
 
         <nav class="top-tabs" aria-label="Menu Categories">
-          <button class="tab-btn active" data-category="all" type="button">All</button>
-          <button class="tab-btn" data-category="popular" type="button">Most Popular</button>
-          <button class="tab-btn" data-category="seasonal" type="button">Seasonal</button>
+          <button class="tab-btn active" data-category="all" type="button" data-i18n="all">All</button>
+          <button class="tab-btn" data-category="popular" type="button" data-i18n="mostPopular">Most Popular</button>
+          <button class="tab-btn" data-category="seasonal" type="button" data-i18n="seasonal">Seasonal</button>
         </nav>
       </header>
 
       <section class="menu-section" id="allSection">
-        <h2 id="sectionTitle">All</h2>
+        <h2 id="sectionTitle" data-i18n="all">All</h2>
 
         <div class="card-row" id="menuCardRow"></div>
 
-        <p id="noResultMessage" class="no-result" style="display: none;">No item found.</p>
+        <p id="noResultMessage" class="no-result" style="display: none;" data-i18n="noItemFound">No item found.</p>
       </section>
     </main>
 
     <div class="popup-overlay" id="popupOverlay"></div>
 
     <div class="addon-popup" id="addonPopup">
-      <h2 id="popupDrinkName">Customize Drink</h2>
+      <h2 id="popupDrinkName" data-i18n="customizeDrink">Customize Drink</h2>
 
       <form id="addonForm">
         <div class="custom-section">
           <div class="custom-row">
             <div class="custom-field">
-              <label>Sugar Level</label>
+              <label data-i18n="sugarLevel">Sugar Level</label>
               <select id="sugarLevel">
                 <option value="0">0%</option>
                 <option value="25">25%</option>
@@ -84,7 +92,7 @@
             </div>
 
             <div class="custom-field">
-              <label>Ice Level</label>
+              <label data-i18n="iceLevel">Ice Level</label>
               <select id="iceLevel">
                 <option value="0">0% Ice</option>
                 <option value="25">25% Ice</option>
@@ -99,8 +107,8 @@
         <div id="addonOptionsContainer" class="addon-grid"></div>
 
         <div class="popup-actions">
-          <button type="button" class="popup-button cancel-button" id="cancelPopupBtn">Cancel</button>
-          <button type="submit" class="popup-button done-button">Done</button>
+          <button type="button" class="popup-button cancel-button" id="cancelPopupBtn" data-i18n="cancel">Cancel</button>
+          <button type="submit" class="popup-button done-button" data-i18n="done">Done</button>
         </div>
       </form>
     </div>
@@ -108,5 +116,6 @@
 
   <script src="/js/addonpopup.js"></script>
   <script src="/js/menu.js"></script>
+  <script src="/js/translate.js"></script>
 </body>
 </html>
