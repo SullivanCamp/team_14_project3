@@ -1,4 +1,5 @@
 const express = require("express");
+const session = require("express-session");
 const { Pool } = require("pg");
 require("dotenv").config();
 
@@ -6,6 +7,7 @@ const ordersRoute = require("./routes/orders");
 const menuDataRoute = require("./routes/menuData");
 const reportsRoute = require("./routes/reports");
 const addonPopupRoute = require("./routes/addonpopup");
+
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -36,8 +38,23 @@ app.use(express.static("public"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+app.use(
+  session({
+    secret: process.env.SESSION_SECRET || "dev_secret_key",
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+      httpOnly: true,
+      sameSite: "lax",
+      secure: false
+    }
+  })
+);
+
 app.get("/", (req, res) => {
-  res.render("login");
+  res.render("login", {
+    user: req.session.user || null
+  });
 });
 
 app.get("/reports", (req, res) => {
@@ -150,11 +167,13 @@ app.get("/weather", (req, res) => {
 });
 
 // Routes
+app.use(userAuthRoute);
 app.use("/menu-data", menuDataRoute);
 app.use("/orders", ordersRoute);
 app.use("/api/orders", ordersRoute);
 app.use("/api/reports", reportsRoute);
 app.use("/addonpopup", addonPopupRoute);
+
 
 app.listen(port, () => {
   console.log(`Example app listening at http://localhost:${port}`);

@@ -106,3 +106,12 @@ body {
 .role-btn.customer:hover {
   background: var(--customer-dark);
 }
+
+
+.role-btn.logout {
+  background: #444;
+}
+
+.role-btn.logout:hover {
+  background: #222;
+}
