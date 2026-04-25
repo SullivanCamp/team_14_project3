@@ -2,6 +2,16 @@ const express = require("express");
 const { Pool } = require("pg");
 require("dotenv").config();
 
+const { TranslationServiceClient } = require("@google-cloud/translate").v3;
+
+const credentials = JSON.parse(process.env.GOOGLE_SERVICE_ACCOUNT_JSON);
+credentials.private_key = credentials.private_key.replace(/\\n/g, "\n");
+
+const translationClient = new TranslationServiceClient({
+  credentials,
+  projectId: process.env.GOOGLE_CLOUD_PROJECT_ID
+});
+
 const app = express();
 const port = process.env.PORT || 3000;
 
@@ -26,6 +36,7 @@ const reportsRoute = require("./routes/reports");
 const inventoryMgmtRoute = require("./routes/inventoryMgmt");
 const employeesMgmtRoute = require("./routes/employeesMgmt");
 const menuMgmtRoute = require("./routes/menuMgmt");
+const userAuthRoute = require("./routes/userauth");
 const aiRoute = require("./routes/chatbot");
 
 app.set("view engine", "ejs");
@@ -50,9 +61,9 @@ app.get("/customerhome", (req, res) => {
   res.render("customerhome");
 });
 
-// app.get("/auth", (req, res) => {
-//   res.render("auth");
-// });
+app.get("/auth", (req, res) => {
+  res.render("auth");
+});
 
 app.get("/managerhome", (req, res) => {
   res.render("managerhome");
@@ -89,7 +100,6 @@ app.get("/reports/trends", (req, res) => {
 app.get("/login", (req, res) => {
   res.render("login");
 });
-
 
 app.get("/inventorymanagement", (req, res) => {
   inventory = [];
@@ -137,7 +147,6 @@ app.get("/menumanagement", async (req, res) => {
     }
 });
 
-
 // Weather
 app.get("/weather", (req, res) => {
   const apiKey = process.env.WEATHER_API_KEY;
@@ -157,10 +166,47 @@ app.use("/api/reports", reportsRoute);
 app.use("/api/inventoryMgmt", inventoryMgmtRoute);
 app.use("/api/employeesMgmt", employeesMgmtRoute);
 app.use("/api/menuMgmt", menuMgmtRoute);
+app.use("/api/userauth", userAuthRoute);
 app.use("/api/ask-ai", aiRoute);
+
+app.post("/api/translate", async (req, res) => {
+  try {
+    const { texts, targetLanguage, sourceLanguage } = req.body;
+
+    if (!Array.isArray(texts) || texts.length === 0) {
+      return res.status(400).json({ error: "texts must be a non-empty array" });
+    }
+
+    if (!targetLanguage) {
+      return res.status(400).json({ error: "targetLanguage is required" });
+    }
+
+    const parent = `projects/${process.env.GOOGLE_CLOUD_PROJECT_ID}/locations/global`;
+
+    const request = {
+      parent,
+      contents: texts,
+      mimeType: "text/plain",
+      targetLanguageCode: targetLanguage
+    };
+
+    if (sourceLanguage) {
+      request.sourceLanguageCode = sourceLanguage;
+    }
+
+    const [response] = await translationClient.translateText(request);
+
+    res.json({
+      translatedTexts: (response.translations || []).map(t => t.translatedText || "")
+    });
+  } catch (error) {
+    console.error("Translation error:", error);
+    res.status(500).json({ error: "Translation failed" });
+  }
+});
 
 app.listen(port, () => {
   console.log(`Example app listening at http://localhost:${port}`);
-  console.log(`Kiosk auth page: http://localhost:${port}/login`);
+  console.log(`Kiosk auth page: http://localhost:${port}/auth`);
   console.log(`Order page: http://localhost:${port}/order`);
 });
