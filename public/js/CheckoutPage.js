@@ -9,6 +9,128 @@ const taxElement = document.getElementById("tax");
 const totalElement = document.getElementById("total");
 const placeOrderBtn = document.getElementById("place-order-btn");
 
+const checkoutRewardPoints = document.getElementById("checkoutRewardPoints");
+const useCheckoutRewardBtn = document.getElementById("useCheckoutRewardBtn");
+const checkoutRewardMessage = document.getElementById("checkoutRewardMessage");
+
+const FREE_DRINK_REWARD_COST = 100;
+
+let activeReward = null;
+let activeCustomerRewards = null;
+
+function getActiveCustomer() {
+  try {
+    const raw = localStorage.getItem("activeCustomer");
+    if (!raw) return null;
+    return JSON.parse(raw);
+  } catch (error) {
+    console.error("Failed to read active customer:", error);
+    return null;
+  }
+}
+
+async function loadCheckoutRewards() {
+  const customer = getActiveCustomer();
+
+  if (!customer || !customer.id) {
+    activeCustomerRewards = null;
+
+    if (checkoutRewardPoints) checkoutRewardPoints.textContent = "0";
+    if (useCheckoutRewardBtn) useCheckoutRewardBtn.disabled = true;
+    if (checkoutRewardMessage) {
+      checkoutRewardMessage.textContent = "Log in to use rewards.";
+    }
+
+    return;
+  }
+
+  try {
+    const response = await fetch(`/api/userauth/rewards/${customer.id}`);
+    const data = await response.json();
+
+    if (!data.success) {
+      throw new Error(data.error || "Failed to load rewards.");
+    }
+
+    activeCustomerRewards = data.customer;
+
+    const points = Number(data.customer.points || 0);
+
+    if (checkoutRewardPoints) {
+      checkoutRewardPoints.textContent = points;
+    }
+
+    if (useCheckoutRewardBtn) {
+      useCheckoutRewardBtn.disabled = points < FREE_DRINK_REWARD_COST;
+    }
+
+    if (checkoutRewardMessage) {
+      checkoutRewardMessage.textContent =
+        points >= FREE_DRINK_REWARD_COST
+          ? "You can use 100 points for a free drink with one topping."
+          : "You need 100 points to use this reward.";
+    }
+  } catch (error) {
+    console.error("Failed to load checkout rewards:", error);
+
+    if (checkoutRewardPoints) checkoutRewardPoints.textContent = "0";
+    if (useCheckoutRewardBtn) useCheckoutRewardBtn.disabled = true;
+    if (checkoutRewardMessage) {
+      checkoutRewardMessage.textContent = "Could not load rewards.";
+    }
+  }
+}
+
+function applyCheckoutReward() {
+  if (!activeCustomerRewards) {
+    alert("Please log in to use rewards.");
+    return;
+  }
+
+  const points = Number(activeCustomerRewards.points || 0);
+
+  if (points < FREE_DRINK_REWARD_COST) {
+    alert("You do not have enough points for this reward.");
+    return;
+  }
+
+  if (cartItems.length === 0) {
+    alert("Add at least one drink before using a reward.");
+    return;
+  }
+
+  if (activeReward) {
+    activeReward = null;
+
+    if (checkoutRewardMessage) {
+      checkoutRewardMessage.textContent = "Reward removed.";
+    }
+
+    if (useCheckoutRewardBtn) {
+      useCheckoutRewardBtn.textContent = "Use 100 pts = Free Drink + 1 Topping";
+    }
+
+    updateSummary();
+    return;
+  }
+
+  activeReward = {
+    type: "FREE_DRINK_ONE_TOPPING",
+    pointsCost: FREE_DRINK_REWARD_COST,
+    label: "Free drink + 1 topping"
+  };
+
+  if (checkoutRewardMessage) {
+    checkoutRewardMessage.textContent = "Reward applied: Free drink + 1 topping.";
+  }
+
+  if (useCheckoutRewardBtn) {
+    useCheckoutRewardBtn.textContent = "Remove Reward";
+  }
+
+  updateSummary();
+}
+
 function toNumber(value, fallback = 0) {
   const num = Number(value);
   return Number.isFinite(num) ? num : fallback;
@@ -35,7 +157,8 @@ function normalizeToppings(toppings) {
   return toppings.map((topping) => ({
     id: toNumber(topping.id, 0),
     name: topping.name || "Addon",
-    qty: Math.max(1, toNumber(topping.qty, 1))
+    qty: Math.max(1, toNumber(topping.qty, 1)),
+    price: toNumber(topping.price, addonPrice)
   }));
 }
 
@@ -155,12 +278,61 @@ function calculateSubtotal() {
   }, 0);
 }
 
+function calculateRewardDiscount() {
+  if (!activeReward || cartItems.length === 0) {
+    return 0;
+  }
+
+  if (activeReward.type !== "FREE_DRINK_ONE_TOPPING") {
+    return 0;
+  }
+
+  let bestDiscount = 0;
+
+  cartItems.forEach((item) => {
+    const drinkDiscount = Number(item.price || 0);
+
+    const toppings = Array.isArray(item.toppings) ? item.toppings : [];
+
+    let toppingDiscount = 0;
+
+    if (toppings.length > 0) {
+      toppingDiscount = Math.min(
+        ...toppings.map((topping) => Number(topping.price || addonPrice))
+      );
+    }
+
+    const possibleDiscount = drinkDiscount + toppingDiscount;
+
+    if (possibleDiscount > bestDiscount) {
+      bestDiscount = possibleDiscount;
+    }
+  });
+
+  return bestDiscount;
+}
+
+function getDiscountedSubtotal() {
+  const subtotal = calculateSubtotal();
+  const rewardDiscount = calculateRewardDiscount();
+
+  return Math.max(0, subtotal - rewardDiscount);
+}
+
 function updateSummary() {
   const subtotal = calculateSubtotal();
-  const tax = subtotal * taxRate;
-  const total = subtotal + tax;
+  const rewardDiscount = calculateRewardDiscount();
+  const discountedSubtotal = Math.max(0, subtotal - rewardDiscount);
 
-  subtotalElement.textContent = `$${subtotal.toFixed(2)}`;
+  const tax = discountedSubtotal * taxRate;
+  const total = discountedSubtotal + tax;
+
+  if (activeReward) {
+    subtotalElement.textContent = `$${discountedSubtotal.toFixed(2)} after reward`;
+  } else {
+    subtotalElement.textContent = `$${subtotal.toFixed(2)}`;
+  }
+
   taxElement.textContent = `$${tax.toFixed(2)}`;
   totalElement.textContent = `$${total.toFixed(2)}`;
 
@@ -286,13 +458,16 @@ async function placeOrder() {
     return;
   }
 
-  const subtotal = calculateSubtotal();
+  const subtotal = getDiscountedSubtotal();
   const tax = subtotal * taxRate;
   const total = subtotal + tax;
+  const activeCustomer = getActiveCustomer();
 
   const payload = {
     totalPrice: Number(total.toFixed(2)),
     paymentMethod: "Card",
+    customerId: activeCustomer && activeCustomer.id ? Number(activeCustomer.id) : null,
+    rewardRedemption: activeReward,
     cart: cartItems.map((item) => ({
       itemId: item.itemId,
       qty: item.qty,
@@ -319,12 +494,22 @@ async function placeOrder() {
       throw new Error(data.error || "Failed to place order.");
     }
 
-    alert(`Order placed successfully. Order ID: ${data.orderId}`);
+    if (data.rewards) {
+      alert(
+        `Order placed successfully. Order ID: ${data.orderId}\n` +
+        `Earned ${data.rewards.earnedPoints} point(s).\n` +
+        `New total: ${data.rewards.totalPoints} point(s).`
+      );
+    } else {
+      alert(`Order placed successfully. Order ID: ${data.orderId}`);
+    }
 
     cartItems = [];
     saveCart();
+    localStorage.removeItem("cartItems");
+    localStorage.removeItem("activeCustomer");
     renderCart();
-    window.location.href = "/";
+    window.location.href = "/customerhome";
   } catch (error) {
     console.error("Order placement error:", error);
 
@@ -346,6 +531,10 @@ window.decreaseAddonQuantity = decreaseAddonQuantity;
 window.removeItem = removeItem;
 
 placeOrderBtn.addEventListener("click", placeOrder);
+if (useCheckoutRewardBtn) {
+  useCheckoutRewardBtn.addEventListener("click", applyCheckoutReward);
+}
 
 loadCart();
 renderCart();
+loadCheckoutRewards();

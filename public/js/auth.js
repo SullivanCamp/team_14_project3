@@ -74,8 +74,18 @@ loginForm.addEventListener("submit", async (event) => {
   event.preventDefault();
   authMessage.textContent = "";
 
-  const email = document.getElementById("loginEmail").value.trim();
+  const identifier = document.getElementById("loginIdentifier").value.trim();
   const password = document.getElementById("loginPassword").value;
+
+  const payload = {
+    password
+  };
+
+  if (identifier.includes("@")) {
+    payload.email = identifier;
+  } else {
+    payload.phone = identifier;
+  }
 
   try {
     const response = await fetch("/api/userauth/login", {
@@ -83,7 +93,7 @@ loginForm.addEventListener("submit", async (event) => {
       headers: {
         "Content-Type": "application/json"
       },
-      body: JSON.stringify({ email, password })
+      body: JSON.stringify(payload)
     });
 
     const data = await response.json();

@@ -207,3 +207,52 @@
     justify-content: center;
   }
 }
+.reward-box {
+  margin-top: 18px;
+  padding-top: 4px;
+}
+
+.reward-box h3 {
+  margin-bottom: 12px;
+}
+
+#checkoutRewardPoints {
+  font-weight: 800;
+  color: #2e7d32;
+}
+
+#useCheckoutRewardBtn {
+  display: inline-block;
+  margin-top: 8px;
+  padding: 12px 18px;
+  font-size: 0.98rem;
+  font-weight: 700;
+  border: none;
+  border-radius: 12px;
+  background: #6c63ff;
+  color: white;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+  transition: background 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+#useCheckoutRewardBtn:hover {
+  background: #584ee0;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.16);
+}
+
+#useCheckoutRewardBtn:disabled {
+  background: #aaa;
+  color: white;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+#checkoutRewardMessage {
+  margin-top: 12px;
+  font-size: 0.95rem;
+  color: #555;
+  line-height: 1.4;
+}
