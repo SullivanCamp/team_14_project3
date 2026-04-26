@@ -79,7 +79,16 @@
             <p><strong>Points:</strong> <span id="cashierCustomerPoints">0</span></p>
             <p><strong>Tier:</strong> <span id="cashierCustomerTier">Standard</span></p>
           </div>
-        </div>
+          
+          <div class="order-actions" style="margin-top: 10px;">
+            <button id="useFreeDrinkRewardBtn" class="primary-btn" type="button" disabled>
+              Use 100 pts Free Drink + 1 Topping
+            </button>
+          </div>
+
+          <p id="activeRewardText" style="margin-top: 8px; font-size: 0.9rem; color: #2353b0;">
+            No reward applied.
+          </p>
 
         <div class="order-items" id="orderItems">
           <div class="empty-order" id="emptyOrderMessage">

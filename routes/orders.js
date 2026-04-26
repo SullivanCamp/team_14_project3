@@ -2,7 +2,7 @@ const express = require("express");
 const pool = require('../db'); 
 
 const router = express.Router();
-
+  
 function calculatePointsFromTotal(totalPrice) {
   return Math.floor(Number(totalPrice) || 0);
 }
@@ -15,14 +15,22 @@ function getTierFromPoints(points) {
   return "Standard";
 }
 
-async function applyRewards(client, customerId, totalPrice) {
-  if (!customerId) return null;
+async function applyRewards(client, customerId, totalPrice, rewardRedemption) {
+  if (!customerId) {
+    return null;
+  }
 
-  const earnedPoints = calculatePointsFromTotal(totalPrice);
+  const earnedPoints = Math.floor(Number(totalPrice || 0));
 
-  const existing = await client.query(
+  let redeemedPoints = 0;
+
+  if (rewardRedemption) {
+    redeemedPoints = Number(rewardRedemption.pointsCost || 0);
+  }
+
+  const currentRewardResult = await client.query(
     `
-    SELECT customer_id, points
+    SELECT points, tier
     FROM customer_rewards
     WHERE customer_id = $1
     FOR UPDATE
@@ -30,31 +38,31 @@ async function applyRewards(client, customerId, totalPrice) {
     [customerId]
   );
 
-  if (existing.rows.length === 0) {
-    const tier = getTierFromPoints(earnedPoints);
-
-    await client.query(
-      `
-      INSERT INTO customer_rewards (customer_id, points, tier)
-      VALUES ($1, $2, $3)
-      `,
-      [customerId, earnedPoints, tier]
-    );
-
-    return {
-      earnedPoints,
-      totalPoints: earnedPoints,
-      tier
-    };
+  if (currentRewardResult.rows.length === 0) {
+    throw new Error("Customer rewards account not found.");
   }
 
-  const newPoints = Number(existing.rows[0].points) + earnedPoints;
-  const newTier = getTierFromPoints(newPoints);
+  const currentPoints = Number(currentRewardResult.rows[0].points || 0);
+
+  if (redeemedPoints > 0 && currentPoints < redeemedPoints) {
+    throw new Error("Customer does not have enough points for this reward.");
+  }
+
+  const newPoints = currentPoints - redeemedPoints + earnedPoints;
+
+  let newTier = "Standard";
+
+  if (newPoints >= 500) {
+    newTier = "Gold";
+  } else if (newPoints >= 250) {
+    newTier = "Silver";
+  }
 
   await client.query(
     `
     UPDATE customer_rewards
-    SET points = $1, tier = $2
+    SET points = $1,
+        tier = $2
     WHERE customer_id = $3
     `,
     [newPoints, newTier, customerId]
@@ -62,6 +70,7 @@ async function applyRewards(client, customerId, totalPrice) {
 
   return {
     earnedPoints,
+    redeemedPoints,
     totalPoints: newPoints,
     tier: newTier
   };
@@ -221,7 +230,14 @@ router.post("/", async (req, res) => {
   const client = await pool.connect();
 
   try {
-    const { totalPrice, paymentMethod, cart, customerId } = req.body;
+    const {
+      employeeFirstName,
+      totalPrice,
+      paymentMethod,
+      customerId,
+      cart,
+      rewardRedemption
+    } = req.body;
 
     console.log("Incoming order payload:", JSON.stringify(req.body, null, 2));
 
@@ -258,7 +274,12 @@ router.post("/", async (req, res) => {
     }
 
     await checkAndDecrementInventoryForCart(client, cart);
-    const rewardsResult = await applyRewards(client, customerId, totalPrice);
+    const rewardsResult = await applyRewards(
+      client,
+      customerId,
+      totalPrice,
+      rewardRedemption
+    );
 
     await client.query("COMMIT");
 

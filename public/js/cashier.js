@@ -35,6 +35,13 @@ const cashierCustomerName = document.getElementById("cashierCustomerName");
 const cashierCustomerPoints = document.getElementById("cashierCustomerPoints");
 const cashierCustomerTier = document.getElementById("cashierCustomerTier");
 
+const useFreeDrinkRewardBtn = document.getElementById("useFreeDrinkRewardBtn");
+const activeRewardText = document.getElementById("activeRewardText");
+
+const FREE_DRINK_REWARD_COST = 100;
+
+let activeReward = null;
+
 let toppingItems = [];
 let currentCategory = "all";
 let menuItems = [];
@@ -90,14 +97,25 @@ function renderCashierCustomer() {
     cashierCustomerName.textContent = "Guest";
     cashierCustomerPoints.textContent = "0";
     cashierCustomerTier.textContent = "Standard";
+
+    if (useFreeDrinkRewardBtn) {
+      useFreeDrinkRewardBtn.disabled = true;
+    }
+
     return;
   }
 
   const first = activeCashierCustomer.first_name || "";
   const last = activeCashierCustomer.last_name || "";
+  const points = Number(activeCashierCustomer.points || 0);
+
   cashierCustomerName.textContent = `${first} ${last}`.trim() || "Guest";
-  cashierCustomerPoints.textContent = Number(activeCashierCustomer.points || 0);
+  cashierCustomerPoints.textContent = points;
   cashierCustomerTier.textContent = activeCashierCustomer.tier || "Standard";
+
+  if (useFreeDrinkRewardBtn) {
+    useFreeDrinkRewardBtn.disabled = points < FREE_DRINK_REWARD_COST || activeReward !== null;
+  }
 }
 
 async function findCustomerByPhone() {
@@ -129,8 +147,49 @@ async function findCustomerByPhone() {
 
 function clearCashierCustomer() {
   activeCashierCustomer = null;
+  activeReward = null;
   customerPhoneInput.value = "";
+  
+
+  if (activeRewardText) {
+    activeRewardText.textContent = "No reward applied.";
+  }
+
+  cashierCart =[];
   renderCashierCustomer();
+  renderCart();
+}
+
+function applyFreeDrinkReward() {
+  if (!activeCashierCustomer) {
+    alert("Find a customer first.");
+    return;
+  }
+
+  const customerPoints = Number(activeCashierCustomer.points || 0);
+
+  if (customerPoints < FREE_DRINK_REWARD_COST) {
+    alert("Customer does not have enough points for this reward.");
+    return;
+  }
+
+  if (activeReward) {
+    alert("A reward is already applied to this order.");
+    return;
+  }
+
+  activeReward = {
+    type: "FREE_DRINK_ONE_TOPPING",
+    pointsCost: FREE_DRINK_REWARD_COST,
+    label: "Free drink + 1 topping"
+  };
+
+  if (activeRewardText) {
+    activeRewardText.textContent = "Reward applied: Free drink + 1 topping.";
+  }
+
+  renderCashierCustomer();
+  renderCart();
 }
 
 function getSelectedToppings() {
@@ -341,6 +400,35 @@ function renderMenu() {
   cashierNoResult.style.display = visibleCount === 0 ? "block" : "none";
 }
 
+function calculateRewardDiscount() {
+  if (!activeReward || cashierCart.length === 0) {
+    return 0;
+  }
+
+  if (activeReward.type !== "FREE_DRINK_ONE_TOPPING") {
+    return 0;
+  }
+
+  let bestDiscount = 0;
+
+  cashierCart.forEach((item) => {
+    const drinkPrice = Number(item.price || 0);
+
+    const toppings = Array.isArray(item.toppings) ? item.toppings : [];
+    const oneToppingDiscount = toppings.length > 0
+      ? Math.min(...toppings.map((topping) => Number(topping.price || 0)))
+      : 0;
+
+    const discount = drinkPrice + oneToppingDiscount;
+
+    if (discount > bestDiscount) {
+      bestDiscount = discount;
+    }
+  });
+
+  return bestDiscount;
+}
+
 function renderCart() {
   orderItems.innerHTML = "";
 
@@ -396,10 +484,14 @@ function renderCart() {
     orderItems.appendChild(card);
   });
   
-  const tax = subtotal * TAX_RATE;
-  const total = subtotal + tax;
+  const rewardDiscount = calculateRewardDiscount();
+  const discountedSubtotal = Math.max(0, subtotal - rewardDiscount);
+  const tax = discountedSubtotal * TAX_RATE;
+  const total = discountedSubtotal + tax;
 
-  subtotalValue.textContent = formatMoney(subtotal);
+  subtotalValue.textContent = activeReward
+    ? `${formatMoney(discountedSubtotal)} after reward`
+    : formatMoney(subtotal);
   taxValue.textContent = formatMoney(tax);
   totalValue.textContent = formatMoney(total);
   orderCountBadge.textContent = `${totalItemCount} item${totalItemCount === 1 ? "" : "s"}`;
@@ -469,9 +561,12 @@ async function payNow() {
     return;
   }
 
-  const subtotal = cashierCart.reduce((sum, item) => {
+  const rawSubtotal = cashierCart.reduce((sum, item) => {
     return sum + (Number(item.price) + toppingExtraPrice(item.toppings)) * Number(item.qty);
   }, 0);
+
+  const rewardDiscount = calculateRewardDiscount();
+  const subtotal = Math.max(0, rawSubtotal - rewardDiscount);
 
   try {
     const response = await fetch("/orders", {
@@ -484,7 +579,8 @@ async function payNow() {
         totalPrice: subtotal + (subtotal * TAX_RATE),
         paymentMethod: paymentMethodSelect.value,
         customerId: activeCashierCustomer ? activeCashierCustomer.id : null,
-        cart: cashierCart
+        cart: cashierCart,
+        rewardRedemption: activeReward
       })
     });
 
@@ -535,6 +631,9 @@ clearOrderBtn.addEventListener("click", clearOrder);
 payNowBtn.addEventListener("click", payNow);
 findCustomerBtn.addEventListener("click", findCustomerByPhone);
 clearCustomerBtn.addEventListener("click", clearCashierCustomer);
+if (useFreeDrinkRewardBtn) {
+  useFreeDrinkRewardBtn.addEventListener("click", applyFreeDrinkReward);
+}
 
 orderItems.addEventListener("click", (event) => {
   const minusBtn = event.target.closest(".minus-btn");
