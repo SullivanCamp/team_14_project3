@@ -1,17 +1,28 @@
 <!DOCTYPE html>
+<html lang="en">
 <head>
-   <title>Customer Home Page</title>
+   <meta charset="UTF-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   <title data-i18n="pageTitleCustomerHome">Customer Home Page</title>
    <link rel="stylesheet" href="css/customerlogin.css">
    <script src="js/weather.js"></script>
 </head>
 <body>
-   <div class = "logo-and-weather">
-      <div class="body">
+   <div class="logo-and-weather">
+      <div class="body"></div>
+
+      <div style="display:flex;justify-content:flex-end;padding:12px 16px 0;">
+        <select id="languageSelect" class="language-select" aria-label="Language selector">
+          <option value="en">English</option>
+          <option value="es">Español</option>
+          <option value="fr">Français</option>
+          <option value="zh-CN">中文</option>
+        </select>
       </div>
-      
+
       <img class="logohome" src="images/happy_tapi.png" alt="Happy tapioca, boba and other tapiocaloca refreshers">
       <div class="widget">
-         <div class="location">
+         <div class="location" data-i18n="locationCollegeStation">
             College Station, TX
          </div>
          <div class="temp" id="weather">
@@ -24,4 +35,6 @@
       <button class="order-btn">Place Order</button>
    </a>
 
+   <script src="/js/translate.js"></script>
 </body>
+</html>

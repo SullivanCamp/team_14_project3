@@ -3,38 +3,46 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Checkout Page</title>
+  <title data-i18n="pageTitleCheckout">Checkout Page</title>
   <link rel="stylesheet" href="/css/CheckoutPage.css" />
 </head>
 <body>
   <div class="checkout-page">
     <header class="checkout-header">
-      <h1>Checkout</h1>
-      <p>Review your order and make any final changes.</p>
-      <p>Each add-on costs $0.50.</p>
+      <div class="header-top-row" style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;">
+        <h1 data-i18n="checkout">Checkout</h1>
+        <select id="languageSelect" class="language-select" aria-label="Language selector">
+          <option value="en">English</option>
+          <option value="es">Español</option>
+          <option value="fr">Français</option>
+          <option value="zh-CN">中文</option>
+        </select>
+      </div>
+      <p data-i18n="reviewOrder">Review your order and make any final changes.</p>
+      <p data-i18n="addonPriceNotice">Each add-on costs $0.50.</p>
     </header>
 
     <main class="checkout-container">
       <section class="cart-section">
-        <h2>Your Order</h2>
+        <h2 data-i18n="yourOrder">Your Order</h2>
         <div id="cart-list" class="cart-list"></div>
       </section>
 
       <aside class="summary-section">
-        <h2>Order Summary</h2>
+        <h2 data-i18n="orderSummary">Order Summary</h2>
 
         <div class="summary-row">
-          <span>Subtotal</span>
+          <span data-i18n="subtotal">Subtotal</span>
           <span id="subtotal">$0.00</span>
         </div>
 
         <div class="summary-row">
-          <span>Tax</span>
+          <span data-i18n="tax">Tax</span>
           <span id="tax">$0.00</span>
         </div>
 
         <div class="summary-row total-row">
-          <span>Total</span>
+          <span data-i18n="total">Total</span>
           <span id="total">$0.00</span>
         </div>
 
@@ -61,10 +69,11 @@
     </main>
 
     <div class="checkout-footer">
-      <a href="/order" class="back-link">← Back to Menu</a>
+      <a href="/order" class="back-link" data-i18n="backToMenu">← Back to Menu</a>
     </div>
   </div>
 
   <script src="/js/CheckoutPage.js"></script>
+  <script src="/js/translate.js"></script>
 </body>
 </html>

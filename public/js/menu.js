@@ -22,6 +22,7 @@ let toppingItems = [];
 let currentCategory = "all";
 let cartItems = [];
 let menuItems = [];
+let currentLanguage = localStorage.getItem("preferredLanguage") || "en";
 
 function toNumber(value, fallback = 0) {
   const num = Number(value);
@@ -150,7 +151,10 @@ function renderMenuItems() {
   let visibleCount = 0;
 
   menuItems.forEach((item) => {
-    const itemName = item.name.toLowerCase();
+    const displayName = item.translatedName || item.name;
+    const displayDescription = item.translatedDescription || item.description || "Freshly made and ready to customize.";
+
+    const itemName = displayName.toLowerCase();
     const itemCategory = item.category.toLowerCase();
 
     const matchCategory =
@@ -171,16 +175,18 @@ function renderMenuItems() {
     card.dataset.category = item.category;
     card.dataset.price = item.price;
 
+card.dataset.name = displayName;
+
     card.innerHTML = `
       <div class="drink-image">
-        <button class="drink-image-button" type="button" aria-label="Customize ${item.name}">
-          <img src="${getImagePath(item.item_id)}" alt="${item.name}" onerror="this.src='/images/default.png'">
+        <button class="drink-image-button" type="button" aria-label="Customize ${displayName}">
+          <img src="${getImagePath(item.item_id)}" alt="${displayName}" onerror="this.src='/images/default.png'">
         </button>
-        <button class="plus-btn" type="button" aria-label="Add ${item.name}">+</button>
+        <button class="plus-btn" type="button" aria-label="Add ${displayName}">+</button>
       </div>
 
-      <h3>${item.name}</h3>
-      <p class="desc">${item.description || "Freshly made and ready to customize."}</p>
+      <h3>${displayName}</h3>
+      <p class="desc">${displayDescription}</p>
       <p class="price">$${Number(item.price).toFixed(2)}</p>
     `;
 
@@ -281,6 +287,50 @@ function addItemToCart(drinkCard, addons, customization = {}) {
   console.log("Cart items:", cartItems);
 }
 
+async function translateMenuItems(items, targetLanguage) {
+  if (!Array.isArray(items) || items.length === 0 || targetLanguage === "en") {
+    return items.map((item) => ({
+      ...item,
+      translatedName: item.name,
+      translatedDescription: item.description || "Freshly made and ready to customize."
+    }));
+  }
+
+  const texts = [];
+  items.forEach((item) => {
+    texts.push(item.name || "");
+    texts.push(item.description || "Freshly made and ready to customize.");
+  });
+
+  const response = await fetch("/api/translate", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      texts,
+      targetLanguage
+    })
+  });
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(data.error || "Failed to translate menu items.");
+  }
+
+  const translatedTexts = data.translatedTexts || [];
+
+  return items.map((item, index) => ({
+    ...item,
+    translatedName: translatedTexts[index * 2] || item.name,
+    translatedDescription:
+      translatedTexts[index * 2 + 1] ||
+      item.description ||
+      "Freshly made and ready to customize."
+  }));
+}
+
 async function loadMenuFromDatabase() {
   try {
     const response = await fetch("/menu-data");
@@ -290,8 +340,10 @@ async function loadMenuFromDatabase() {
       throw new Error(data.error || "Failed to load menu.");
     }
 
-    menuItems = data.items || [];
+    const rawItems = data.items || [];
     toppingItems = data.toppings || [];
+    menuItems = await translateMenuItems(rawItems, currentLanguage);
+
     renderMenuItems();
     renderAddonOptions();
   } catch (error) {
@@ -425,6 +477,18 @@ logoutBtn.addEventListener("click", () => {
   localStorage.removeItem("cartItems");
   window.location.href = "/auth";
 });
+
+const languageSelect = document.getElementById("languageSelect");
+
+if (languageSelect) {
+  languageSelect.value = currentLanguage;
+
+  languageSelect.addEventListener("change", async (event) => {
+    currentLanguage = event.target.value;
+    localStorage.setItem("preferredLanguage", currentLanguage);
+    await loadMenuFromDatabase();
+  });
+}
 
 ensureActiveCustomer();
 renderActiveCustomer();
