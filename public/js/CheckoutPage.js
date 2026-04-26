@@ -507,8 +507,7 @@ async function placeOrder() {
     cartItems = [];
     saveCart();
     localStorage.removeItem("cartItems");
-    localStorage.removeItem("activeCustomer");
-    renderCart();
+
     window.location.href = "/customerhome";
   } catch (error) {
     console.error("Order placement error:", error);
