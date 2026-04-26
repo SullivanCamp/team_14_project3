@@ -11,7 +11,7 @@
   <link rel="stylesheet" href="/css/menu.css">
   <link rel="stylesheet" href="/css/addonpopup.css">
   <link rel="stylesheet" href="/css/chat.css">
-  
+  <script src="https://code.responsivevoice.org/responsivevoice.js"></script>
 </head>
 <body>
   <div class="page-shell">
@@ -64,7 +64,6 @@
             </button>
           </a>
         </div>
-
         <nav class="top-tabs" aria-label="Menu Categories">
           <button class="tab-btn active" data-category="all" type="button" data-i18n="all">All</button>
           <button class="tab-btn" data-category="popular" type="button" data-i18n="mostPopular">Most Popular</button>
@@ -90,8 +89,8 @@
         <div id="addonOptions"></div>
 
         <div class="popup-actions">
-          <button type="button" class="popup-button cancel-button" id="cancelPopupBtn" data-i18n="cancel">Cancel</button>
-          <button type="submit" class="popup-button done-button" data-i18n="done">Done</button>
+          <button type="button" class="popup-button cancel-button" id="cancelPopupBtn" data-i18n="cancel" aria-label="Cancel customization and return to drink menu">Cancel</button>
+          <button type="submit" class="popup-button done-button" data-i18n="done" aria-label="Save customization and add to cart">Done</button>
         </div>
       </form>
     </div>
@@ -126,5 +125,6 @@
   <script src="/js/menu.js"></script>
   <script src="/js/translate.js"></script>
   <script src="/js/chat.js"></script>
+  <script src="/js/screenreader.js"></script>
 </body>
 </html>
