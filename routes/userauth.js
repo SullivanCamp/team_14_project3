@@ -294,4 +294,87 @@ router.get("/find-by-phone", async (req, res) => {
   }
 });
 
+const crypto = require("crypto");
+const { OAuth2Client } = require("google-auth-library");
+
+const oauth2Client = new OAuth2Client(
+  process.env.GOOGLE_CLIENT_ID,
+  process.env.GOOGLE_CLIENT_SECRET,
+  process.env.GOOGLE_REDIRECT_URI
+);
+
+router.get("/google", (req, res) => {
+  const state = crypto.randomBytes(32).toString("hex");
+  req.session.oauthState = state;
+
+  const authUrl = oauth2Client.generateAuthUrl({
+    scope: ["openid", "profile", "email"],
+    state
+  });
+
+  res.redirect(authUrl);
+});
+
+router.get("/google/callback", async (req, res) => {
+  try {
+    const { code, state } = req.query;
+
+    if (!code || !state) {
+      return res.status(400).send("Missing Google login data.");
+    }
+
+    if (state !== req.session.oauthState) {
+      return res.status(403).send("Invalid login state.");
+    }
+
+    delete req.session.oauthState;
+
+    const { tokens } = await oauth2Client.getToken(code);
+
+    const ticket = await oauth2Client.verifyIdToken({
+      idToken: tokens.id_token,
+      audience: process.env.GOOGLE_CLIENT_ID
+    });
+
+    const payload = ticket.getPayload();
+    const email = payload.email;
+
+    const result = await pool.query(
+      `
+      SELECT employee_id, first_name, last_name, email, access_level
+      FROM employee
+      WHERE email = $1
+      `,
+      [email]
+    );
+
+    if (result.rows.length === 0) {
+      req.session.user = null;
+      return res.redirect("/customerhome");
+    }
+
+    const employee = result.rows[0];
+
+    req.session.user = {
+      employee_id: employee.employee_id,
+      first_name: employee.first_name,
+      last_name: employee.last_name,
+      email: employee.email,
+      access_level: employee.access_level
+    };
+
+    return res.redirect("/");
+  } catch (error) {
+    console.error("Google login failed:", error);
+    return res.status(500).send("Google login failed.");
+  }
+});
+
+router.post("/logout", (req, res) => {
+  req.session.destroy(() => {
+    res.redirect("/");
+  });
+});
+
+
 module.exports = router;

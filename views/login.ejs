@@ -11,13 +11,33 @@
     <section class="login-card">
       <p class="eyebrow">Team 14 POS</p>
       <h1>Select View</h1>
-      <p class="subtext">Choose which area of the system you want to enter.</p>
 
-      <div class="role-buttons">
-        <a href="/managerhome" class="role-btn manager">Manager View</a>
-        <a href="/cashier" class="role-btn cashier">Cashier View</a>
-        <a href="/customerhome" class="role-btn customer">Customer View</a>
-      </div>
+      <% if (!user) { %>
+        <p class="subtext">Continue as a customer or sign in as staff.</p>
+
+        <div class="role-buttons">
+          <a href="/customerhome" class="role-btn customer">Customer View</a>
+          <a href="/auth/google" class="role-btn manager">Staff Login with Google</a>
+        </div>
+
+      <% } else { %>
+        <p class="subtext">
+          Welcome, <%= user.first_name %>. Choose your authorized view.
+        </p>
+
+        <div class="role-buttons">
+          <% if (Number(user.access_level) === 1) { %>
+            <a href="/managerhome" class="role-btn manager">Manager View</a>
+          <% } %>
+
+          <a href="/cashier" class="role-btn cashier">Cashier View</a>
+          <a href="/customerhome" class="role-btn customer">Customer View</a>
+
+          <form method="POST" action="/logout">
+            <button type="submit" class="role-btn logout">Logout</button>
+          </form>
+        </div>
+      <% } %>
     </section>
   </main>
 </body>
