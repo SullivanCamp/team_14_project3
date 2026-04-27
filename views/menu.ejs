@@ -28,10 +28,10 @@
         />
 
         <div class="header-actions">
-          <% if (user) { %>
+          <% if (typeof user !== "undefined" && user) { %>
             <a href="/" class="staff-back-btn">← Back to Staff</a>
           <% } %>
-          
+
           <select id="languageSelect" class="language-select" aria-label="Language selector">
             <option value="en">English</option>
             <option value="es">Español</option>
@@ -90,7 +90,30 @@
       <h2 id="popupDrinkName" data-i18n="customizeDrink">Customize Drink</h2>
 
       <form id="addonForm">
-        <div id="addonOptions"></div>
+
+        <div class="popup-field">
+          <label for="sugarLevel">Sugar Level</label>
+          <select id="sugarLevel" class="custom-select">
+            <option value="0">0%</option>
+            <option value="25">25%</option>
+            <option value="50">50%</option>
+            <option value="75">75%</option>
+            <option value="100" selected>100%</option>
+          </select>
+        </div>
+
+        <div class="popup-field">
+          <label for="iceLevel">Ice Level</label>
+          <select id="iceLevel" class="custom-select">
+            <option value="0">0% Ice</option>
+            <option value="25">25% Ice</option>
+            <option value="50">50% Ice</option>
+            <option value="75">75% Ice</option>
+            <option value="100" selected>100% Ice</option>
+          </select>
+        </div>
+
+        <div id="addonOptionsContainer"></div>
 
         <div class="popup-actions">
           <button type="button" class="popup-button cancel-button" id="cancelPopupBtn" data-i18n="cancel" aria-label="Cancel customization and return to drink menu">Cancel</button>
@@ -117,7 +140,7 @@
 
         <div class="chat-box-container">
           <div class="chat-box">
-            <input type="text" placeholder="Type your message.." name="msg" requred id="chatQuestion">
+            <input type="text" placeholder="Type your message.." name="msg" required id="chatQuestion">
             <button type="button" class="send-btn" onclick="askAI()"><i class="fa fa-chevron-circle-right"></i></button>
           </div>
         </div>

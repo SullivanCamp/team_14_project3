@@ -87,7 +87,9 @@ app.get("/management", (req, res) => {
 });
 
 app.get("/order", (req, res) => {
-  res.render("menu");
+  res.render("menu", {
+    user: req.session && req.session.user ? req.session.user : null
+  });
 });
 
 app.get("/checkout", (req, res) => {

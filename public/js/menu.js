@@ -6,7 +6,7 @@ const searchInput = document.getElementById("searchInput");
 const cartCount = document.getElementById("cartCount");
 const sectionTitle = document.getElementById("sectionTitle");
 const noResultMessage = document.getElementById("noResultMessage");
-const addonOptionsContainer = document.getElementById("addonOptions");
+const addonOptionsContainer = document.getElementById("addonOptionsContainer");
 
 const customerChip = document.getElementById("customerChip");
 const customerChipName = document.getElementById("customerChipName");
