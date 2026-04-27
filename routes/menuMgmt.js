@@ -11,11 +11,12 @@ router.post("/", async (req, res) => {
     if (submissionType === "Edit") {
       const query = `
         UPDATE menu_item
-        SET name = $1, price = $2, description = $3
-        WHERE item_id = $4`;
+        SET name = $1, price = $2, category = $3, description = $4
+        WHERE item_id = $5`;
       await client.query(query, [
         item.name,
         item.price,
+        item.category,
         item.description,
         item.itemId
       ]);
@@ -29,13 +30,14 @@ router.post("/", async (req, res) => {
         const newId = parseInt(result.rows[0].max_id) + 1;
 
         const query2 = `
-            INSERT INTO menu_item (item_id, name, price, description)
-            VALUES ($1, $2, $3, $4)
+            INSERT INTO menu_item (item_id, name, price, category, description)
+            VALUES ($1, $2, $3, $4, $5)
             `;
         await client.query(query2, [
             newId,
             item.name,
             item.price,
+            item.category,
             item.description
         ]);
     }

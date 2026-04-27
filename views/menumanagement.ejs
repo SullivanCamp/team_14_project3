@@ -18,6 +18,7 @@
                 <th> Item ID </th>
                 <th> Item Name </th>
                 <th> Price </th>
+                <th> Category </th>
                 <th> Description </th>
                 <th><button type="button" onclick="openAddForm()"> Add </button></th>
             </tr>
@@ -26,6 +27,7 @@
                     <td><%= menuItems[i].item_id %></td>
                     <td><%= menuItems[i].name %></td>
                     <td><%= menuItems[i].price %></td>
+                    <td><%= menuItems[i].category %></td>
                     <td><%= menuItems[i].description %></td>
                     <td style ="text-align: center;">
                         <button 
@@ -34,6 +36,7 @@
                             data-id="<%= menuItems[i].item_id %>"
                             data-name="<%= menuItems[i].name %>"
                             data-price="<%= menuItems[i].price %>"
+                            data-category="<%= menuItems[i].category %>""
                             data-description="<%= menuItems[i].description %>">
                             
                             Edit
@@ -52,6 +55,13 @@
 
             <label for="edit-price">Price:</label>
             <input type="number" id="edit-price" name="price"><br>
+
+            <label for="edit-category">Category:</label>
+            <select id="edit-category" name="category">
+                <% for (var i in categories) {%>
+                    <option value="<%= categories[i].category %>"><%= categories[i].category %></option>
+                <% } %>
+            </select><br>
 
             <label for="edit-description">Description:</label>
             <textarea id="edit-description" name="description" rows=2></textarea><br>
@@ -73,6 +83,13 @@
 
             <label for="add-price">Price:</label>
             <input type="number" id="add-price" name="price"><br>
+
+            <label for="add-category">Category:</label>
+            <select id="add-category" name="category">
+                <% for (var i in categories) {%>
+                    <option value="<%= categories[i].category %>"><%= categories[i].category %></option>
+                <% } %>
+            </select><br>
 
             <label for="add-description">Description:</label>
             <textarea id="add-description" name="description" rows=2></textarea><br>
