@@ -23,12 +23,10 @@ router.get("/", async (req, res) => {
     `;
 
     const toppingsQuery = `
-      SELECT DISTINCT m.item_id, m.name, m.price, m.description
-      FROM menu_item m
-      JOIN menu_item_topping mt
-        ON mt.menu_item_id = m.item_id
-      WHERE mt.is_topping = true
-      ORDER BY m.item_id
+      SELECT inventory_item_id AS item_id, name, 0.50 AS price, '' AS description
+      FROM inventory_item
+      WHERE category = 'Topping'
+      ORDER BY name
     `;
 
     const drinksResult = await pool.query(drinksQuery);

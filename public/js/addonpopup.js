@@ -56,11 +56,25 @@ function openAddonPopup(drinkCard) {
 
   popupOverlay.style.display = "block";
   addonPopup.style.display = "block";
+
+  document.querySelectorAll(".drink-card, .drink-image-button, .plus-btn").forEach((el) => {
+    el.setAttribute("tabindex", "-1");
+  });
+
+  setTimeout(() => {
+    const first = addonPopup.querySelector("button, input, select");
+    if (first) first.focus();
+  }, 50);
 }
 
 function closeAddonPopup() {
   popupOverlay.style.display = "none";
   addonPopup.style.display = "none";
+
+  document.querySelectorAll(".drink-card, .drink-image-button, .plus-btn").forEach((el) => {
+    el.removeAttribute("tabindex");
+  });
+
   resetPopupFields();
   activeDrinkCard = null;
 }
