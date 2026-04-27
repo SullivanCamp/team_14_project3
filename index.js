@@ -148,16 +148,18 @@ app.get("/employeemanagement", (req, res) => {
 
 app.get("/menumanagement", async (req, res) => {
     try {
-        const [menuRes, inventoryRes, ingredientsRes] = await Promise.all([
+        const [menuRes, inventoryRes, ingredientsRes, categoryRes] = await Promise.all([
             pool.query(`SELECT * FROM menu_item WHERE item_id < 200 ORDER BY item_id ASC`),
             pool.query(`SELECT * FROM inventory_item WHERE inventory_item_id < 500 ORDER BY inventory_item_id ASC`),
-            pool.query(`SELECT * FROM inventory_menu ORDER BY menu_item_id ASC`)
+            pool.query(`SELECT * FROM inventory_menu ORDER BY menu_item_id ASC`),
+            pool.query(`SELECT DISTINCT category FROM menu_item WHERE item_id < 200`)
         ]);
 
         res.render("menumanagement", {
             menuItems: menuRes.rows,
             inventory: inventoryRes.rows,
-            ingredients: ingredientsRes.rows
+            ingredients: ingredientsRes.rows,
+            categories: categoryRes.rows
         });
     } catch (err) {
         res.status(500).json({ error: "Database query failed" });
