@@ -3,24 +3,45 @@ const addonPopup = document.getElementById("addonPopup");
 const popupDrinkName = document.getElementById("popupDrinkName");
 const addonFormPopup = document.getElementById("addonForm");
 const cancelPopupBtn = document.getElementById("cancelPopupBtn");
-const addonOptions = document.getElementById("addonOptionsContainer");
 
-const sugarLevelSelect = document.getElementById("sugarLevel");
-const iceLevelSelect = document.getElementById("iceLevel");
+const sugarLevelInput = document.getElementById("sugarLevel");
+const iceLevelInput = document.getElementById("iceLevel");
+const drinkSizeInput = document.getElementById("drinkSize");
+const sizePriceAdjustInput = document.getElementById("sizePriceAdjust");
+const drinkQtyInput = document.getElementById("drinkQty");
+const drinkQtyDisplay = document.getElementById("drinkQtyDisplay");
+
+const minusDrinkQty = document.getElementById("minusDrinkQty");
+const plusDrinkQty = document.getElementById("plusDrinkQty");
 
 let activeDrinkCard = null;
-let toppingsData = [];
+
+function setActiveChoice(buttons, clickedButton) {
+  buttons.forEach((btn) => btn.classList.remove("active"));
+  clickedButton.classList.add("active");
+}
 
 function resetPopupFields() {
   addonFormPopup.reset();
 
-  if (sugarLevelSelect) {
-    sugarLevelSelect.value = "100";
-  }
+  sugarLevelInput.value = "100";
+  iceLevelInput.value = "100";
+  drinkSizeInput.value = "Medium";
+  sizePriceAdjustInput.value = "0";
+  drinkQtyInput.value = "1";
+  drinkQtyDisplay.textContent = "1";
 
-  if (iceLevelSelect) {
-    iceLevelSelect.value = "100";
-  }
+  document.querySelectorAll(".sugar-choice").forEach((btn) => {
+    btn.classList.toggle("active", btn.dataset.value === "100");
+  });
+
+  document.querySelectorAll(".ice-choice").forEach((btn) => {
+    btn.classList.toggle("active", btn.dataset.value === "100");
+  });
+
+  document.querySelectorAll(".size-choice").forEach((btn) => {
+    btn.classList.toggle("active", btn.dataset.size === "Medium");
+  });
 
   const addonInputs = addonFormPopup.querySelectorAll('input[name="addonQty"]');
   addonInputs.forEach((input) => {
@@ -28,35 +49,23 @@ function resetPopupFields() {
   });
 }
 
-function openAddonPopup(drinkCard)
-{
+function openAddonPopup(drinkCard) {
   activeDrinkCard = drinkCard;
   popupDrinkName.textContent = "Customize " + drinkCard.dataset.name;
   resetPopupFields();
 
   popupOverlay.style.display = "block";
   addonPopup.style.display = "block";
-  setTimeout(() => {
-    const firstFocusable = document.querySelector(
-      "#addonPopup [tabindex='0'], #addonPopup button, #addonPopup input"
-    );
-
-    if (firstFocusable) {
-      firstFocusable.focus();
-    }
-  }, 100);
 }
 
-function closeAddonPopup()
-{
+function closeAddonPopup() {
   popupOverlay.style.display = "none";
   addonPopup.style.display = "none";
   resetPopupFields();
   activeDrinkCard = null;
 }
 
-function getSelectedAddons()
-{
+function getSelectedAddons() {
   const addonInputs = addonFormPopup.querySelectorAll('input[name="addonQty"]');
   const selected = [];
 
@@ -77,14 +86,20 @@ function getSelectedAddons()
 }
 
 function getCustomizationSelections() {
-  const sugar = Number(sugarLevelSelect?.value || 100);
-  const ice = Number(iceLevelSelect?.value || 100);
+  const sugar = Number(sugarLevelInput.value || 100);
+  const ice = Number(iceLevelInput.value || 100);
+  const size = drinkSizeInput.value || "Medium";
+  const sizePriceAdjust = Number(sizePriceAdjustInput.value || 0);
+  const qty = Number(drinkQtyInput.value || 1);
 
   return {
     sugar,
     sweetness: `${sugar}%`,
     ice,
-    iceLabel: `${ice}% Ice`
+    iceLabel: `${ice}% Ice`,
+    size,
+    sizePriceAdjust,
+    qty
   };
 }
 
@@ -92,16 +107,45 @@ function getActiveDrinkCard() {
   return activeDrinkCard;
 }
 
-if (cancelPopupBtn) {
-  cancelPopupBtn.addEventListener("click", closeAddonPopup);
-}
+document.querySelectorAll(".sugar-choice").forEach((button) => {
+  button.addEventListener("click", () => {
+    setActiveChoice(document.querySelectorAll(".sugar-choice"), button);
+    sugarLevelInput.value = button.dataset.value;
+  });
+});
 
-if (popupOverlay) {
-  popupOverlay.addEventListener("click", closeAddonPopup);
-}
+document.querySelectorAll(".ice-choice").forEach((button) => {
+  button.addEventListener("click", () => {
+    setActiveChoice(document.querySelectorAll(".ice-choice"), button);
+    iceLevelInput.value = button.dataset.value;
+  });
+});
 
+document.querySelectorAll(".size-choice").forEach((button) => {
+  button.addEventListener("click", () => {
+    setActiveChoice(document.querySelectorAll(".size-choice"), button);
+    drinkSizeInput.value = button.dataset.size;
+    sizePriceAdjustInput.value = button.dataset.priceAdjust;
+  });
+});
 
-loadToppings();
+minusDrinkQty.addEventListener("click", () => {
+  const current = Number(drinkQtyInput.value || 1);
+  const next = Math.max(1, current - 1);
+  drinkQtyInput.value = next;
+  drinkQtyDisplay.textContent = next;
+});
+
+plusDrinkQty.addEventListener("click", () => {
+  const current = Number(drinkQtyInput.value || 1);
+  const next = Math.min(10, current + 1);
+  drinkQtyInput.value = next;
+  drinkQtyDisplay.textContent = next;
+});
+
+cancelPopupBtn.addEventListener("click", closeAddonPopup);
+popupOverlay.addEventListener("click", closeAddonPopup);
+
 window.openAddonPopup = openAddonPopup;
 window.closeAddonPopup = closeAddonPopup;
 window.getSelectedAddons = getSelectedAddons;
