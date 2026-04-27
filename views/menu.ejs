@@ -26,7 +26,7 @@
           placeholder="Search drinks..."
           data-i18n-placeholder="searchDrinks"
         />
-        <button id="screenReaderToggle" class="screen-reader-btn" type="button" data-reader="Screen reader enabled. Use the tab key to navigate the page.">
+        <button id="screenReaderToggle" class="screen-reader-btn" data-i18n="screenReader" type="button" data-reader="Screen reader enabled. Use the tab key to navigate the page.">
           Enable Screen Reader
         </button>
         <div class="header-actions">
@@ -41,7 +41,7 @@
             <option value="zh-CN">中文</option>
           </select>
 
-          <button class="chat-btn" id="chatBtn" onclick="openChatWindow()">Ask Tapi!</button>
+          <button class="chat-btn" id="chatBtn" data-i18n="askTapi" onclick="openChatWindow()">Ask Tapi!</button>
 
           <div class="customer-menu-wrapper" id="customerMenuWrapper">
 
@@ -58,8 +58,8 @@
             </div>
           </div>
 
-          <button class="rewards-btn" type="button" id="rewardsBtn" data-i18n="rewards">
-            Rewards: <span id="rewardsPoints">0</span> pts
+          <button class="rewards-btn" type="button" id="rewardsBtn">
+            <span data-i18n="rewards">Rewards</span>: <span id="rewardsPoints">0</span> pts
             (<span id="rewardsTier">Standard</span>)
           </button>
 
@@ -82,7 +82,7 @@
       </header>
 
       <section class="menu-section" id="allSection">
-        <h2 id="sectionTitle" data-i18n="all">All</h2>
+        <!-- <h2 id="sectionTitle" data-i18n="sectionTitle">All</h2> -->
 
         <div class="card-row" id="menuCardRow"></div>
 
