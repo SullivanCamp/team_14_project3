@@ -6,7 +6,7 @@ const searchInput = document.getElementById("searchInput");
 const cartCount = document.getElementById("cartCount");
 const sectionTitle = document.getElementById("sectionTitle");
 const noResultMessage = document.getElementById("noResultMessage");
-const addonOptionsContainer = document.getElementById("addonOptionsContainer");
+const addonOptionsContainer = document.getElementById("addonOptions");
 
 const customerChip = document.getElementById("customerChip");
 const customerChipName = document.getElementById("customerChipName");
@@ -170,6 +170,13 @@ function renderMenuItems() {
 
     const card = document.createElement("article");
     card.className = "drink-card";
+    card.setAttribute("tabindex", "0");
+    card.setAttribute("role", "button");
+    card.setAttribute(
+      "data-reader",
+      `${displayName}. ${displayDescription}. Price $${Number(item.price).toFixed(2)}. Select this drink to customize it and add toppings.`
+    );
+    
     card.dataset.id = item.item_id;
     card.dataset.name = item.name;
     card.dataset.category = item.category;
@@ -209,7 +216,11 @@ function renderAddonOptions() {
   toppingItems.forEach((item) => {
     const card = document.createElement("div");
     card.className = "addon-card";
-
+    card.setAttribute("tabindex", "0");
+    card.setAttribute(
+      "data-reader",
+      `${item.name}. Add on price $${Number(item.price).toFixed(2)}. Increase or decrease quantity using plus and minus buttons.`
+    );
     card.innerHTML = `
       <div class="addon-card-top">
         <div>
@@ -219,7 +230,7 @@ function renderAddonOptions() {
       </div>
 
       <div class="addon-qty-controls">
-        <button type="button" class="addon-qty-btn minus-addon-btn" data-id="${item.item_id}">-</button>
+        <button type="button" class="addon-qty-btn minus-addon-btn" data-id="${item.item_id}" aria-label="Decrease ${item.name} quantity">-</button>
         <input
           type="number"
           class="addon-qty-input"
@@ -231,8 +242,10 @@ function renderAddonOptions() {
           max="5"
           value="0"
           readonly
+          tabindex="-1"
+          aria-hidden="true"
         >
-        <button type="button" class="addon-qty-btn plus-addon-btn" data-id="${item.item_id}">+</button>
+        <button type="button" class="addon-qty-btn plus-addon-btn" data-id="${item.item_id}" aria-label="Increase ${item.name} quantity">+</button>
       </div>
     `;
 
@@ -428,6 +441,23 @@ menuCardRow.addEventListener("click", (event) => {
   }
 });
 
+menuCardRow.addEventListener("click", (event) => {
+  const plusButton = event.target.closest(".plus-btn");
+  const imageButton = event.target.closest(".drink-image-button");
+
+  if (plusButton) {
+    event.stopPropagation();
+    const drinkCard = plusButton.closest(".drink-card");
+    openAddonPopup(drinkCard);
+    return;
+  }
+
+  if (imageButton) {
+    const drinkCard = imageButton.closest(".drink-card");
+    openAddonPopup(drinkCard);
+  }
+});
+
 addonForm.addEventListener("submit", (event) => {
   event.preventDefault();
 
@@ -449,6 +479,10 @@ addonOptionsContainer.addEventListener("click", (event) => {
     const input = addonOptionsContainer.querySelector(`input[data-id="${minusBtn.dataset.id}"]`);
     const current = Number(input.value);
     input.value = Math.max(0, current - 1);
+    if (typeof speak === "function") {
+      speak(`${input.dataset.name} quantity ${input.value}`);
+    }
+
     return;
   }
 
@@ -456,6 +490,9 @@ addonOptionsContainer.addEventListener("click", (event) => {
     const input = addonOptionsContainer.querySelector(`input[data-id="${plusBtn.dataset.id}"]`);
     const current = Number(input.value);
     input.value = Math.min(5, current + 1);
+    if (typeof speak === "function") {
+      speak(`${input.dataset.name} quantity ${input.value}`);
+    }
   }
 });
 

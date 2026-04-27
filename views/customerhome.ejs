@@ -6,13 +6,16 @@
    <title data-i18n="pageTitleCustomerHome">Customer Home Page</title>
    <link rel="stylesheet" href="css/customerlogin.css">
    <script src="js/weather.js"></script>
+   <script src="https://code.responsivevoice.org/responsivevoice.js"></script>
 </head>
 <body>
    <div class="logo-and-weather">
       <div class="body"></div>
 
-      <div style="display:flex;justify-content:flex-end;padding:12px 16px 0;">
+      <div class="language-select-wrap">
         <select id="languageSelect" class="language-select" aria-label="Language selector">
+      <div style="display:flex;justify-content:flex-end;padding:12px 16px 0;">
+        <select id="languageSelect" class="language-select" aria-label="Language selector" data-reader="Language selector. Choose your preferred language.">
           <option value="en">English</option>
           <option value="es">Español</option>
           <option value="fr">Français</option>
@@ -20,12 +23,12 @@
         </select>
       </div>
 
-      <img class="logohome" src="images/happy_tapi.png" alt="Happy tapioca, boba and other tapiocaloca refreshers">
+      <img class="logohome" src="images/happy_tapi.png" alt="Happy tapioca, boba and other tapiocaloca refreshers" aria-hiddwen="true">
       <div class="widget">
-         <div class="location" data-i18n="locationCollegeStation">
+         <div class="location" data-i18n="locationCollegeStation" tabindex="0" data-reader="Location. College Station, Texas">
             College Station, TX
          </div>
-         <div class="temp" id="weather">
+         <div class="temp" id="weather" aria-hidden="true">
             --°F
          </div>
       </div>
@@ -33,8 +36,11 @@
 
    <a href="/auth">
       <button class="order-btn">Place Order</button>
+   <a href="/order">
+      <button class="order-btn" data-i18n="placeOrder" tabindex="0" data-reader="Click to Place Order">Place Order</button>
    </a>
 
    <script src="/js/translate.js"></script>
+   <script src="/js/screenreader.js"></script>
 </body>
 </html>

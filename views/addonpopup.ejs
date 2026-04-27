@@ -2,26 +2,15 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title data-i18n="pageTitleAddonPopup">Addon Popup</title>
+  <title>Addon Popup</title>
   <link rel="stylesheet" href="/css/addonpopup.css">
 </head>
 <body>
-
-  <div style="display:flex;justify-content:flex-end;padding:12px 16px 0;">
-    <select id="languageSelect" class="language-select" aria-label="Language selector">
-      <option value="en">English</option>
-      <option value="es">Español</option>
-      <option value="fr">Français</option>
-      <option value="zh-CN">中文</option>
-    </select>
-  </div>
 
   <button
     type="button"
     data-name="Milk Tea"
     onclick="openAddonPopup(this)"
-    data-i18n="openPopup"
   >
     Open Popup
   </button>
@@ -29,14 +18,14 @@
   <div class="overlay" id="popupOverlay"></div>
 
   <div class="popup" id="addonPopup">
-    <h2 id="popupDrinkName" data-i18n="customizeDrink">Customize Drink</h2>
+    <h2 id="popupDrinkName">Customize Drink</h2>
 
     <form id="addonForm">
       <div id="addonOptions"></div>
 
       <div class="popup-buttons">
-        <button type="button" id="cancelPopupBtn" class="close-btn" data-i18n="cancel">Cancel</button>
-        <button type="submit" data-i18n="addToCart">Add to Cart</button>
+        <button type="button" id="cancelPopupBtn" class="close-btn">Cancel</button>
+        <button type="submit">Add to Cart</button>
       </div>
     </form>
   </div>
