@@ -167,7 +167,7 @@ app.get("/weather", (req, res) => {
 });
 
 // Routes
-app.use(userAuthRoute);
+app.use("/auth", userAuthRoute);
 app.use("/menu-data", menuDataRoute);
 app.use("/orders", ordersRoute);
 app.use("/api/orders", ordersRoute);
