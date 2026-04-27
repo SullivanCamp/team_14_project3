@@ -133,7 +133,11 @@
 
         <nav class="cashier-tabs" aria-label="Cashier menu categories">
           <button class="cashier-tab active" type="button" data-category="all">All</button>
-          <button class="cashier-tab" type="button" data-category="popular">Popular</button>
+          <button class="cashier-tab" type="button" data-category="milk-tea">Milk Tea</button>
+          <button class="cashier-tab" type="button" data-category="fruit-tea">Fruit Tea</button>
+          <button class="cashier-tab" type="button" data-category="slush">Slushies</button>
+          <button class="cashier-tab" type="button" data-category="dessert">Dessert</button>
+          <button class="cashier-tab" type="button" data-category="hot-drinks">Hot Drinks</button>
           <button class="cashier-tab" type="button" data-category="seasonal">Seasonal</button>
         </nav>
 
@@ -159,30 +163,36 @@
 
     <div class="modal-section">
       <label class="field-label" for="drinkQtyInput">Quantity</label>
-      <input id="drinkQtyInput" class="qty-input" type="number" min="1" value="1" />
+      <div class="qty-controls">
+        <button onclick="decreaseQty()">-</button>
+        <span id="qtyDisplay">1</span>
+        <button onclick="increaseQty()">+</button>
+      </div>
     </div>
 
     <div class="modal-grid">
       <div class="modal-section">
         <label class="field-label" for="sugarSelect">Sugar</label>
-        <select id="sugarSelect" class="custom-select">
-          <option value="0">0%</option>
-          <option value="25">25%</option>
-          <option value="50">50%</option>
-          <option value="75">75%</option>
-          <option value="100" selected>100%</option>
-        </select>
+        <div class="level-row" id="sugarLevel">
+          <button data-value="0">0%</button>
+          <button data-value="25">25%</button>
+          <button data-value="50">50%</button>
+          <button data-value="75">75%</button>
+          <button data-value="100" class="active">100%</button>
+          <button data-value="125">125%</button>
+        </div>
       </div>
 
       <div class="modal-section">
         <label class="field-label" for="iceSelect">Ice</label>
-        <select id="iceSelect" class="custom-select">
-          <option value="0">0%</option>
-          <option value="25">25%</option>
-          <option value="50">50%</option>
-          <option value="75">75%</option>
-          <option value="100" selected>100%</option>
-        </select>
+        <div class="level-row" id="iceLevel">
+          <button data-value="0">0%</button>
+          <button data-value="25">25%</button>
+          <button data-value="50">50%</button>
+          <button data-value="75">75%</button>
+          <button data-value="100" class="active">100%</button>
+          <button data-value="125">125%</button>
+        </div>
       </div>
     </div>
 

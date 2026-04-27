@@ -69,9 +69,13 @@
           </a>
         </div>
         <nav class="top-tabs" aria-label="Menu Categories">
-          <button class="tab-btn active" data-category="all" type="button" data-i18n="all">All</button>
-          <button class="tab-btn" data-category="popular" type="button" data-i18n="mostPopular">Most Popular</button>
-          <button class="tab-btn" data-category="seasonal" type="button" data-i18n="seasonal">Seasonal</button>
+          <button class="tab-btn active" data-category="all" type="button">All</button>
+          <button class="tab-btn" data-category="milk-tea" type="button">Milk Tea</button>
+          <button class="tab-btn" data-category="fruit-tea" type="button">Fruit Tea</button>
+          <button class="tab-btn" data-category="slush" type="button">Slushies</button>
+          <button class="tab-btn" data-category="dessert" type="button">Dessert</button>
+          <button class="tab-btn" data-category="hot-drinks" type="button">Hot Drinks</button>
+          <button class="tab-btn" data-category="seasonal" type="button">Seasonal</button>
         </nav>
       </header>
 
@@ -90,34 +94,83 @@
       <h2 id="popupDrinkName" data-i18n="customizeDrink">Customize Drink</h2>
 
       <form id="addonForm">
+        <div class="choice-section">
+          <div class="choice-header">
+            <h3>Size</h3>
+            <span>Required</span>
+          </div>
 
-        <div class="popup-field">
-          <label for="sugarLevel">Sugar Level</label>
-          <select id="sugarLevel" class="custom-select">
-            <option value="0">0%</option>
-            <option value="25">25%</option>
-            <option value="50">50%</option>
-            <option value="75">75%</option>
-            <option value="100" selected>100%</option>
-          </select>
+          <div class="choice-row">
+            <button type="button" class="choice-btn size-choice" data-size="Small" data-price-adjust="-0.75">Small -$0.75</button>
+            <button type="button" class="choice-btn size-choice active" data-size="Medium" data-price-adjust="0">Medium</button>
+            <button type="button" class="choice-btn size-choice" data-size="Large" data-price-adjust="0.75">Large +$0.75</button>
+          </div>
+
+          <input type="hidden" id="drinkSize" value="Medium">
+          <input type="hidden" id="sizePriceAdjust" value="0">
         </div>
 
-        <div class="popup-field">
-          <label for="iceLevel">Ice Level</label>
-          <select id="iceLevel" class="custom-select">
-            <option value="0">0% Ice</option>
-            <option value="25">25% Ice</option>
-            <option value="50">50% Ice</option>
-            <option value="75">75% Ice</option>
-            <option value="100" selected>100% Ice</option>
-          </select>
+        <div class="choice-section">
+          <div class="choice-header">
+            <h3>Ice Level</h3>
+            <span>Required</span>
+          </div>
+
+          <div class="choice-row">
+            <button type="button" class="choice-btn ice-choice" data-value="0">0%</button>
+            <button type="button" class="choice-btn ice-choice" data-value="25">25%</button>
+            <button type="button" class="choice-btn ice-choice" data-value="50">50%</button>
+            <button type="button" class="choice-btn ice-choice" data-value="75">75%</button>
+            <button type="button" class="choice-btn ice-choice active" data-value="100">100%</button>
+            <button type="button" class="choice-btn ice-choice" data-value="125">125%</button>
+          </div>
+
+          <input type="hidden" id="iceLevel" value="100">
         </div>
 
-        <div id="addonOptionsContainer"></div>
+        <div class="choice-section">
+          <div class="choice-header">
+            <h3>Sugar Level</h3>
+            <span>Required</span>
+          </div>
+
+          <div class="choice-row">
+            <button type="button" class="choice-btn sugar-choice" data-value="0">0%</button>
+            <button type="button" class="choice-btn sugar-choice" data-value="25">25%</button>
+            <button type="button" class="choice-btn sugar-choice" data-value="50">50%</button>
+            <button type="button" class="choice-btn sugar-choice" data-value="75">75%</button>
+            <button type="button" class="choice-btn sugar-choice active" data-value="100">100%</button>
+            <button type="button" class="choice-btn sugar-choice" data-value="125">125%</button>
+          </div>
+
+          <input type="hidden" id="sugarLevel" value="100">
+        </div>
+
+        <div class="choice-section">
+          <div class="choice-header">
+            <h3>Drink Quantity</h3>
+          </div>
+
+          <div class="drink-qty-row">
+            <button type="button" class="round-qty-btn" id="minusDrinkQty">-</button>
+            <span id="drinkQtyDisplay">1</span>
+            <button type="button" class="round-qty-btn" id="plusDrinkQty">+</button>
+          </div>
+
+          <input type="hidden" id="drinkQty" value="1">
+        </div>
+
+        <div class="choice-section">
+          <div class="choice-header">
+            <h3>Add Toppings</h3>
+          </div>
+
+          <div id="addonOptionsContainer"></div>
+        </div>
 
         <div class="popup-actions">
-          <button type="button" class="popup-button cancel-button" id="cancelPopupBtn" data-i18n="cancel" aria-label="Cancel customization and return to drink menu">Cancel</button>
-          <button type="submit" class="popup-button done-button" data-i18n="done" aria-label="Save customization and add to cart">Done</button>
+          <button type="button" class="popup-button cancel-button" id="cancelPopupBtn">Cancel</button>
+          <button type="submit" class="popup-button done-button">Add To Cart</button>
         </div>
       </form>
     </div>

@@ -4,7 +4,7 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
-    height: 100vh;
+    height: 50vh;
     margin: 0;
 }
 .logo-and-weather {
@@ -45,6 +45,7 @@ a {
 div.widget
 {
   position: fixed;
+  z-index: 1;
   top: 0;
   transform: translateY(-50%);
   right: 10px;
@@ -75,26 +76,37 @@ div.temp {
     color: rgba(0,0,0,0.5);
 }
 
+.language-select-wrap {
+  position: fixed;
+  top: 20px;
+  right: 28px;
+  z-index: 9999;
+}
+
 .language-select {
-  appearance: none;
-  -webkit-appearance: none;
-  border: none;
-  outline: none;
-  cursor: pointer;
-
-  min-width: 145px;
-  padding: 12px 42px 12px 16px;
-  border-radius: 18px;
-
-  font-size: 0.95rem;
-  font-weight: 700;
+  width: 160px;
+  height: 48px;
+  padding: 0 14px;
+  border: 2px solid #d7e8f8;
+  border-radius: 16px;
+  background-color: white;
   color: #222;
-  background:
-    linear-gradient(45deg, transparent 50%, #4a5565 50%) calc(100% - 22px) 50% / 7px 7px no-repeat,
-    linear-gradient(135deg, #ffffff, #f4f7fb);
-
+  font-family: Arial, sans-serif;
+  font-size: 16px;
+  font-weight: 700;
   box-shadow: 0 8px 22px rgba(0, 0, 0, 0.10);
-  transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+  cursor: pointer;
+  outline: none;
+  appearance: auto;
+}
+
+.language-select {
+  color: #111 !important;
+  font-family: Arial, sans-serif !important;
+  font-size: 16px !important;
+  font-weight: 700 !important;
+  line-height: 48px;
+  text-indent: 0;
 }
 
 .language-select:hover {
@@ -104,15 +116,8 @@ div.temp {
 
 .language-select:focus {
   box-shadow:
-    0 12px 26px rgba(0, 0, 0, 0.14),
+    0 8px 22px rgba(0, 0, 0, 0.10),
     0 0 0 3px rgba(78, 162, 245, 0.25);
-}
-
-.language-select-wrap {
-  position: fixed;
-  top: 16px;
-  right: 16px;
-  z-index: 20;
 }
 
 @media (max-width: 640px) {

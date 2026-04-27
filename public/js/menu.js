@@ -256,7 +256,9 @@ function renderAddonOptions() {
 function addItemToCart(drinkCard, addons, customization = {}) {
   const drinkId = Number(drinkCard.dataset.id);
   const drinkName = drinkCard.dataset.name;
-  const drinkPrice = Number(drinkCard.dataset.price);
+  const drinkBasePrice = Number(drinkCard.dataset.price);
+  const sizePriceAdjust = Number(customization.sizePriceAdjust || 0);
+  const drinkPrice = drinkBasePrice + sizePriceAdjust;
 
   const toppingObjects = [];
 
@@ -279,8 +281,8 @@ function addItemToCart(drinkCard, addons, customization = {}) {
     itemId: drinkId,
     name: drinkName,
     price: drinkPrice,
-    qty: 1,
-    size: "Regular",
+    qty: Math.max(1, Number(customization.qty || 1)),
+    size: customization.size || "Medium",
     sugar: sugar,
     sweetness: customization.sweetness || `${sugar}%`,
     ice: ice,
@@ -406,15 +408,18 @@ tabButtons.forEach((button) => {
 
     currentCategory = button.dataset.category;
 
-    if (currentCategory === "all") {
-      sectionTitle.textContent = "All";
-    } else if (currentCategory === "popular") {
-      sectionTitle.textContent = "Most Popular";
-    } else if (currentCategory === "seasonal") {
-      sectionTitle.textContent = "Seasonal";
-    } else {
-      sectionTitle.textContent = currentCategory;
-    }
+    const categoryTitles = {
+      all: "All",
+      "milk-tea": "Milk Tea",
+      "fruit-tea": "Fruit Tea",
+      slush: "Slushies",
+      dessert: "Dessert",
+      seasonal: "Seasonal",
+      "caffeine-free": "Caffeine Free",
+      "hot-drinks": "Hot Drinks"
+    };
+
+    sectionTitle.textContent = categoryTitles[currentCategory] || currentCategory;
 
     renderMenuItems();
   });

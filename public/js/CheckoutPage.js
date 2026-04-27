@@ -495,6 +495,7 @@ async function placeOrder() {
     cart: cartItems.map((item) => ({
       itemId: item.itemId,
       qty: item.qty,
+      size: item.size,
       sugar: item.sugar,
       ice: item.ice,
       toppings: item.toppings || []
