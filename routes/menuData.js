@@ -16,7 +16,7 @@ const pool = new Pool({
 router.get("/", async (req, res) => {
   try {
     const drinksQuery = `
-      SELECT item_id, name, price, description
+      SELECT item_id, name, price, description, COALESCE(category, 'all') AS category
       FROM menu_item
       WHERE item_id < 200
       ORDER BY item_id
@@ -34,21 +34,13 @@ router.get("/", async (req, res) => {
     const drinksResult = await pool.query(drinksQuery);
     const toppingsResult = await pool.query(toppingsQuery);
 
-    const items = drinksResult.rows.map((row, index) => {
-      let category = "all";
-
-      if (index < 4) {
-        category = "popular";
-      } else if (index < 8) {
-        category = "seasonal";
-      }
-
+    const items = drinksResult.rows.map((row) => {
       return {
         item_id: Number(row.item_id),
         name: row.name,
         price: Number(row.price),
         description: row.description || "Freshly made and ready to customize.",
-        category: category
+        category: row.category || "all"
       };
     });
 

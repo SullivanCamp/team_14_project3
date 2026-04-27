@@ -24,8 +24,8 @@ const addDrinkBtn = document.getElementById("addDrinkBtn");
 const modalDrinkName = document.getElementById("modalDrinkName");
 const modalDrinkPrice = document.getElementById("modalDrinkPrice");
 const drinkQtyInput = document.getElementById("drinkQtyInput");
-const sugarSelect = document.getElementById("sugarSelect");
-const iceSelect = document.getElementById("iceSelect");
+const sugarSelect = document.getElementById("sugarLevel");
+const iceSelect = document.getElementById("iceLevel");
 const cashierToppingsGrid = document.getElementById("cashierToppingsGrid");
 
 const customerPhoneInput = document.getElementById("customerPhoneInput");
@@ -50,6 +50,7 @@ let cashierCart = [];
 let activeDrink = null;
 let activeCashierCustomer = null;
 let loggedInEmployee = null;
+let currentQty = 1;
 
 function updateClock() {
   const now = new Date();
@@ -336,25 +337,6 @@ function formatMoney(value) {
   return `$${Number(value).toFixed(2)}`;
 }
 
-function getSelectedToppings() {
-  const checked = document.querySelectorAll('input[name="cashierAddon"]:checked');
-  const toppings = [];
-
-  checked.forEach((input) => {
-    const toppingId = toppingNameToId(input.value);
-
-    if (toppingId !== null) {
-      toppings.push({
-        id: toppingId,
-        name: input.value,
-        qty: 1
-      });
-    }
-  });
-
-  return toppings;
-}
-
 function toppingExtraPrice(toppings) {
   let extra = 0;
 
@@ -370,9 +352,24 @@ function toppingExtraPrice(toppings) {
 }
 
 function resetModal() {
-  drinkQtyInput.value = 1;
-  sugarSelect.value = "100";
-  iceSelect.value = "100";
+  currentQty = 1;
+
+  if (drinkQtyInput) {
+    drinkQtyInput.value = 1;
+  }
+
+  const qtyDisplay = document.getElementById("qtyDisplay");
+  if (qtyDisplay) {
+    qtyDisplay.innerText = 1;
+  }
+
+  document.querySelectorAll("#sugarLevel button").forEach((btn) => {
+    btn.classList.toggle("active", btn.dataset.value === "100");
+  });
+
+  document.querySelectorAll("#iceLevel button").forEach((btn) => {
+    btn.classList.toggle("active", btn.dataset.value === "100");
+  });
 
   const inputs = document.querySelectorAll('input[name="cashierAddonQty"]');
   inputs.forEach((input) => {
@@ -537,7 +534,7 @@ function addActiveDrinkToOrder() {
     return;
   }
 
-  const quantity = Math.max(1, Number(drinkQtyInput.value) || 1);
+  const quantity = Math.max(1, currentQty || 1);
   const toppings = getSelectedToppings();
 
   const newItem = {
@@ -545,8 +542,8 @@ function addActiveDrinkToOrder() {
     name: activeDrink.name,
     price: Number(activeDrink.price),
     qty: quantity,
-    sugar: Number(sugarSelect.value),
-    ice: Number(iceSelect.value),
+    sugar: getSelectedLevel("sugarLevel"),
+    ice: getSelectedLevel("iceLevel"),
     toppings: toppings
   };
 
@@ -720,3 +717,40 @@ cashierToppingsGrid.addEventListener("click", (event) => {
     input.value = Math.min(5, current + 1);
   }
 });
+
+function getSelectedLevel(containerId) {
+  const activeBtn = document.querySelector(`#${containerId} button.active`);
+  return activeBtn ? Number(activeBtn.dataset.value) : 100;
+}
+
+function increaseQty() {
+  currentQty++;
+  document.getElementById("qtyDisplay").innerText = currentQty;
+}
+
+function decreaseQty() {
+  if (currentQty > 1) {
+    currentQty--;
+    document.getElementById("qtyDisplay").innerText = currentQty;
+  }
+}
+
+function setupLevelSelector(containerId) {
+  const container = document.getElementById(containerId);
+
+  if (!container) {
+    return;
+  }
+
+  const buttons = container.querySelectorAll("button");
+
+  buttons.forEach((btn) => {
+    btn.addEventListener("click", () => {
+      buttons.forEach((b) => b.classList.remove("active"));
+      btn.classList.add("active");
+    });
+  });
+}
+
+setupLevelSelector("sugarLevel");
+setupLevelSelector("iceLevel");
