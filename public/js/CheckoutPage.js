@@ -45,7 +45,7 @@ async function loadCheckoutRewards() {
   }
 
   try {
-    const response = await fetch(`/api/userauth/rewards/${customer.id}`);
+    const response = await fetch(`/auth/rewards/${customer.id}`);
     const data = await response.json();
 
     if (!data.success) {

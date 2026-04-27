@@ -28,6 +28,10 @@
         />
 
         <div class="header-actions">
+          <% if (user) { %>
+            <a href="/" class="staff-back-btn">← Back to Staff</a>
+          <% } %>
+          
           <select id="languageSelect" class="language-select" aria-label="Language selector">
             <option value="en">English</option>
             <option value="es">Español</option>

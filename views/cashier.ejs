@@ -19,7 +19,11 @@
         </div>
 
         <div class="status-pill">Station A1</div>
-        <div class="status-pill" id="cashierNameDisplay">Cashier: Lam</div>
+        <div class="status-pill" id="cashierNameDisplay">Cashier: </div>
+
+        <% if (user) { %>
+          <a href="/" class="status-pill staff-back-link">← Back</a>
+        <% } %>
       </div>
 
       <div class="topbar-right">
@@ -67,7 +71,7 @@
               class="meta-select"
               placeholder="Enter phone number"
             />
-          </div>
+          </div> 
 
           <div class="order-actions" style="margin-top: 10px;">
             <button id="findCustomerBtn" class="secondary-btn" type="button">Find Customer</button>
@@ -89,6 +93,7 @@
           <p id="activeRewardText" style="margin-top: 8px; font-size: 0.9rem; color: #2353b0;">
             No reward applied.
           </p>
+        </div>
 
         <div class="order-items" id="orderItems">
           <div class="empty-order" id="emptyOrderMessage">
@@ -116,6 +121,7 @@
           <button id="payNowBtn" class="primary-btn" type="button">Pay Now</button>
         </div>
       </aside>
+    
 
       <section class="menu-panel">
         <div class="menu-panel-header">

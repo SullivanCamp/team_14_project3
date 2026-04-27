@@ -37,6 +37,7 @@ const cashierCustomerTier = document.getElementById("cashierCustomerTier");
 
 const useFreeDrinkRewardBtn = document.getElementById("useFreeDrinkRewardBtn");
 const activeRewardText = document.getElementById("activeRewardText");
+const cashierNameDisplay = document.getElementById("cashierNameDisplay");
 
 const FREE_DRINK_REWARD_COST = 100;
 
@@ -48,6 +49,7 @@ let menuItems = [];
 let cashierCart = [];
 let activeDrink = null;
 let activeCashierCustomer = null;
+let loggedInEmployee = null;
 
 function updateClock() {
   const now = new Date();
@@ -118,6 +120,37 @@ function renderCashierCustomer() {
   }
 }
 
+async function loadLoggedInEmployee() {
+  try {
+    const response = await fetch("/auth/current-user");
+    const data = await response.json();
+
+    if (!data.success) {
+      if (cashierNameDisplay) {
+        cashierNameDisplay.textContent = "Cashier: Not logged in";
+      }
+      return;
+    }
+
+    const user = data.user;
+    loggedInEmployee = user;
+
+    const fullName = `${user.first_name || ""} ${user.last_name || ""}`.trim();
+    const email = user.email || "";
+
+    if (cashierNameDisplay) {
+      cashierNameDisplay.textContent = `Cashier: ${fullName || email || "Employee"}`;
+      cashierNameDisplay.title = email;
+    }
+  } catch (error) {
+    console.error("Failed to load logged in employee:", error);
+
+    if (cashierNameDisplay) {
+      cashierNameDisplay.textContent = "Cashier: Not logged in";
+    }
+  }
+}
+
 async function findCustomerByPhone() {
   const phone = customerPhoneInput.value.trim();
 
@@ -127,7 +160,7 @@ async function findCustomerByPhone() {
   }
 
   try {
-    const response = await fetch(`/api/userauth/find-by-phone?phone=${encodeURIComponent(phone)}`);
+    const response = await fetch(`/auth/find-by-phone?phone=${encodeURIComponent(phone)}`);
     const data = await response.json();
 
     if (!data.success) {
@@ -575,7 +608,7 @@ async function payNow() {
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
-        employeeFirstName: "Lam",
+        employeeFirstName: loggedInEmployee ? loggedInEmployee.first_name : "Cashier",
         totalPrice: subtotal + (subtotal * TAX_RATE),
         paymentMethod: paymentMethodSelect.value,
         customerId: activeCashierCustomer ? activeCashierCustomer.id : null,
@@ -668,6 +701,7 @@ orderItems.addEventListener("click", (event) => {
 loadCashierCart();
 renderCart();
 loadMenu();
+loadLoggedInEmployee();
 
 cashierToppingsGrid.addEventListener("click", (event) => {
   const minusBtn = event.target.closest(".minus-cashier-addon-btn");

@@ -672,3 +672,14 @@ body
   text-align: center;
   font-weight: 700;
 }
+
+.staff-back-link {
+  text-decoration: none;
+  color: #24468f;
+  font-weight: 800;
+}
+
+.staff-back-link:hover {
+  background: #e8eefc;
+  transform: translateY(-1px);
+}

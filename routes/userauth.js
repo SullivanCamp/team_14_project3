@@ -370,9 +370,23 @@ router.get("/google/callback", async (req, res) => {
   }
 });
 
-router.post("/logout", (req, res) => {
+router.post("/auth/logout", (req, res) => {
   req.session.destroy(() => {
     res.redirect("/");
+  });
+});
+
+router.get("/current-user", (req, res) => {
+  if (!req.session || !req.session.user) {
+    return res.status(401).json({
+      success: false,
+      error: "No employee is logged in."
+    });
+  }
+
+  return res.json({
+    success: true,
+    user: req.session.user
   });
 });
 
