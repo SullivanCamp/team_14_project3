@@ -48,7 +48,7 @@ skipBtn.addEventListener("click", async () => {
   authMessage.textContent = "";
 
   try {
-    const response = await fetch("/api/userauth/skip", {
+    const response = await fetch("/auth/skip", {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
@@ -88,7 +88,7 @@ loginForm.addEventListener("submit", async (event) => {
   }
 
   try {
-    const response = await fetch("/api/userauth/login", {
+    const response = await fetch("/auth/login", {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
@@ -122,7 +122,7 @@ signupForm.addEventListener("submit", async (event) => {
   const password = document.getElementById("signupPassword").value;
 
   try {
-    const response = await fetch("/api/userauth/signup", {
+    const response = await fetch("/auth/signup", {
       method: "POST",
       headers: {
         "Content-Type": "application/json"

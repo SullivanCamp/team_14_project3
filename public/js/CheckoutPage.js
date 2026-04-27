@@ -244,6 +244,7 @@ function toppingsLabel(item) {
             <button
               class="qty-btn"
               type="button"
+              aria-label="Decrease ${topping.name} quantity"
               onclick="decreaseAddonQuantity('${item.cartId}', '${topping.id}')"
             >
               -
@@ -252,6 +253,7 @@ function toppingsLabel(item) {
             <button
               class="qty-btn"
               type="button"
+              aria-label="Increase ${topping.name} quantity"
               onclick="increaseAddonQuantity('${item.cartId}', '${topping.id}')"
             >
               +
@@ -337,6 +339,15 @@ function updateSummary() {
   totalElement.textContent = `$${total.toFixed(2)}`;
 
   placeOrderBtn.disabled = cartItems.length === 0;
+  
+  subtotalElement.setAttribute("tabindex", "0");
+  subtotalElement.setAttribute("data-reader", `Subtotal $${subtotal.toFixed(2)}.`);
+
+  taxElement.setAttribute("tabindex", "0");
+  taxElement.setAttribute("data-reader", `Tax $${tax.toFixed(2)}.`);
+
+  totalElement.setAttribute("tabindex", "0");
+  totalElement.setAttribute("data-reader", `Total $${total.toFixed(2)}.`);
 }
 
 function renderCart() {
@@ -352,9 +363,22 @@ function renderCart() {
     const itemDiv = document.createElement("div");
     itemDiv.classList.add("cart-item");
 
+    let addonText = "";
+    if(item.toppings && item.toppings.length > 0) {
+      addonText = item.toppings.map((topping) => `${topping.name} x${topping.qty}`).join(", ");
+    }
+    else{
+      addonText = "No add-ons or toppings were added to this item.";
+    }
+
     const baseTotal = item.price * item.qty;
     const addonTotal = calculateAddonTotalForItem(item);
     const lineTotal = baseTotal + addonTotal;
+    itemDiv.setAttribute("tabindex", "0");
+    itemDiv.setAttribute(
+      "data-reader",
+      `${item.name}. Quantity ${item.qty}. Size ${item.size}. Sweetness ${sugarLabel(item)}. Ice ${iceLabel(item)}. Add ons: ${addonText}. Line total $${lineTotal.toFixed(2)}.`
+    );
 
     itemDiv.innerHTML = `
       <div class="item-info">
@@ -365,14 +389,14 @@ function renderCart() {
       </div>
 
       <div class="item-controls">
-        <button class="qty-btn" type="button" onclick="decreaseQuantity('${item.cartId}')">-</button>
+        <button class="qty-btn" type="button" aria-label="Decrease ${item.name} quantity"onclick="decreaseQuantity('${item.cartId}')">-</button>
         <span class="quantity">${item.qty}</span>
-        <button class="qty-btn" type="button" onclick="increaseQuantity('${item.cartId}')">+</button>
+        <button class="qty-btn" type="button" aria-label="Increase ${item.name} quantity" onclick="increaseQuantity('${item.cartId}')">+</button>
       </div>
 
       <div class="item-total">
         <p>$${lineTotal.toFixed(2)}</p>
-        <button class="remove-btn" type="button" onclick="removeItem('${item.cartId}')">Remove</button>
+        <button class="remove-btn" type="button" aria-label="Remove ${item.name}" onclick="removeItem('${item.cartId}')">Remove</button>
       </div>
     `;
 

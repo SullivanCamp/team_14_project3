@@ -1,16 +1,13 @@
 const express = require("express");
+const session = require("express-session");
 const { Pool } = require("pg");
 require("dotenv").config();
 
-const { TranslationServiceClient } = require("@google-cloud/translate").v3;
+const ordersRoute = require("./routes/orders");
+const menuDataRoute = require("./routes/menuData");
+const reportsRoute = require("./routes/reports");
+const addonPopupRoute = require("./routes/addonpopup");
 
-const credentials = JSON.parse(process.env.GOOGLE_SERVICE_ACCOUNT_JSON);
-credentials.private_key = credentials.private_key.replace(/\\n/g, "\n");
-
-const translationClient = new TranslationServiceClient({
-  credentials,
-  projectId: process.env.GOOGLE_CLOUD_PROJECT_ID
-});
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -30,9 +27,6 @@ process.on("SIGINT", function () {
   process.exit(0);
 });
 
-const ordersRoute = require("./routes/orders");
-const menuDataRoute = require("./routes/menuData");
-const reportsRoute = require("./routes/reports");
 const inventoryMgmtRoute = require("./routes/inventoryMgmt");
 const employeesMgmtRoute = require("./routes/employeesMgmt");
 const menuMgmtRoute = require("./routes/menuMgmt");
@@ -44,9 +38,23 @@ app.use(express.static("public"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Pages
+app.use(
+  session({
+    secret: process.env.SESSION_SECRET || "dev_secret_key",
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+      httpOnly: true,
+      sameSite: "lax",
+      secure: false
+    }
+  })
+);
+
 app.get("/", (req, res) => {
-  res.render("login");
+  res.render("login", {
+    user: req.session.user || null
+  });
 });
 
 app.get("/reports", (req, res) => {
@@ -159,51 +167,13 @@ app.get("/weather", (req, res) => {
 });
 
 // Routes
+app.use("/auth", userAuthRoute);
 app.use("/menu-data", menuDataRoute);
 app.use("/orders", ordersRoute);
 app.use("/api/orders", ordersRoute);
 app.use("/api/reports", reportsRoute);
-app.use("/api/inventoryMgmt", inventoryMgmtRoute);
-app.use("/api/employeesMgmt", employeesMgmtRoute);
-app.use("/api/menuMgmt", menuMgmtRoute);
-app.use("/api/userauth", userAuthRoute);
-app.use("/api/ask-ai", aiRoute);
+app.use("/addonpopup", addonPopupRoute);
 
-app.post("/api/translate", async (req, res) => {
-  try {
-    const { texts, targetLanguage, sourceLanguage } = req.body;
-
-    if (!Array.isArray(texts) || texts.length === 0) {
-      return res.status(400).json({ error: "texts must be a non-empty array" });
-    }
-
-    if (!targetLanguage) {
-      return res.status(400).json({ error: "targetLanguage is required" });
-    }
-
-    const parent = `projects/${process.env.GOOGLE_CLOUD_PROJECT_ID}/locations/global`;
-
-    const request = {
-      parent,
-      contents: texts,
-      mimeType: "text/plain",
-      targetLanguageCode: targetLanguage
-    };
-
-    if (sourceLanguage) {
-      request.sourceLanguageCode = sourceLanguage;
-    }
-
-    const [response] = await translationClient.translateText(request);
-
-    res.json({
-      translatedTexts: (response.translations || []).map(t => t.translatedText || "")
-    });
-  } catch (error) {
-    console.error("Translation error:", error);
-    res.status(500).json({ error: "Translation failed" });
-  }
-});
 
 app.listen(port, () => {
   console.log(`Example app listening at http://localhost:${port}`);

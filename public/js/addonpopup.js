@@ -36,6 +36,15 @@ function openAddonPopup(drinkCard)
 
   popupOverlay.style.display = "block";
   addonPopup.style.display = "block";
+  setTimeout(() => {
+    const firstFocusable = document.querySelector(
+      "#addonPopup [tabindex='0'], #addonPopup button, #addonPopup input"
+    );
+
+    if (firstFocusable) {
+      firstFocusable.focus();
+    }
+  }, 100);
 }
 
 function closeAddonPopup()
