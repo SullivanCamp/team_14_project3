@@ -385,11 +385,25 @@ function openModalForDrink(item) {
 
   cashierModal.style.display = "block";
   cashierModalOverlay.style.display = "block";
+
+  document.querySelectorAll(".menu-drink-btn").forEach(btn => {
+    btn.setAttribute("tabindex", "-1");
+  });
+
+  setTimeout(() => {
+    const first = cashierModal.querySelector("button, input");
+    if (first) first.focus();
+  }, 50);
 }
 
 function closeCashierModal() {
   cashierModal.style.display = "none";
   cashierModalOverlay.style.display = "none";
+
+  document.querySelectorAll(".menu-drink-btn").forEach(btn => {
+    btn.removeAttribute("tabindex");
+  });
+
   activeDrink = null;
 }
 
@@ -664,6 +678,32 @@ clearCustomerBtn.addEventListener("click", clearCashierCustomer);
 if (useFreeDrinkRewardBtn) {
   useFreeDrinkRewardBtn.addEventListener("click", applyFreeDrinkReward);
 }
+// 🔥 trap tab inside popup
+document.addEventListener("keydown", (e) => {
+  if (cashierModal.style.display !== "block") return;
+  if (e.key !== "Tab") return;
+
+  const focusable = cashierModal.querySelectorAll(
+    "button, input, select"
+  );
+
+  if (focusable.length === 0) return;
+
+  const first = focusable[0];
+  const last = focusable[focusable.length - 1];
+
+  if (e.shiftKey) {
+    if (document.activeElement === first) {
+      e.preventDefault();
+      last.focus();
+    }
+  } else {
+    if (document.activeElement === last) {
+      e.preventDefault();
+      first.focus();
+    }
+  }
+});
 
 orderItems.addEventListener("click", (event) => {
   const minusBtn = event.target.closest(".minus-btn");

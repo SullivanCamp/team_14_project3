@@ -520,6 +520,30 @@ logoutBtn.addEventListener("click", () => {
   window.location.href = "/auth";
 });
 
+document.addEventListener("keydown", (e) => {
+  const popup = document.getElementById("addonPopup");
+
+  if (!popup || popup.style.display !== "block") return;
+  if (e.key !== "Tab") return;
+
+  const focusable = popup.querySelectorAll(
+    "button, input, select, textarea, [tabindex]:not([tabindex='-1'])"
+  );
+
+  if (focusable.length === 0) return;
+
+  const first = focusable[0];
+  const last = focusable[focusable.length - 1];
+
+  if (e.shiftKey && document.activeElement === first) {
+    e.preventDefault();
+    last.focus();
+  } else if (!e.shiftKey && document.activeElement === last) {
+    e.preventDefault();
+    first.focus();
+  }
+});
+
 const languageSelect = document.getElementById("languageSelect");
 
 if (languageSelect) {
