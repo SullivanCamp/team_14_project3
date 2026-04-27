@@ -17,28 +17,26 @@ const pool = new Pool({
 router.get("/toppings", async (req, res) => {
   try {
     const query = `
-        SELECT DISTINCT mi.item_id, mi.name
-        FROM menu_item mi
-        JOIN menu_item_topping mit
-            ON mi.item_id = mit.menu_item_id
-        WHERE mit.is_topping = 't'
-        ORDER BY mi.name
+      SELECT inventory_item_id, name, category
+      FROM inventory_item
+      WHERE category IN ('Topping')
+      ORDER BY name;
     `;
 
     const result = await pool.query(query);
 
     const toppings = result.rows.map((row) => ({
-      inventory_id: Number(row.inventory_id),
-      name: row.name
+      inventory_id: Number(row.inventory_item_id),
+      name: row.name,
+      category: row.category
     }));
 
     res.json({
       success: true,
-      toppings: toppings
+      toppings
     });
   } catch (error) {
     console.error("Failed to load toppings:", error);
-
     res.status(500).json({
       success: false,
       error: "Failed to load toppings."

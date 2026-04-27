@@ -16,7 +16,7 @@ function speak(text) {
 }
 
 function getReadableText(element) {
-  return (
+  const ownText = (
     element.getAttribute("data-reader") ||
     element.getAttribute("aria-label") ||
     element.getAttribute("alt") ||
@@ -24,6 +24,31 @@ function getReadableText(element) {
     element.placeholder ||
     ""
   ).trim();
+
+  const section = element.closest(".choice-section, .addon-card, .drink-card");
+
+  let sectionTitle = "";
+
+  if (section) {
+    const title = section.querySelector(".choice-header h3, .addon-name, h3");
+    if (title && !title.contains(element)) {
+      sectionTitle = title.innerText.trim();
+    }
+  }
+
+  if (sectionTitle && sectionTitle.toLowerCase().includes("drink quantity")) {
+    const qtyDisplay = section.querySelector("#qtyDisplay");
+
+    if (qtyDisplay) {
+      return `${sectionTitle}. Current quantity ${qtyDisplay.innerText.trim()}. ${ownText}`;
+    }
+  }
+
+  if (sectionTitle && ownText) {
+    return `${sectionTitle}. ${ownText}`;
+  }
+
+  return ownText || sectionTitle;
 }
 
 if (toggleBtn) {
