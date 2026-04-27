@@ -1,4 +1,7 @@
+let screenReaderEnabled = false;
 let lastInputWasTab = false;
+
+const toggleBtn = document.getElementById("screenReaderToggle");
 
 function speak(text) {
   if (!text || typeof responsiveVoice === "undefined") return;
@@ -23,6 +26,21 @@ function getReadableText(element) {
   ).trim();
 }
 
+if (toggleBtn) {
+  toggleBtn.addEventListener("click", () => {
+    screenReaderEnabled = !screenReaderEnabled;
+
+    if (screenReaderEnabled) {
+      toggleBtn.innerText = "Disable Screen Reader";
+      speak("Screen reader enabled. Use the tab key to navigate the page.");
+      toggleBtn.focus();
+    } else {
+      toggleBtn.innerText = "Enable Screen Reader";
+      responsiveVoice.cancel();
+    }
+  });
+}
+
 document.addEventListener("keydown", (event) => {
   lastInputWasTab = event.key === "Tab";
 });
@@ -36,6 +54,7 @@ document.addEventListener("touchstart", () => {
 });
 
 document.addEventListener("focusin", (event) => {
+  if (!screenReaderEnabled) return;
   if (!lastInputWasTab) return;
 
   const text = getReadableText(event.target);

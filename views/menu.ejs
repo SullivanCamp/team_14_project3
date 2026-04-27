@@ -11,6 +11,7 @@
   <link rel="stylesheet" href="/css/menu.css">
   <link rel="stylesheet" href="/css/addonpopup.css">
   <link rel="stylesheet" href="/css/chat.css">
+  <link rel="stylesheet" href="/css/screenreader.css">
   <script src="https://code.responsivevoice.org/responsivevoice.js"></script>
 </head>
 <body>
@@ -26,7 +27,9 @@
           placeholder="Search drinks..."
           data-i18n-placeholder="searchDrinks"
         />
-
+        <button id="screenReaderToggle" class="screen-reader-btn" type="button" data-reader="Screen reader enabled. Use the tab key to navigate the page.">
+          Enable Screen Reader
+        </button>
         <div class="header-actions">
           <% if (typeof user !== "undefined" && user) { %>
             <a href="/" class="staff-back-btn">← Back to Staff</a>
