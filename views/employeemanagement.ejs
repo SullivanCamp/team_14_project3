@@ -17,6 +17,7 @@
             <tr>
                 <th> Employee ID </th>
                 <th> Employee Name </th>
+                <th> Employee Email </th>
                 <th> Position </th>
                 <th> Salary </th>
                 <th><button type="button" onclick="openAddForm()"> Add </button></th>
@@ -26,6 +27,7 @@
                     <td><%= employees[i].employee_id %></td>
                     <td><%= employees[i].first_name %> <%= employees[i].last_name %></td>
                     <td><%if (employees[i].access_level === 1) { %>Manager<% } else { %>Worker<% } %></td>
+                    <td><%= employees[i].email %></td>
                     <td><%= employees[i].pay_rate %></td>
 
                     <td style ="text-align: center;">
@@ -35,6 +37,7 @@
                             data-id="<%= employees[i].employee_id %>"
                             data-first-name="<%= employees[i].first_name %>"
                             data-last-name="<%= employees[i].last_name %>"
+                            data-email="<%= employees[i].email %>"
                             data-position="<%= employees[i].access_level %>"
                             data-salary="<%= employees[i].pay_rate %>"
                             data-password="<%= employees[i].password %>">
@@ -55,6 +58,9 @@
 
             <label for="edit-last-name">Last Name:</label>
             <input type="text" id="edit-last-name" name="last_name"><br>
+
+            <label for="edit-email">Last Name:</label>
+            <input type="text" id="edit-email" name="email"><br>
 
             <label for="edit-position">Position:</label>
             <select id="edit-position" name="position">
@@ -84,6 +90,9 @@
 
             <label for="add-last-name">Last Name:</label>
             <input type="text" id="add-last-name" name="last_name"><br>
+
+            <label for="add-email">Last Name:</label>
+            <input type="text" id="add-email" name="email"><br>
 
             <label for="add-position">Position:</label>
             <select id="add-position" name="position">

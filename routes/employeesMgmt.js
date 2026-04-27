@@ -11,11 +11,12 @@ router.post("/", async (req, res) => {
     if (submissionType === "Edit") {
       const query = `
         UPDATE employee
-        SET first_name = $1, last_name = $2, access_level = $3, pay_rate = $4, password = $5
-        WHERE employee_id = $6`;
+        SET first_name = $1, last_name = $2, email = $3, access_level = $4, pay_rate = $5, password = $6
+        WHERE employee_id = $7`;
       await client.query(query, [
         employee.first_name,
         employee.last_name,
+        employee.email,
         employee.access_level,
         employee.pay_rate,
         employee.password,
@@ -31,13 +32,14 @@ router.post("/", async (req, res) => {
         const newId = parseInt(result.rows[0].max_id) + 1;
 
         const query2 = `
-            INSERT INTO employee (employee_id, first_name, last_name, access_level, pay_rate, password)
-            VALUES ($1, $2, $3, $4, $5, $6)
+            INSERT INTO employee (employee_id, first_name, last_name, email, access_level, pay_rate, password)
+            VALUES ($1, $2, $3, $4, $5, $6, $7)
             `;
         await client.query(query2, [
             newId,
             employee.first_name,
             employee.last_name,
+            employee.email,
             employee.access_level,
             employee.pay_rate,
             employee.password
