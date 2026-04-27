@@ -51,9 +51,14 @@ app.use(
   })
 );
 
+app.use((req, res, next) => {
+  res.locals.user = req.session && req.session.user ? req.session.user : null;
+  next();
+});
+
 app.get("/", (req, res) => {
   res.render("login", {
-    user: req.session.user || null
+    user: req.session && req.session.user ? req.session.user : null
   });
 });
 
@@ -106,7 +111,9 @@ app.get("/reports/trends", (req, res) => {
 });
 
 app.get("/login", (req, res) => {
-  res.render("login");
+  res.render("login", {
+    user: req.session && req.session.user ? req.session.user : null
+  });
 });
 
 app.get("/inventorymanagement", (req, res) => {
@@ -166,6 +173,12 @@ app.get("/weather", (req, res) => {
     .catch(() => res.status(500).json({ error: "Weather fetch failed" }));
 });
 
+app.post("/logout", (req, res) => {
+  req.session.destroy(() => {
+    res.redirect("/");
+  });
+});
+
 // Routes
 app.use("/auth", userAuthRoute);
 app.use("/menu-data", menuDataRoute);
@@ -173,7 +186,10 @@ app.use("/orders", ordersRoute);
 app.use("/api/orders", ordersRoute);
 app.use("/api/reports", reportsRoute);
 app.use("/addonpopup", addonPopupRoute);
-
+app.use("/api/inventoryMgmt", inventoryMgmtRoute);
+app.use("/api/employeesMgmt", employeesMgmtRoute);
+app.use("/api/menuMgmt", menuMgmtRoute);
+app.use("/api/ask-ai", aiRoute);
 
 app.listen(port, () => {
   console.log(`Example app listening at http://localhost:${port}`);
