@@ -3,7 +3,7 @@ const addonPopup = document.getElementById("addonPopup");
 const popupDrinkName = document.getElementById("popupDrinkName");
 const addonFormPopup = document.getElementById("addonForm");
 const cancelPopupBtn = document.getElementById("cancelPopupBtn");
-const addonOptions = document.getElementById("addonOptions");
+const addonOptions = document.getElementById("addonOptionsContainer");
 
 const sugarLevelSelect = document.getElementById("sugarLevel");
 const iceLevelSelect = document.getElementById("iceLevel");
