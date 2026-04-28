@@ -6,7 +6,6 @@ const FALLBACK_TEXT = {
   pageTitleMenu: "Team 14 Menu",
   screenReader: "Enable Screen Reader",
   askTapi:"Ask Tapi!",
-  guest: "Guest",
   signedInAs: "Signed in as",
   changeAccount: "Change Account",
   logOut: "Log Out",
