@@ -354,7 +354,7 @@ function renderCart() {
   cartList.innerHTML = "";
 
   if (cartItems.length === 0) {
-    cartList.innerHTML = `<p class="empty-cart">Your cart is empty.</p>`;
+    cartList.innerHTML = `<p class="empty-cart" data-i18n="cartEmpty">Your cart is empty.</p>`;
     updateSummary();
     return;
   }
