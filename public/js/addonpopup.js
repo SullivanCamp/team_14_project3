@@ -62,8 +62,10 @@ function openAddonPopup(drinkCard) {
   });
 
   setTimeout(() => {
-    const first = addonPopup.querySelector("button, input, select");
-    if (first) first.focus();
+    if (window.screenReaderEnabled === true && window.keyboardMode === true) {
+      const first = addonPopup.querySelector("button, input, select");
+      if (first) first.focus();
+    }
   }, 50);
 }
 

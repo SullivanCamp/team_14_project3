@@ -1,9 +1,23 @@
-let screenReaderEnabled = false;
-let lastInputWasTab = false;
+window.screenReaderEnabled = false;
+window.keyboardMode = false;
 
 const toggleBtn = document.getElementById("screenReaderToggle");
 
 function speak(text) {
+  if (!window.screenReaderEnabled) return;
+  if (!window.keyboardMode) return;
+  if (!text || typeof responsiveVoice === "undefined") return;
+
+  responsiveVoice.cancel();
+
+  responsiveVoice.speak(text, "US English Female", {
+    rate: 0.9,
+    pitch: 1,
+    volume: 1
+  });
+}
+
+function speakSystemMessage(text) {
   if (!text || typeof responsiveVoice === "undefined") return;
 
   responsiveVoice.cancel();
@@ -16,6 +30,9 @@ function speak(text) {
 }
 
 function getReadableText(element) {
+  if (!element) return "";
+  if (element.id === "screenReaderToggle") return "";
+
   const ownText = (
     element.getAttribute("data-reader") ||
     element.getAttribute("aria-label") ||
@@ -31,13 +48,14 @@ function getReadableText(element) {
 
   if (section) {
     const title = section.querySelector(".choice-header h3, .addon-name, h3");
+
     if (title && !title.contains(element)) {
       sectionTitle = title.innerText.trim();
     }
   }
 
   if (sectionTitle && sectionTitle.toLowerCase().includes("drink quantity")) {
-    const qtyDisplay = section.querySelector("#qtyDisplay");
+    const qtyDisplay = section.querySelector("#drinkQtyDisplay");
 
     if (qtyDisplay) {
       return `${sectionTitle}. Current quantity ${qtyDisplay.innerText.trim()}. ${ownText}`;
@@ -53,34 +71,49 @@ function getReadableText(element) {
 
 if (toggleBtn) {
   toggleBtn.addEventListener("click", () => {
-    screenReaderEnabled = !screenReaderEnabled;
+    window.screenReaderEnabled = !window.screenReaderEnabled;
 
-    if (screenReaderEnabled) {
+    if (window.screenReaderEnabled) {
       toggleBtn.innerText = "Disable Screen Reader";
-      speak("Screen reader enabled. Use the tab key to navigate the page.");
-      toggleBtn.focus();
+      toggleBtn.setAttribute("aria-pressed", "true");
+
+      speakSystemMessage("Screen reader enabled. Use the tab key to navigate the page.");
+      toggleBtn.blur();
     } else {
       toggleBtn.innerText = "Enable Screen Reader";
-      responsiveVoice.cancel();
+      toggleBtn.setAttribute("aria-pressed", "false");
+
+      window.keyboardMode = false;
+
+      if (typeof responsiveVoice !== "undefined") {
+        responsiveVoice.cancel();
+      }
+
+      toggleBtn.blur();
     }
   });
 }
 
 document.addEventListener("keydown", (event) => {
-  lastInputWasTab = event.key === "Tab";
+  if (event.key === "Tab") {
+    window.keyboardMode = true;
+  }
 });
 
-document.addEventListener("mousedown", () => {
-  lastInputWasTab = false;
-});
+["pointerdown", "mousedown", "mouseup", "click", "touchstart"].forEach((type) => {
+  document.addEventListener(type, () => {
+    window.keyboardMode = false;
 
-document.addEventListener("touchstart", () => {
-  lastInputWasTab = false;
+    if (typeof responsiveVoice !== "undefined") {
+      responsiveVoice.cancel();
+    }
+  }, true);
 });
 
 document.addEventListener("focusin", (event) => {
-  if (!screenReaderEnabled) return;
-  if (!lastInputWasTab) return;
+  if (!window.screenReaderEnabled) return;
+  if (!window.keyboardMode) return;
+  if (event.target.id === "screenReaderToggle") return;
 
   const text = getReadableText(event.target);
 
