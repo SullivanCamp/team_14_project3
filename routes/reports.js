@@ -292,25 +292,128 @@ router.post("/z/generate", async (req, res) => {
 
 router.get("/trends", async (req, res) => {
   try {
-    const { start, end } = getDayBounds(req.query.date);
+    const { start, end, dayString } = getDayBounds(req.query.date);
+    const limit = Math.min(20, Math.max(1, Number(req.query.limit) || 5));
 
     const totalsSql = `
       SELECT COUNT(*) AS total_orders,
              COALESCE(SUM(total_price), 0) AS total_revenue
       FROM orders
-      WHERE order_datetime >= $1 AND order_datetime < $2
+      WHERE order_datetime::timestamp >= $1
+        AND order_datetime::timestamp < $2
+        AND is_complete = TRUE
     `;
 
-    const result = await pool.query(totalsSql, [start, end]);
+    const hourSql = `
+      SELECT EXTRACT(HOUR FROM order_datetime::timestamp) AS hour,
+             date_trunc('hour', order_datetime::timestamp) AS hour_bucket,
+             COUNT(*) AS order_count,
+             COALESCE(SUM(total_price), 0) AS revenue
+      FROM orders
+      WHERE order_datetime::timestamp >= $1
+        AND order_datetime::timestamp < $2
+        AND is_complete = TRUE
+      GROUP BY hour, hour_bucket
+      ORDER BY hour ASC
+    `;
+
+    const sellingSql = `
+      SELECT oi.menu_id,
+             COALESCE(mi.name, 'Menu ID: ' || oi.menu_id::text) AS item_name,
+             SUM(oi.quantity) AS qty
+      FROM orders o
+      JOIN order_item oi ON oi.order_id = o.id
+      LEFT JOIN menu_item mi ON mi.item_id = oi.menu_id
+      WHERE o.order_datetime::timestamp >= $1
+        AND o.order_datetime::timestamp < $2
+        AND o.is_complete = TRUE
+      GROUP BY oi.menu_id, mi.name
+    `;
+
+    const [totalsResult, hourResult, topSellingResult, leastSellingResult] =
+      await Promise.all([
+        pool.query(totalsSql, [start, end]),
+        pool.query(hourSql, [start, end]),
+        pool.query(
+          `${sellingSql} ORDER BY qty DESC, item_name ASC LIMIT $3`,
+          [start, end, limit]
+        ),
+        pool.query(
+          `${sellingSql} ORDER BY qty ASC, item_name ASC LIMIT $3`,
+          [start, end, limit]
+        )
+      ]);
+
+    function formatHourRange(value) {
+      if (!value) return "--";
+
+      const startDate = new Date(value);
+      const endDate = new Date(startDate);
+      endDate.setHours(endDate.getHours() + 1);
+
+      const options = { hour: "numeric", minute: "2-digit", hour12: true };
+      return `${startDate.toLocaleTimeString("en-US", options)}–${endDate.toLocaleTimeString("en-US", options)}`;
+    }
+
+    const totalsRow = totalsResult.rows[0] || {
+      total_orders: 0,
+      total_revenue: 0
+    };
+
+    const hourly = Array.from({ length: 24 }, (_, hour) => ({
+      hour,
+      label: `${hour === 0 ? 12 : hour > 12 ? hour - 12 : hour}${hour < 12 ? " AM" : " PM"}`,
+      orders: 0,
+      revenue: 0
+    }));
+
+    for (const row of hourResult.rows) {
+      const hour = Number(row.hour);
+      if (hour >= 0 && hour < 24) {
+        hourly[hour].orders = Number(row.order_count || 0);
+        hourly[hour].revenue = Number(row.revenue || 0);
+      }
+    }
+
+    const nonZeroHours = hourResult.rows.filter((row) => Number(row.order_count) > 0);
+
+    const busiestRow = nonZeroHours.length
+      ? [...nonZeroHours].sort(
+          (a, b) =>
+            Number(b.order_count) - Number(a.order_count) ||
+            Number(a.hour) - Number(b.hour)
+        )[0]
+      : null;
+
+    const slowestRow = nonZeroHours.length
+      ? [...nonZeroHours].sort(
+          (a, b) =>
+            Number(a.order_count) - Number(b.order_count) ||
+            Number(a.hour) - Number(b.hour)
+        )[0]
+      : null;
 
     res.json({
       success: true,
-      totalOrders: Number(result.rows[0].total_orders),
-      totalRevenue: Number(result.rows[0].total_revenue)
+      date: dayString,
+      totalOrders: Number(totalsRow.total_orders || 0),
+      totalRevenue: Number(totalsRow.total_revenue || 0),
+      busiest: busiestRow ? formatHourRange(busiestRow.hour_bucket) : "--",
+      slowest: slowestRow ? formatHourRange(slowestRow.hour_bucket) : "--",
+      topSelling: topSellingResult.rows.map(
+        (row) => `${row.item_name} (qty: ${Number(row.qty || 0)})`
+      ),
+      leastSelling: leastSellingResult.rows.map(
+        (row) => `${row.item_name} (qty: ${Number(row.qty || 0)})`
+      ),
+      hourly
     });
   } catch (error) {
-    console.error("Failed to load trends:", error);
-    res.status(500).json({ success: false });
+    console.error("Failed to load order trends:", error);
+    res.status(500).json({
+      success: false,
+      error: "Failed to load order trends."
+    });
   }
 });
 
