@@ -286,3 +286,13 @@ input[type="number"] {
     width: 100%;
   }
 }
+
+.trends-chart-card {
+  margin: 24px 0;
+}
+
+.trends-chart-card canvas {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+}
