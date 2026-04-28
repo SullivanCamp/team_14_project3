@@ -26,8 +26,8 @@
                 <tr>
                     <td><%= employees[i].employee_id %></td>
                     <td><%= employees[i].first_name %> <%= employees[i].last_name %></td>
-                    <td><%if (employees[i].access_level === 1) { %>Manager<% } else { %>Worker<% } %></td>
                     <td><%= employees[i].email %></td>
+                    <td><%if (employees[i].access_level === 1) { %>Manager<% } else { %>Worker<% } %></td>
                     <td><%= employees[i].pay_rate %></td>
 
                     <td style ="text-align: center;">
