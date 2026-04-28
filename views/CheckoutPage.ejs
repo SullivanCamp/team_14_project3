@@ -5,13 +5,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title data-i18n="pageTitleCheckout">Checkout Page</title>
   <link rel="stylesheet" href="/css/CheckoutPage.css" />
+  <script src="https://code.responsivevoice.org/responsivevoice.js"></script>
 </head>
 <body>
   <div class="checkout-page">
     <header class="checkout-header">
-      <div class="header-top-row">
-        <h1 data-i18n="checkout">Checkout</h1>
-
+      <div class="header-top-row" style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;">
+        <a href="/order" data-i18n="backBtn" class="back-btn">← Back</a>
+        <h1 data-i18n="checkout" data-reader="Checkout page. Review your order and make any final changes.">Checkout</h1>
         <select id="languageSelect" class="language-select" aria-label="Language selector">
           <option value="en">English</option>
           <option value="es">Español</option>
@@ -20,62 +21,59 @@
         </select>
       </div>
 
-      <p data-i18n="reviewOrder">Review your order and make any final changes.</p>
-      <p data-i18n="addonPriceNotice">Each add-on costs $0.50.</p>
+      <p data-i18n="reviewOrder" data-reader="Review your order and make any final changes.">Review your order and make any final changes.</p>
+      <p data-i18n="addonPriceNotice" data-reader="Each add-on costs $0.50.">Each add-on costs $0.50.</p>
     </header>
 
     <main class="checkout-container">
       <section class="cart-section">
-        <h2 data-i18n="yourOrder">Your Order</h2>
+        <h2 data-i18n="yourOrder" data-reader="Your order. Review the items in your cart and make any final changes.">Your Order</h2>
         <div id="cart-list" class="cart-list"></div>
       </section>
 
       <aside class="summary-section">
-        <h2 data-i18n="orderSummary">Order Summary</h2>
+        <h2 data-i18n="orderSummary" data-reader="Order summary. Review the total cost of your order including tax.">Order Summary</h2>
 
         <div class="summary-row">
-          <span data-i18n="subtotal">Subtotal</span>
+          <span data-i18n="subtotal" data-reader="Subtotal Amount">Subtotal</span>
           <span id="subtotal">$0.00</span>
         </div>
 
         <div class="summary-row">
-          <span data-i18n="tax">Tax</span>
+          <span data-i18n="tax" data-reader="Tax Amount">Tax</span>
           <span id="tax">$0.00</span>
         </div>
 
         <div class="summary-row total-row">
-          <span data-i18n="total">Total</span>
+          <span data-i18n="total" data-reader="Total Amount">Total</span>
           <span id="total">$0.00</span>
         </div>
 
         <div class="reward-box">
-          <h3>Rewards</h3>
-          <p>
+          <h3 data-i18n="rewardCheckout">Rewards</h3>
+          <p data-i18n="rewardCheckoutDesc">
             Points Available:
             <strong><span id="checkoutRewardPoints">0</span></strong>
           </p>
 
-          <button id="useCheckoutRewardBtn" type="button" disabled>
+          <button id="useCheckoutRewardBtn" data-i18n="rewardCheckoutDeal" type="button" disabled>
             Use 100 pts Free Drink + 1 Topping
           </button>
 
-          <p id="checkoutRewardMessage">
+          <p id="checkoutRewardMessage" data-i18n="rewardCheckoutMsg">
             Log in or earn 100 points to use this reward.
           </p>
         </div>
 
-        <button id="place-order-btn" class="checkout-btn">
+        <button id="place-order-btn" class="checkout-btn" data-i18n="placeOrder" data-reader="Place your order now.">
           Place Order
         </button>
       </aside>
     </main>
-
-    <div class="checkout-footer">
-      <a href="/order" class="back-link" data-i18n="backToMenu">← Back to Menu</a>
-    </div>
   </div>
 
   <script src="/js/CheckoutPage.js"></script>
   <script src="/js/translate.js"></script>
+  <script src="/js/screenreader.js"></script>
 </body>
 </html>

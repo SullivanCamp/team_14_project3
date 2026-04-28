@@ -1,6 +1,12 @@
 const express = require("express");
+const session = require("express-session");
 const { Pool } = require("pg");
 require("dotenv").config();
+
+const ordersRoute = require("./routes/orders");
+const menuDataRoute = require("./routes/menuData");
+const reportsRoute = require("./routes/reports");
+const addonPopupRoute = require("./routes/addonpopup");
 
 const { TranslationServiceClient } = require("@google-cloud/translate").v3;
 
@@ -11,6 +17,7 @@ const translationClient = new TranslationServiceClient({
   credentials,
   projectId: process.env.GOOGLE_CLOUD_PROJECT_ID
 });
+
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -30,9 +37,6 @@ process.on("SIGINT", function () {
   process.exit(0);
 });
 
-const ordersRoute = require("./routes/orders");
-const menuDataRoute = require("./routes/menuData");
-const reportsRoute = require("./routes/reports");
 const inventoryMgmtRoute = require("./routes/inventoryMgmt");
 const employeesMgmtRoute = require("./routes/employeesMgmt");
 const menuMgmtRoute = require("./routes/menuMgmt");
@@ -44,9 +48,28 @@ app.use(express.static("public"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Pages
+app.use(
+  session({
+    secret: process.env.SESSION_SECRET || "dev_secret_key",
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+      httpOnly: true,
+      sameSite: "lax",
+      secure: false
+    }
+  })
+);
+
+app.use((req, res, next) => {
+  res.locals.user = req.session && req.session.user ? req.session.user : null;
+  next();
+});
+
 app.get("/", (req, res) => {
-  res.render("login");
+  res.render("login", {
+    user: req.session && req.session.user ? req.session.user : null
+  });
 });
 
 app.get("/reports", (req, res) => {
@@ -74,7 +97,9 @@ app.get("/management", (req, res) => {
 });
 
 app.get("/order", (req, res) => {
-  res.render("menu");
+  res.render("menu", {
+    user: req.session && req.session.user ? req.session.user : null
+  });
 });
 
 app.get("/checkout", (req, res) => {
@@ -98,7 +123,9 @@ app.get("/reports/trends", (req, res) => {
 });
 
 app.get("/login", (req, res) => {
-  res.render("login");
+  res.render("login", {
+    user: req.session && req.session.user ? req.session.user : null
+  });
 });
 
 app.get("/inventorymanagement", (req, res) => {
@@ -131,16 +158,18 @@ app.get("/employeemanagement", (req, res) => {
 
 app.get("/menumanagement", async (req, res) => {
     try {
-        const [menuRes, inventoryRes, ingredientsRes] = await Promise.all([
+        const [menuRes, inventoryRes, ingredientsRes, categoryRes] = await Promise.all([
             pool.query(`SELECT * FROM menu_item WHERE item_id < 200 ORDER BY item_id ASC`),
             pool.query(`SELECT * FROM inventory_item WHERE inventory_item_id < 500 ORDER BY inventory_item_id ASC`),
-            pool.query(`SELECT * FROM inventory_menu ORDER BY menu_item_id ASC`)
+            pool.query(`SELECT * FROM inventory_menu ORDER BY menu_item_id ASC`),
+            pool.query(`SELECT DISTINCT category FROM menu_item WHERE item_id < 200`)
         ]);
 
         res.render("menumanagement", {
             menuItems: menuRes.rows,
             inventory: inventoryRes.rows,
-            ingredients: ingredientsRes.rows
+            ingredients: ingredientsRes.rows,
+            categories: categoryRes.rows
         });
     } catch (err) {
         res.status(500).json({ error: "Database query failed" });
@@ -158,15 +187,22 @@ app.get("/weather", (req, res) => {
     .catch(() => res.status(500).json({ error: "Weather fetch failed" }));
 });
 
+app.post("/logout", (req, res) => {
+  req.session.destroy(() => {
+    res.redirect("/");
+  });
+});
+
 // Routes
+app.use("/auth", userAuthRoute);
 app.use("/menu-data", menuDataRoute);
 app.use("/orders", ordersRoute);
 app.use("/api/orders", ordersRoute);
 app.use("/api/reports", reportsRoute);
+app.use("/addonpopup", addonPopupRoute);
 app.use("/api/inventoryMgmt", inventoryMgmtRoute);
 app.use("/api/employeesMgmt", employeesMgmtRoute);
 app.use("/api/menuMgmt", menuMgmtRoute);
-app.use("/api/userauth", userAuthRoute);
 app.use("/api/ask-ai", aiRoute);
 
 app.post("/api/translate", async (req, res) => {
@@ -204,7 +240,6 @@ app.post("/api/translate", async (req, res) => {
     res.status(500).json({ error: "Translation failed" });
   }
 });
-
 app.listen(port, () => {
   console.log(`Example app listening at http://localhost:${port}`);
   console.log(`Kiosk auth page: http://localhost:${port}/auth`);

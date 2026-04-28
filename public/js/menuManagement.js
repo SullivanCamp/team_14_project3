@@ -31,11 +31,13 @@ function openEditForm(button) {
     const id = button.getAttribute('data-id');
     const name = button.getAttribute('data-name');
     const price = button.getAttribute('data-price');
+    const category = button.getAttribute('data-category')
     const description = button.getAttribute('data-description');
 
     document.getElementById('edit-header').innerText = "Edit Entry for Item " + id;
     document.getElementById('edit-name').value = name;
     document.getElementById('edit-price').value = price;
+    document.getElementById('edit-category').value = category;
     document.getElementById('edit-description').value = description;
 }
 
@@ -50,6 +52,7 @@ function hideEditForm() {
     document.getElementById('edit-header').innerText = "Edit Entry for Item ";
     document.getElementById('edit-name').value = "";
     document.getElementById('edit-price').value = "";
+    document.getElementById('edit-category').value = "";
     document.getElementById('edit-description').value = "";
 }
 
@@ -57,12 +60,14 @@ function hideAddForm() {
     document.querySelector('.add').style.display = 'none';
     document.getElementById('add-name').value = "";
     document.getElementById('add-price').value = "";
+    document.getElementById('add-category').value = "";
     document.getElementById('add-description').value = "";
 }
 
 function submitAdd() {
     const name = document.getElementById('add-name').value;
     const price = document.getElementById('add-price').value;
+    const category = document.getElementById('add-category').value;
     const description = document.getElementById('add-description').value;
 
 
@@ -72,6 +77,7 @@ function submitAdd() {
         item: {
             name: name,
             price: price,
+            category: category,
             description: description
         }
     };
@@ -100,6 +106,7 @@ function submitEdits() {
     const id = document.getElementById('edit-header').innerText.split(" ")[4];
     const name = document.getElementById('edit-name').value;
     const price = document.getElementById('edit-price').value;
+    const category = document.getElementById('edit-category').value;
     const description = document.getElementById('edit-description').value;
 
 
@@ -109,6 +116,7 @@ function submitEdits() {
             itemId: id,
             name: name,
             price: price,
+            category: category,
             description: description
         }
     };

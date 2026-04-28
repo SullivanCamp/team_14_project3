@@ -139,12 +139,32 @@ async function insertMenuItemTopping(client, menuItemId, orderItemId, isTopping,
 async function checkAndDecrementInventoryForCart(client, cart) {
   const SUGAR_ID = 217;
   const ICE_ID = 206;
+  const SMALL_CUP_ID = 504;
+  const MEDIUM_CUP_ID = 505;
+  const LARGE_CUP_ID = 506;
 
   const need = new Map();
 
   for (const line of cart) {
     let sugarPct = 100;
     let icePct = 100;
+    let cupId = MEDIUM_CUP_ID;
+
+    if (line.size === "Small") {
+      cupId = SMALL_CUP_ID;
+    } else if (line.size === "Large") {
+      cupId = LARGE_CUP_ID;
+    }
+
+    let sizeMultiplier = 1;
+
+    if (line.size === "Small") {
+      sizeMultiplier = 0.85;
+    } else if (line.size === "Large") {
+      sizeMultiplier = 1.15;
+    }
+
+    need.set(cupId, (need.get(cupId) || 0) + Number(line.qty));
 
     if (line.sugar >= 0) sugarPct = Number(line.sugar);
     if (line.ice >= 0) icePct = Number(line.ice);
@@ -159,7 +179,7 @@ async function checkAndDecrementInventoryForCart(client, cart) {
 
     for (const row of recipeResult.rows) {
       const invId = Number(row.inventory_item_id);
-      let used = Number(row.quantity_used) * Number(line.qty);
+      let used = Number(row.quantity_used) * Number(line.qty) * sizeMultiplier;
 
       if (invId === SUGAR_ID) used *= sugarPct / 100.0;
       if (invId === ICE_ID) used *= icePct / 100.0;

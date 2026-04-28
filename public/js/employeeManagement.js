@@ -28,6 +28,7 @@ function openEditForm(button) {
     const id = button.getAttribute('data-id');
     const firstName = button.getAttribute('data-first-name');
     const lastName = button.getAttribute('data-last-name');
+    const email = button.getAttribute('data-email');
     const position = button.getAttribute('data-position');
     const salary = button.getAttribute('data-salary');
     const password = button.getAttribute('data-password');
@@ -35,6 +36,7 @@ function openEditForm(button) {
     document.getElementById('edit-header').innerText = "Edit Entry for Employee " + id;
     document.getElementById('edit-first-name').value = firstName;
     document.getElementById('edit-last-name').value = lastName;
+    document.getElementById('edit-email').value = email;
     document.getElementById('edit-position').value = position;
     document.getElementById('edit-salary').value = salary;
     document.getElementById('edit-password').value = password;
@@ -51,6 +53,7 @@ function hideEditForm() {
     document.getElementById('edit-header').innerText = "Edit Entry for Employee ";
     document.getElementById('edit-first-name').value = "";
     document.getElementById('edit-last-name').value = "";
+    document.getElementById('edit-email').value = "";
     document.getElementById('edit-position').value = "";
     document.getElementById('edit-salary').value = "";
     document.getElementById('edit-password').value = "";
@@ -60,6 +63,7 @@ function hideAddForm() {
     document.querySelector('.add').style.display = 'none';
     document.getElementById('add-first-name').value = "";
     document.getElementById('add-last-name').value = "";
+    document.getElementById('add-email').value ="";
     document.getElementById('add-position').value = "Manager";
     document.getElementById('add-salary').value = "";
     document.getElementById('add-password').value = "";
@@ -68,6 +72,7 @@ function hideAddForm() {
 function submitAdd() {
     const firstName = document.getElementById('add-first-name').value;
     const lastName = document.getElementById('add-last-name').value;
+    const email = document.getElementById('add-email').value;
     const position = document.getElementById('add-position').value;
     const salary = document.getElementById('add-salary').value;
     const password = document.getElementById('add-password').value;
@@ -79,6 +84,7 @@ function submitAdd() {
         employee: {
             first_name: firstName,
             last_name: lastName,
+            email: email,
             access_level: position,
             pay_rate: salary,
             password: password
@@ -109,6 +115,7 @@ function submitEdits() {
     const id = document.getElementById('edit-header').innerText.split(" ")[4];
     const firstName = document.getElementById('edit-first-name').value;
     const lastName = document.getElementById('edit-last-name').value;
+    const email = document.getElementById('edit-email').value;
     const position = document.getElementById('edit-position').value;
     const salary = document.getElementById('edit-salary').value;
     const password = document.getElementById('edit-password').value;
@@ -120,6 +127,7 @@ function submitEdits() {
             employee_id: id,
             first_name: firstName,
             last_name: lastName,
+            email: email,
             access_level: position,
             pay_rate: salary,
             password: password

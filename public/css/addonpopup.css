@@ -17,9 +17,9 @@
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: 380px;
+  width: 430px;
   max-width: calc(100% - 32px);
-  max-height: 80vh;
+  max-height: 86vh;
   background: white;
   border-radius: 20px;
   padding: 24px;
@@ -33,22 +33,81 @@
 {
   margin: 0 0 18px;
   font-size: 1.4rem;
-  font-weight: 600;
+  font-weight: 700;
+  color: #1f2937;
 }
 
 #addonForm
 {
   display: flex;
   flex-direction: column;
-  max-height: calc(80vh - 80px);
+  max-height: calc(86vh - 88px);
+  overflow: hidden;
 }
 
-#addonOptions
+.popup-field
+{
+  margin-bottom: 14px;
+  flex-shrink: 0;
+}
+
+.popup-field label
+{
+  display: block;
+  margin-bottom: 6px;
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: #1f2937;
+}
+
+.popup-field .custom-select
+{
+  width: 100%;
+  padding: 11px 12px;
+  border: none;
+  border-radius: 12px;
+  background: #f3f6fa;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #1f2937;
+  outline: none;
+  box-shadow: inset 0 0 0 1px #e1e7ef;
+}
+
+.popup-field .custom-select:focus
+{
+  box-shadow:
+    inset 0 0 0 1px #4ea2f5,
+    0 0 0 3px rgba(78, 162, 245, 0.18);
+}
+
+#addonOptions,
+#addonOptionsContainer
 {
   overflow-y: auto;
-  max-height: 400px;
+  max-height: 280px;
   padding-right: 8px;
   margin-bottom: 16px;
+}
+
+#addonOptions::-webkit-scrollbar,
+#addonOptionsContainer::-webkit-scrollbar
+{
+  width: 8px;
+}
+
+#addonOptions::-webkit-scrollbar-thumb,
+#addonOptionsContainer::-webkit-scrollbar-thumb
+{
+  background: #cfd8e6;
+  border-radius: 20px;
+}
+
+#addonOptions::-webkit-scrollbar-track,
+#addonOptionsContainer::-webkit-scrollbar-track
+{
+  background: #f3f6fa;
+  border-radius: 20px;
 }
 
 .addon-option
@@ -67,22 +126,147 @@
   height: 18px;
 }
 
+.addon-grid
+{
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.addon-card
+{
+  background: #f6f8fb;
+  border: 1px solid #e3e8f0;
+  border-radius: 14px;
+  padding: 14px 16px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.addon-card-top
+{
+  flex: 1;
+}
+
+.addon-name
+{
+  margin: 0;
+  font-weight: 800;
+  color: #1f2937;
+}
+
+.addon-price
+{
+  margin: 5px 0 0;
+  color: #5b6472;
+  font-size: 0.95rem;
+}
+
+.addon-qty-controls
+{
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.addon-qty-btn
+{
+  width: 36px;
+  height: 36px;
+  border: none;
+  border-radius: 10px;
+  background: #e7edf7;
+  font-size: 1.1rem;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.addon-qty-input
+{
+  width: 44px;
+  height: 36px;
+  border: none;
+  border-radius: 10px;
+  background: white;
+  text-align: center;
+  font-weight: 800;
+  box-shadow: inset 0 0 0 1px #e1e7ef;
+}
+
+.addon-qty-btn:hover
+{
+  background: #d9e4f5;
+  transform: translateY(-1px);
+}
+
+.custom-section
+{
+  margin-bottom: 14px;
+}
+
+.custom-row
+{
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.custom-field
+{
+  display: flex;
+  flex-direction: column;
+}
+
+.custom-field label
+{
+  font-weight: 600;
+  font-size: 0.9rem;
+  margin-bottom: 4px;
+  color: #1f2937;
+}
+
+.custom-field select
+{
+  width: 100%;
+  padding: 8px;
+  border-radius: 10px;
+  border: none;
+  background: #f3f6fa;
+  font-size: 0.9rem;
+}
+
 .popup-actions
 {
   display: flex;
   justify-content: flex-end;
   gap: 12px;
   margin-top: auto;
-  padding-top: 10px;
+  padding-top: 12px;
   background: white;
+  position: sticky;
+  bottom: 0;
+  flex-shrink: 0;
+  border-top: 1px solid #eef2f7;
 }
+
 .popup-button
 {
   border: none;
   border-radius: 12px;
   padding: 10px 18px;
   font-size: 0.95rem;
+  font-weight: 700;
   cursor: pointer;
+  transition: background 0.18s ease, transform 0.18s ease, box-shadow 0.18s ease;
+}
+
+.popup-button:hover
+{
+  transform: translateY(-1px);
 }
 
 .cancel-button
@@ -91,94 +275,154 @@
   color: #222;
 }
 
+.cancel-button:hover
+{
+  background: #dddddd;
+}
+
 .done-button
 {
   background: #4ea2f5;
   color: white;
+  box-shadow: 0 8px 18px rgba(78, 162, 245, 0.25);
 }
 
-.addon-grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 12px;
-  max-height: 360px;
-  overflow-y: auto;
-  margin-bottom: 16px;
+.done-button:hover
+{
+  background: #2f86eb;
+  box-shadow: 0 10px 22px rgba(78, 162, 245, 0.32);
 }
 
-.addon-card {
-  background: #f6f8fb;
-  border: 1px solid #e3e8f0;
-  border-radius: 14px;
-  padding: 12px;
+@media (max-width: 520px)
+{
+  .addon-popup
+  {
+    width: calc(100% - 24px);
+    padding: 18px;
+    max-height: 88vh;
+  }
+
+  #addonForm
+  {
+    max-height: calc(88vh - 76px);
+  }
+
+  #addonOptions,
+  #addonOptionsContainer
+  {
+    max-height: 250px;
+  }
+
+  .addon-grid
+  {
+    grid-template-columns: 1fr;
+  }
+
+  .popup-actions
+  {
+    flex-direction: column;
+  }
+
+  .popup-button
+  {
+    width: 100%;
+  }
 }
 
-.addon-name {
-  margin: 0;
-  font-weight: 700;
-  color: #1f2937;
-}
-
-.addon-price {
-  margin: 4px 0 10px 0;
-  color: #5b6472;
-  font-size: 0.95rem;
-}
-
-.addon-qty-controls {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.addon-qty-btn {
-  width: 34px;
-  height: 34px;
-  border: none;
-  border-radius: 10px;
-  background: #e7edf7;
-  font-size: 1.1rem;
-  font-weight: 700;
-  cursor: pointer;
-}
-
-.addon-qty-input {
-  width: 48px;
-  height: 34px;
-  border: none;
-  border-radius: 10px;
-  background: white;
-  text-align: center;
-  font-weight: 700;
-}
-
-.custom-section {
+.choice-section {
+  background: #ffffff;
+  border: 1px solid #eef2f7;
+  border-radius: 16px;
+  padding: 14px;
   margin-bottom: 14px;
 }
 
-.custom-row {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
-}
-
-.custom-field {
+.choice-header {
   display: flex;
-  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
 }
 
-.custom-field label {
-  font-weight: 600;
-  font-size: 0.9rem;
-  margin-bottom: 4px;
+.choice-header h3 {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 800;
   color: #1f2937;
 }
 
-.custom-field select {
-  width: 100%;
-  padding: 8px;
-  border-radius: 10px;
+.choice-header span {
+  font-size: 0.85rem;
+  font-weight: 800;
+  color: #4ea2f5;
+}
+
+.choice-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.choice-btn {
+  border: 1px solid #e3e8f0;
+  background: #f7f9fc;
+  color: #1f2937;
+  border-radius: 999px;
+  padding: 10px 14px;
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: 0.18s ease;
+}
+
+.choice-btn:hover {
+  background: #eef4ff;
+  transform: translateY(-1px);
+}
+
+.choice-btn.active {
+  background: #4ea2f5;
+  color: white;
+  border-color: #4ea2f5;
+  box-shadow: 0 8px 18px rgba(209, 0, 63, 0.22);
+}
+
+.drink-qty-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.round-qty-btn {
+  width: 38px;
+  height: 38px;
   border: none;
-  background: #f3f6fa;
-  font-size: 0.9rem;
+  border-radius: 50%;
+  background: #4ea2f5;
+  color: white;
+  font-size: 1.3rem;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+#drinkQtyDisplay {
+  min-width: 24px;
+  text-align: center;
+  font-size: 1.2rem;
+  font-weight: 800;
+  color: #4ea2f5;
+}
+
+.addon-popup {
+  width: 560px;
+}
+
+#addonForm {
+  overflow-y: auto;
+  padding-right: 8px;
+}
+
+#addonOptionsContainer {
+  max-height: none;
+  overflow: visible;
 }

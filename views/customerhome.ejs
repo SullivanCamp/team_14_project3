@@ -10,29 +10,32 @@
 <body>
    <div class="logo-and-weather">
       <div class="body"></div>
-
       <div class="language-select-wrap">
-        <select id="languageSelect" class="language-select" aria-label="Language selector">
-          <option value="en">English</option>
-          <option value="es">Español</option>
-          <option value="fr">Français</option>
-          <option value="zh-CN">中文</option>
-        </select>
+      <select id="languageSelect" class="language-select">
+         <option value="en" selected>English</option>
+         <option value="es">Español</option>
+         <option value="fr">Français</option>
+         <option value="zh-CN">中文</option>
+      </select>
       </div>
 
-      <img class="logohome" src="images/happy_tapi.png" alt="Happy tapioca, boba and other tapiocaloca refreshers">
+      <img class="logohome" src="images/happy_tapi.png" alt="Happy tapioca, boba and other tapiocaloca refreshers" aria-hiddwen="true">
       <div class="widget">
-         <div class="location" data-i18n="locationCollegeStation">
+         <div class="location" data-i18n="locationCollegeStation" tabindex="0" data-reader="Location. College Station, Texas">
             College Station, TX
          </div>
-         <div class="temp" id="weather">
+         <div class="temp" id="weather" aria-hidden="true">
             --°F
          </div>
       </div>
    </div>
 
    <a href="/auth">
+<<<<<<< HEAD
       <button class="order-btn" data-i18n="placeOrder">Place Order</button>
+=======
+      <button class="order-btn" data-i18n="placeOrder" tabindex="0" data-reader="Click to Place Order">Place Order</button>
+>>>>>>> ec0d99051ea4f72daeffc83c2bd81f5fb16c30f3
    </a>
 
    <script src="/js/translate.js"></script>

@@ -11,7 +11,7 @@
   <link rel="stylesheet" href="/css/menu.css">
   <link rel="stylesheet" href="/css/addonpopup.css">
   <link rel="stylesheet" href="/css/chat.css">
-  
+  <script src="https://code.responsivevoice.org/responsivevoice.js"></script>
 </head>
 <body>
   <div class="page-shell">
@@ -26,8 +26,14 @@
           placeholder="Search drinks..."
           data-i18n-placeholder="searchDrinks"
         />
-
+        <button id="screenReaderToggle" class="screen-reader-btn" data-i18n="screenReader" type="button" data-reader="Screen reader enabled. Use the tab key to navigate the page.">
+          Enable Screen Reader
+        </button>
         <div class="header-actions">
+          <% if (typeof user !== "undefined" && user) { %>
+            <a href="/" class="staff-back-btn">← Back to Staff</a>
+          <% } %>
+
           <select id="languageSelect" class="language-select" aria-label="Language selector">
             <option value="en">English</option>
             <option value="es">Español</option>
@@ -35,12 +41,12 @@
             <option value="zh-CN">中文</option>
           </select>
 
-          <button class="chat-btn" id="chatBtn" onclick="openChatWindow()">Ask Tapi!</button>
+          <button class="chat-btn" id="chatBtn" data-i18n="askTapi" onclick="openChatWindow()">Ask Tapi!</button>
 
           <div class="customer-menu-wrapper" id="customerMenuWrapper">
 
             <button class="customer-chip" id="customerChip" type="button">
-              <span id="customerChipName" data-i18n="guest">Guest</span>
+              <span id="customerChipName" >Guest</span>
               <span class="customer-chip-arrow">▾</span>
             </button>
 
@@ -53,7 +59,7 @@
           </div>
 
           <button class="rewards-btn" type="button" id="rewardsBtn">
-            Rewards: <span id="rewardsPoints">0</span> pts
+            <span data-i18n="rewards">Rewards</span>: <span id="rewardsPoints">0</span> pts
             (<span id="rewardsTier">Standard</span>)
           </button>
 
@@ -64,16 +70,19 @@
             </button>
           </a>
         </div>
-
         <nav class="top-tabs" aria-label="Menu Categories">
-          <button class="tab-btn active" data-category="all" type="button" data-i18n="all">All</button>
-          <button class="tab-btn" data-category="popular" type="button" data-i18n="mostPopular">Most Popular</button>
-          <button class="tab-btn" data-category="seasonal" type="button" data-i18n="seasonal">Seasonal</button>
+          <button class="tab-btn active" data-category="all" data-i18n="catAll"  type="button">All</button>
+          <button class="tab-btn" data-category="milk-tea" data-i18n="catMilkTea" type="button">Milk Tea</button>
+          <button class="tab-btn" data-category="fruit-tea" data-i18n="catFruitTea" type="button">Fruit Tea</button>
+          <button class="tab-btn" data-category="slush" data-i18n="catSlushies" type="button">Slushies</button>
+          <button class="tab-btn" data-category="dessert" data-i18n="catDessert" type="button">Dessert</button>
+          <button class="tab-btn" data-category="hot-drinks" data-i18n="catHotDrinks" type="button">Hot Drinks</button>
+          <button class="tab-btn" data-category="seasonal" data-i18n="catSeasonal" type="button">Seasonal</button>
         </nav>
       </header>
 
       <section class="menu-section" id="allSection">
-        <h2 id="sectionTitle" data-i18n="all">All</h2>
+        <!-- <h2 id="sectionTitle" data-i18n="sectionTitle">All</h2> -->
 
         <div class="card-row" id="menuCardRow"></div>
 
@@ -87,37 +96,83 @@
       <h2 id="popupDrinkName" data-i18n="customizeDrink">Customize Drink</h2>
 
       <form id="addonForm">
-        <div class="custom-section">
-          <div class="custom-row">
-            <div class="custom-field">
-              <label data-i18n="sugarLevel">Sugar Level</label>
-              <select id="sugarLevel">
-                <option value="0">0%</option>
-                <option value="25">25%</option>
-                <option value="50">50%</option>
-                <option value="75">75%</option>
-                <option value="100" selected>100%</option>
-              </select>
-            </div>
-
-            <div class="custom-field">
-              <label data-i18n="iceLevel">Ice Level</label>
-              <select id="iceLevel">
-                <option value="0">0% Ice</option>
-                <option value="25">25% Ice</option>
-                <option value="50">50% Ice</option>
-                <option value="75">75% Ice</option>
-                <option value="100" selected>100% Ice</option>
-              </select>
-            </div>
+        <div class="choice-section">
+          <div class="choice-header">
+            <h3>Size</h3>
+            <span>Required</span>
           </div>
+
+          <div class="choice-row">
+            <button type="button" class="choice-btn size-choice" data-size="Small" data-price-adjust="-0.75">Small -$0.75</button>
+            <button type="button" class="choice-btn size-choice active" data-size="Medium" data-price-adjust="0">Medium</button>
+            <button type="button" class="choice-btn size-choice" data-size="Large" data-price-adjust="0.75">Large +$0.75</button>
+          </div>
+
+          <input type="hidden" id="drinkSize" value="Medium">
+          <input type="hidden" id="sizePriceAdjust" value="0">
         </div>
 
-        <div id="addonOptionsContainer" class="addon-grid"></div>
+        <div class="choice-section">
+          <div class="choice-header">
+            <h3>Ice Level</h3>
+            <span>Required</span>
+          </div>
+
+          <div class="choice-row">
+            <button type="button" class="choice-btn ice-choice" data-value="0">0%</button>
+            <button type="button" class="choice-btn ice-choice" data-value="25">25%</button>
+            <button type="button" class="choice-btn ice-choice" data-value="50">50%</button>
+            <button type="button" class="choice-btn ice-choice" data-value="75">75%</button>
+            <button type="button" class="choice-btn ice-choice active" data-value="100">100%</button>
+            <button type="button" class="choice-btn ice-choice" data-value="125">125%</button>
+          </div>
+
+          <input type="hidden" id="iceLevel" value="100">
+        </div>
+
+        <div class="choice-section">
+          <div class="choice-header">
+            <h3>Sugar Level</h3>
+            <span>Required</span>
+          </div>
+
+          <div class="choice-row">
+            <button type="button" class="choice-btn sugar-choice" data-value="0">0%</button>
+            <button type="button" class="choice-btn sugar-choice" data-value="25">25%</button>
+            <button type="button" class="choice-btn sugar-choice" data-value="50">50%</button>
+            <button type="button" class="choice-btn sugar-choice" data-value="75">75%</button>
+            <button type="button" class="choice-btn sugar-choice active" data-value="100">100%</button>
+            <button type="button" class="choice-btn sugar-choice" data-value="125">125%</button>
+          </div>
+
+          <input type="hidden" id="sugarLevel" value="100">
+        </div>
+
+        <div class="choice-section">
+          <div class="choice-header">
+            <h3>Drink Quantity</h3>
+          </div>
+
+          <div class="drink-qty-row">
+            <button type="button" class="round-qty-btn" id="minusDrinkQty">-</button>
+            <span id="drinkQtyDisplay">1</span>
+            <button type="button" class="round-qty-btn" id="plusDrinkQty">+</button>
+          </div>
+
+          <input type="hidden" id="drinkQty" value="1">
+        </div>
+
+        <div class="choice-section">
+          <div class="choice-header">
+            <h3>Add Toppings</h3>
+          </div>
+
+          <div id="addonOptionsContainer"></div>
+        </div>
 
         <div class="popup-actions">
-          <button type="button" class="popup-button cancel-button" id="cancelPopupBtn" data-i18n="cancel">Cancel</button>
-          <button type="submit" class="popup-button done-button" data-i18n="done">Done</button>
+          <button type="button" class="popup-button cancel-button" id="cancelPopupBtn">Cancel</button>
+          <button type="submit" class="popup-button done-button">Add To Cart</button>
         </div>
       </form>
     </div>
@@ -140,7 +195,7 @@
 
         <div class="chat-box-container">
           <div class="chat-box">
-            <input type="text" placeholder="Type your message.." name="msg" requred id="chatQuestion">
+            <input type="text" placeholder="Type your message.." name="msg" required id="chatQuestion">
             <button type="button" class="send-btn" onclick="askAI()"><i class="fa fa-chevron-circle-right"></i></button>
           </div>
         </div>
@@ -152,5 +207,6 @@
   <script src="/js/menu.js"></script>
   <script src="/js/translate.js"></script>
   <script src="/js/chat.js"></script>
+  <script src="/js/screenreader.js"></script>
 </body>
 </html>

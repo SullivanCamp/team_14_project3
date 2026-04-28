@@ -4,7 +4,7 @@ const addonForm = document.getElementById("addonForm");
 
 const searchInput = document.getElementById("searchInput");
 const cartCount = document.getElementById("cartCount");
-const sectionTitle = document.getElementById("sectionTitle");
+// const sectionTitle = document.getElementById("sectionTitle");
 const noResultMessage = document.getElementById("noResultMessage");
 const addonOptionsContainer = document.getElementById("addonOptionsContainer");
 
@@ -170,6 +170,13 @@ function renderMenuItems() {
 
     const card = document.createElement("article");
     card.className = "drink-card";
+    card.setAttribute("tabindex", "0");
+    card.setAttribute("role", "button");
+    card.setAttribute(
+      "data-reader",
+      `${displayName}. ${displayDescription}. Price $${Number(item.price).toFixed(2)}. Select this drink to customize it and add toppings.`
+    );
+    
     card.dataset.id = item.item_id;
     card.dataset.name = item.name;
     card.dataset.category = item.category;
@@ -209,7 +216,11 @@ function renderAddonOptions() {
   toppingItems.forEach((item) => {
     const card = document.createElement("div");
     card.className = "addon-card";
-
+    card.setAttribute("tabindex", "0");
+    card.setAttribute(
+      "data-reader",
+      `${item.name}. Add on price $${Number(item.price).toFixed(2)}. Increase or decrease quantity using plus and minus buttons.`
+    );
     card.innerHTML = `
       <div class="addon-card-top">
         <div>
@@ -219,7 +230,7 @@ function renderAddonOptions() {
       </div>
 
       <div class="addon-qty-controls">
-        <button type="button" class="addon-qty-btn minus-addon-btn" data-id="${item.item_id}">-</button>
+        <button type="button" class="addon-qty-btn minus-addon-btn" data-id="${item.item_id}" aria-label="Decrease ${item.name} quantity">-</button>
         <input
           type="number"
           class="addon-qty-input"
@@ -231,8 +242,10 @@ function renderAddonOptions() {
           max="5"
           value="0"
           readonly
+          tabindex="-1"
+          aria-hidden="true"
         >
-        <button type="button" class="addon-qty-btn plus-addon-btn" data-id="${item.item_id}">+</button>
+        <button type="button" class="addon-qty-btn plus-addon-btn" data-id="${item.item_id}" aria-label="Increase ${item.name} quantity">+</button>
       </div>
     `;
 
@@ -243,7 +256,9 @@ function renderAddonOptions() {
 function addItemToCart(drinkCard, addons, customization = {}) {
   const drinkId = Number(drinkCard.dataset.id);
   const drinkName = drinkCard.dataset.name;
-  const drinkPrice = Number(drinkCard.dataset.price);
+  const drinkBasePrice = Number(drinkCard.dataset.price);
+  const sizePriceAdjust = Number(customization.sizePriceAdjust || 0);
+  const drinkPrice = drinkBasePrice + sizePriceAdjust;
 
   const toppingObjects = [];
 
@@ -266,8 +281,8 @@ function addItemToCart(drinkCard, addons, customization = {}) {
     itemId: drinkId,
     name: drinkName,
     price: drinkPrice,
-    qty: 1,
-    size: "Regular",
+    qty: Math.max(1, Number(customization.qty || 1)),
+    size: customization.size || "Medium",
     sugar: sugar,
     sweetness: customization.sweetness || `${sugar}%`,
     ice: ice,
@@ -362,7 +377,7 @@ async function loadRewardsForActiveCustomer() {
   }
 
   try {
-    const response = await fetch(`/api/userauth/rewards/${customer.id}`);
+    const response = await fetch(`/auth/rewards/${customer.id}`);
     const data = await response.json();
 
     if (!data.success) {
@@ -393,15 +408,18 @@ tabButtons.forEach((button) => {
 
     currentCategory = button.dataset.category;
 
-    if (currentCategory === "all") {
-      sectionTitle.textContent = "All";
-    } else if (currentCategory === "popular") {
-      sectionTitle.textContent = "Most Popular";
-    } else if (currentCategory === "seasonal") {
-      sectionTitle.textContent = "Seasonal";
-    } else {
-      sectionTitle.textContent = currentCategory;
-    }
+    const categoryTitles = {
+      all: "All",
+      "milk-tea": "Milk Tea",
+      "fruit-tea": "Fruit Tea",
+      slush: "Slushies",
+      dessert: "Dessert",
+      seasonal: "Seasonal",
+      "caffeine-free": "Caffeine Free",
+      "hot-drinks": "Hot Drinks"
+    };
+
+    // sectionTitle.textContent = categoryTitles[currentCategory] || currentCategory;
 
     renderMenuItems();
   });
@@ -409,6 +427,23 @@ tabButtons.forEach((button) => {
 
 searchInput.addEventListener("input", () => {
   renderMenuItems();
+});
+
+menuCardRow.addEventListener("click", (event) => {
+  const plusButton = event.target.closest(".plus-btn");
+  const imageButton = event.target.closest(".drink-image-button");
+
+  if (plusButton) {
+    event.stopPropagation();
+    const drinkCard = plusButton.closest(".drink-card");
+    openAddonPopup(drinkCard);
+    return;
+  }
+
+  if (imageButton) {
+    const drinkCard = imageButton.closest(".drink-card");
+    openAddonPopup(drinkCard);
+  }
 });
 
 menuCardRow.addEventListener("click", (event) => {
@@ -449,6 +484,10 @@ addonOptionsContainer.addEventListener("click", (event) => {
     const input = addonOptionsContainer.querySelector(`input[data-id="${minusBtn.dataset.id}"]`);
     const current = Number(input.value);
     input.value = Math.max(0, current - 1);
+    if (typeof speak === "function") {
+      speak(`${input.dataset.name} quantity ${input.value}`);
+    }
+
     return;
   }
 
@@ -456,6 +495,9 @@ addonOptionsContainer.addEventListener("click", (event) => {
     const input = addonOptionsContainer.querySelector(`input[data-id="${plusBtn.dataset.id}"]`);
     const current = Number(input.value);
     input.value = Math.min(5, current + 1);
+    if (typeof speak === "function") {
+      speak(`${input.dataset.name} quantity ${input.value}`);
+    }
   }
 });
 
@@ -476,6 +518,30 @@ logoutBtn.addEventListener("click", () => {
   localStorage.removeItem("activeCustomer");
   localStorage.removeItem("cartItems");
   window.location.href = "/auth";
+});
+
+document.addEventListener("keydown", (e) => {
+  const popup = document.getElementById("addonPopup");
+
+  if (!popup || popup.style.display !== "block") return;
+  if (e.key !== "Tab") return;
+
+  const focusable = popup.querySelectorAll(
+    "button, input, select, textarea, [tabindex]:not([tabindex='-1'])"
+  );
+
+  if (focusable.length === 0) return;
+
+  const first = focusable[0];
+  const last = focusable[focusable.length - 1];
+
+  if (e.shiftKey && document.activeElement === first) {
+    e.preventDefault();
+    last.focus();
+  } else if (!e.shiftKey && document.activeElement === last) {
+    e.preventDefault();
+    first.focus();
+  }
 });
 
 const languageSelect = document.getElementById("languageSelect");
