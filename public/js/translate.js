@@ -35,7 +35,7 @@ const FALLBACK_TEXT = {
   tax: "Tax",
   total: "Total",
   placeOrder: "Place Order",
-  backToMenu: "Back to Menu"
+  backToMenu: "Back to Menu",
 };
 
 function getTranslatableNodes() {
