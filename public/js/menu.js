@@ -406,20 +406,20 @@ tabButtons.forEach((button) => {
     tabButtons.forEach((btn) => btn.classList.remove("active"));
     button.classList.add("active");
 
-    currentCategory = button.dataset.category;
+    // currentCategory = button.dataset.category;
 
-    const categoryTitles = {
-      all: "All",
-      "milk-tea": "Milk Tea",
-      "fruit-tea": "Fruit Tea",
-      slush: "Slushies",
-      dessert: "Dessert",
-      seasonal: "Seasonal",
-      "caffeine-free": "Caffeine Free",
-      "hot-drinks": "Hot Drinks"
-    };
+    // const categoryTitles = {
+    //   all: "All",
+    //   "milk-tea": "Milk Tea",
+    //   "fruit-tea": "Fruit Tea",
+    //   slush: "Slushies",
+    //   dessert: "Dessert",
+    //   seasonal: "Seasonal",
+    //   "caffeine-free": "Caffeine Free",
+    //   "hot-drinks": "Hot Drinks"
+    // };
 
-    sectionTitle.textContent = categoryTitles[currentCategory] || currentCategory;
+    // sectionTitle.textContent = categoryTitles[currentCategory] || currentCategory;
 
     renderMenuItems();
   });

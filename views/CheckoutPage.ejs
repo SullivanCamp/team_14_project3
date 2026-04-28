@@ -11,7 +11,7 @@
   <div class="checkout-page">
     <header class="checkout-header">
       <div class="header-top-row" style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;">
-        <a href="/order" class="back-btn">← Back</a>
+        <a href="/order" data-i18n="backBtn" class="back-btn">← Back</a>
         <h1 data-i18n="checkout" data-reader="Checkout page. Review your order and make any final changes.">Checkout</h1>
         <select id="languageSelect" class="language-select" aria-label="Language selector">
           <option value="en">English</option>
@@ -50,17 +50,17 @@
         </div>
 
         <div class="reward-box">
-          <h3>Rewards</h3>
-          <p>
+          <h3 data-i18n="rewardCheckout">Rewards</h3>
+          <p data-i18n="rewardCheckoutDesc">
             Points Available:
             <strong><span id="checkoutRewardPoints">0</span></strong>
           </p>
 
-          <button id="useCheckoutRewardBtn" type="button" disabled>
+          <button id="useCheckoutRewardBtn" data-i18n="rewardCheckoutDeal" type="button" disabled>
             Use 100 pts Free Drink + 1 Topping
           </button>
 
-          <p id="checkoutRewardMessage">
+          <p id="checkoutRewardMessage" data-i18n="rewardCheckoutMsg">
             Log in or earn 100 points to use this reward.
           </p>
         </div>
