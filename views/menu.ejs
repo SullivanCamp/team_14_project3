@@ -93,89 +93,89 @@
     <div class="popup-overlay" id="popupOverlay"></div>
 
     <div class="addon-popup" id="addonPopup">
-      <h2 id="popupDrinkName" data-i18n="customizeDrink">Customize Drink</h2>
+    <h2 id="popupDrinkName" data-i18n="customizeDrink">Customize Drink</h2>
 
-      <form id="addonForm">
-        <div class="choice-section">
-          <div class="choice-header">
-            <h3>Size</h3>
-            <span>Required</span>
-          </div>
-
-          <div class="choice-row">
-            <button type="button" class="choice-btn size-choice" data-size="Small" data-price-adjust="-0.75">Small -$0.75</button>
-            <button type="button" class="choice-btn size-choice active" data-size="Medium" data-price-adjust="0">Medium</button>
-            <button type="button" class="choice-btn size-choice" data-size="Large" data-price-adjust="0.75">Large +$0.75</button>
-          </div>
-
-          <input type="hidden" id="drinkSize" value="Medium">
-          <input type="hidden" id="sizePriceAdjust" value="0">
+    <form id="addonForm">
+      <div class="choice-section">
+        <div class="choice-header">
+          <h3 data-i18n="size">Size</h3>
+          <span data-i18n="required">Required</span>
         </div>
 
-        <div class="choice-section">
-          <div class="choice-header">
-            <h3>Ice Level</h3>
-            <span>Required</span>
-          </div>
-
-          <div class="choice-row">
-            <button type="button" class="choice-btn ice-choice" data-value="0">0%</button>
-            <button type="button" class="choice-btn ice-choice" data-value="25">25%</button>
-            <button type="button" class="choice-btn ice-choice" data-value="50">50%</button>
-            <button type="button" class="choice-btn ice-choice" data-value="75">75%</button>
-            <button type="button" class="choice-btn ice-choice active" data-value="100">100%</button>
-            <button type="button" class="choice-btn ice-choice" data-value="125">125%</button>
-          </div>
-
-          <input type="hidden" id="iceLevel" value="100">
+        <div class="choice-row">
+          <button type="button" class="choice-btn size-choice" data-size="Small" data-price-adjust="-0.75" data-i18n="smallSize">Small -$0.75</button>
+          <button type="button" class="choice-btn size-choice active" data-size="Medium" data-price-adjust="0" data-i18n="mediumSize">Medium</button>
+          <button type="button" class="choice-btn size-choice" data-size="Large" data-price-adjust="0.75" data-i18n="largeSize">Large +$0.75</button>
         </div>
 
-        <div class="choice-section">
-          <div class="choice-header">
-            <h3>Sugar Level</h3>
-            <span>Required</span>
-          </div>
+        <input type="hidden" id="drinkSize" value="Medium">
+        <input type="hidden" id="sizePriceAdjust" value="0">
+      </div>
 
-          <div class="choice-row">
-            <button type="button" class="choice-btn sugar-choice" data-value="0">0%</button>
-            <button type="button" class="choice-btn sugar-choice" data-value="25">25%</button>
-            <button type="button" class="choice-btn sugar-choice" data-value="50">50%</button>
-            <button type="button" class="choice-btn sugar-choice" data-value="75">75%</button>
-            <button type="button" class="choice-btn sugar-choice active" data-value="100">100%</button>
-            <button type="button" class="choice-btn sugar-choice" data-value="125">125%</button>
-          </div>
-
-          <input type="hidden" id="sugarLevel" value="100">
+      <div class="choice-section">
+        <div class="choice-header">
+          <h3 data-i18n="iceLevel">Ice Level</h3>
+          <span data-i18n="required">Required</span>
         </div>
 
-        <div class="choice-section">
-          <div class="choice-header">
-            <h3>Drink Quantity</h3>
-          </div>
-
-          <div class="drink-qty-row">
-            <button type="button" class="round-qty-btn" id="minusDrinkQty">-</button>
-            <span id="drinkQtyDisplay">1</span>
-            <button type="button" class="round-qty-btn" id="plusDrinkQty">+</button>
-          </div>
-
-          <input type="hidden" id="drinkQty" value="1">
+        <div class="choice-row">
+          <button type="button" class="choice-btn ice-choice" data-value="0">0%</button>
+          <button type="button" class="choice-btn ice-choice" data-value="25">25%</button>
+          <button type="button" class="choice-btn ice-choice" data-value="50">50%</button>
+          <button type="button" class="choice-btn ice-choice" data-value="75">75%</button>
+          <button type="button" class="choice-btn ice-choice active" data-value="100">100%</button>
+          <button type="button" class="choice-btn ice-choice" data-value="125">125%</button>
         </div>
 
-        <div class="choice-section">
-          <div class="choice-header">
-            <h3>Add Toppings</h3>
-          </div>
+        <input type="hidden" id="iceLevel" value="100">
+      </div>
 
-          <div id="addonOptionsContainer"></div>
+      <div class="choice-section">
+        <div class="choice-header">
+          <h3 data-i18n="sugarLevel">Sugar Level</h3>
+          <span data-i18n="required">Required</span>
         </div>
 
-        <div class="popup-actions">
-          <button type="button" class="popup-button cancel-button" id="cancelPopupBtn">Cancel</button>
-          <button type="submit" class="popup-button done-button">Add To Cart</button>
+        <div class="choice-row">
+          <button type="button" class="choice-btn sugar-choice" data-value="0">0%</button>
+          <button type="button" class="choice-btn sugar-choice" data-value="25">25%</button>
+          <button type="button" class="choice-btn sugar-choice" data-value="50">50%</button>
+          <button type="button" class="choice-btn sugar-choice" data-value="75">75%</button>
+          <button type="button" class="choice-btn sugar-choice active" data-value="100">100%</button>
+          <button type="button" class="choice-btn sugar-choice" data-value="125">125%</button>
         </div>
-      </form>
-    </div>
+
+        <input type="hidden" id="sugarLevel" value="100">
+      </div>
+
+      <div class="choice-section">
+        <div class="choice-header">
+          <h3 data-i18n="drinkQuantity">Drink Quantity</h3>
+        </div>
+
+        <div class="drink-qty-row">
+          <button type="button" class="round-qty-btn" id="minusDrinkQty">-</button>
+          <span id="drinkQtyDisplay">1</span>
+          <button type="button" class="round-qty-btn" id="plusDrinkQty">+</button>
+        </div>
+
+        <input type="hidden" id="drinkQty" value="1">
+      </div>
+
+      <div class="choice-section">
+        <div class="choice-header">
+          <h3 data-i18n="addToppings">Add Toppings</h3>
+        </div>
+
+        <div id="addonOptionsContainer"></div>
+      </div>
+
+      <div class="popup-actions">
+        <button type="button" class="popup-button cancel-button" id="cancelPopupBtn" data-i18n="cancel">Cancel</button>
+        <button type="submit" class="popup-button done-button" data-i18n="addToCart">Add To Cart</button>
+      </div>
+    </form>
+  </div>
 
 
     <div class = "chat-window" id="chatWindow">

@@ -82,7 +82,8 @@ function normalizeToppings(toppings) {
 
   return toppings.map((topping) => ({
     id: toNumber(topping.id, 0),
-    name: topping.name || "Addon",
+    originalName: topping.originalName || topping.original_name || topping.name || "Addon",
+    name: topping.name || topping.originalName || topping.original_name || "Addon",
     qty: Math.max(1, toNumber(topping.qty, 1)),
     price: toNumber(topping.price, 0)
   }));
@@ -98,14 +99,15 @@ function normalizeCartItem(raw, index = 0) {
   return {
     cartId: raw.cartId || raw.id || createCartId(),
     itemId: toNumber(raw.itemId ?? raw.id, index + 1),
-    name: raw.name || "Unnamed Item",
+    originalName: raw.originalName || raw.original_name || raw.name || "Unnamed Item",
+    name: raw.name || raw.originalName || raw.original_name || "Unnamed Item",
     price: toNumber(raw.price, 0),
     qty,
     size: raw.size || "Regular",
     sugar,
-    sweetness: raw.sweetness || `${sugar}%`,
+    sweetness: `${sugar}%`,
     ice,
-    iceLabel: raw.iceLabel || `${ice}% Ice`,
+    iceLabel: `${ice}%`,
     toppings: normalizeToppings(raw.toppings)
   };
 }
@@ -178,11 +180,10 @@ function renderMenuItems() {
     );
     
     card.dataset.id = item.item_id;
-    card.dataset.name = item.name;
+    card.dataset.originalName = item.originalName || item.name;
+    card.dataset.name = displayName;
     card.dataset.category = item.category;
     card.dataset.price = item.price;
-
-card.dataset.name = displayName;
 
     card.innerHTML = `
       <div class="drink-image">
@@ -214,29 +215,33 @@ function renderAddonOptions() {
   addonOptionsContainer.innerHTML = "";
 
   toppingItems.forEach((item) => {
+    const displayName = item.translatedName || item.name;
+
     const card = document.createElement("div");
     card.className = "addon-card";
     card.setAttribute("tabindex", "0");
     card.setAttribute(
       "data-reader",
-      `${item.name}. Add on price $${Number(item.price).toFixed(2)}. Increase or decrease quantity using plus and minus buttons.`
+      `${displayName}. Add on price $${Number(item.price).toFixed(2)}. Increase or decrease quantity using plus and minus buttons.`
     );
+
     card.innerHTML = `
       <div class="addon-card-top">
         <div>
-          <p class="addon-name">${item.name}</p>
+          <p class="addon-name">${displayName}</p>
           <p class="addon-price">+$${Number(item.price).toFixed(2)}</p>
         </div>
       </div>
 
       <div class="addon-qty-controls">
-        <button type="button" class="addon-qty-btn minus-addon-btn" data-id="${item.item_id}" aria-label="Decrease ${item.name} quantity">-</button>
+        <button type="button" class="addon-qty-btn minus-addon-btn" data-id="${item.item_id}" aria-label="Decrease ${displayName} quantity">-</button>
         <input
           type="number"
           class="addon-qty-input"
           name="addonQty"
           data-id="${item.item_id}"
-          data-name="${item.name}"
+          data-name="${displayName}"
+          data-original-name="${item.originalName || item.name}"
           data-price="${item.price}"
           min="0"
           max="5"
@@ -245,7 +250,7 @@ function renderAddonOptions() {
           tabindex="-1"
           aria-hidden="true"
         >
-        <button type="button" class="addon-qty-btn plus-addon-btn" data-id="${item.item_id}" aria-label="Increase ${item.name} quantity">+</button>
+        <button type="button" class="addon-qty-btn plus-addon-btn" data-id="${item.item_id}" aria-label="Increase ${displayName} quantity">+</button>
       </div>
     `;
 
@@ -256,6 +261,7 @@ function renderAddonOptions() {
 function addItemToCart(drinkCard, addons, customization = {}) {
   const drinkId = Number(drinkCard.dataset.id);
   const drinkName = drinkCard.dataset.name;
+  const drinkOriginalName = drinkCard.dataset.originalName || drinkName;
   const drinkBasePrice = Number(drinkCard.dataset.price);
   const sizePriceAdjust = Number(customization.sizePriceAdjust || 0);
   const drinkPrice = drinkBasePrice + sizePriceAdjust;
@@ -266,6 +272,7 @@ function addItemToCart(drinkCard, addons, customization = {}) {
     addons.forEach((addon) => {
       toppingObjects.push({
         id: Number(addon.id),
+        originalName: addon.originalName || addon.name,
         name: addon.name,
         qty: Number(addon.qty),
         price: Number(addon.price)
@@ -279,6 +286,7 @@ function addItemToCart(drinkCard, addons, customization = {}) {
   const newItem = normalizeCartItem({
     cartId: createCartId(),
     itemId: drinkId,
+    originalName: drinkOriginalName,
     name: drinkName,
     price: drinkPrice,
     qty: Math.max(1, Number(customization.qty || 1)),
@@ -306,12 +314,14 @@ async function translateMenuItems(items, targetLanguage) {
   if (!Array.isArray(items) || items.length === 0 || targetLanguage === "en") {
     return items.map((item) => ({
       ...item,
+      originalName: item.name,
       translatedName: item.name,
       translatedDescription: item.description || "Freshly made and ready to customize."
     }));
   }
 
   const texts = [];
+
   items.forEach((item) => {
     texts.push(item.name || "");
     texts.push(item.description || "Freshly made and ready to customize.");
@@ -338,11 +348,48 @@ async function translateMenuItems(items, targetLanguage) {
 
   return items.map((item, index) => ({
     ...item,
+    originalName: item.name,
     translatedName: translatedTexts[index * 2] || item.name,
     translatedDescription:
       translatedTexts[index * 2 + 1] ||
       item.description ||
       "Freshly made and ready to customize."
+  }));
+}
+
+async function translateToppingItems(items, targetLanguage) {
+  if (!Array.isArray(items) || items.length === 0 || targetLanguage === "en") {
+    return items.map((item, index) => ({
+      ...item,
+      translatedName: translatedTexts[index] || item.name
+    }));
+  }
+
+  const texts = items.map((item) => item.name || "");
+
+  const response = await fetch("/api/translate", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      texts,
+      targetLanguage
+    })
+  });
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(data.error || "Failed to translate toppings.");
+  }
+
+  const translatedTexts = data.translatedTexts || [];
+
+  return items.map((item, index) => ({
+    ...item,
+    originalName: item.name,
+    translatedName: translatedTexts[index] || item.name
   }));
 }
 
@@ -356,8 +403,30 @@ async function loadMenuFromDatabase() {
     }
 
     const rawItems = data.items || [];
-    toppingItems = data.toppings || [];
-    menuItems = await translateMenuItems(rawItems, currentLanguage);
+    const rawToppings = data.toppings || [];
+
+    try {
+      menuItems = await translateMenuItems(rawItems, currentLanguage);
+    } catch (translateError) {
+      console.error("Drink translation failed, using original items:", translateError);
+      menuItems = rawItems.map((item) => ({
+        ...item,
+        originalName: item.name,
+        translatedName: item.name,
+        translatedDescription: item.description || "Freshly made and ready to customize."
+      }));
+    }
+
+    try {
+      toppingItems = await translateToppingItems(rawToppings, currentLanguage);
+    } catch (translateError) {
+      console.error("Topping translation failed, using original toppings:", translateError);
+      toppingItems = rawToppings.map((item) => ({
+        ...item,
+        originalName: item.name,
+        translatedName: item.name
+      }));
+    }
 
     renderMenuItems();
     renderAddonOptions();
