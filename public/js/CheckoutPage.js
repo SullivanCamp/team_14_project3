@@ -39,7 +39,12 @@ const CHECKOUT_TEXT = {
     sizeRegular: "Regular",
     ice: "Ice",
     afterReward: "after reward",
-    cartEmpty: "Your cart is empty."
+    cartEmpty: "Your cart is empty.",
+    removeReward: "Remove Reward",
+    useReward: "Use 100 pts = Free Drink + 1 Topping",
+    rewardApplied: "Reward applied: Free drink + 1 topping.",
+    rewardRemoved: "Reward removed.",
+    freeDrinkReward: "Free drink + 1 topping"
   },
   es: {
     addOns: "Complementos",
@@ -52,7 +57,12 @@ const CHECKOUT_TEXT = {
     sizeRegular: "Regular",
     ice: "hielo",
     afterReward: "después de recompensa",
-    cartEmpty: "Tu carrito está vacío."
+    cartEmpty: "Tu carrito está vacío.",
+    removeReward: "Eliminar recompensa",
+    useReward: "Usa 100 puntos para obtener una bebida gratis + 1 ingrediente adicional",
+    rewardApplied: "Recompensa aplicada: bebida gratis + 1 ingrediente adicional.",
+    rewardRemoved: "Recompensa eliminada.",
+    freeDrinkReward: "Bebida gratis + 1 ingrediente adicional"
   },
   fr: {
     addOns: "Options",
@@ -65,7 +75,12 @@ const CHECKOUT_TEXT = {
     sizeRegular: "Standard",
     ice: "glace",
     afterReward: "après récompense",
-    cartEmpty: "Votre panier est vide."
+    cartEmpty: "Votre panier est vide.",
+    removeReward: "Supprimer la récompense",
+    useReward: "Utilisez 100 points pour une boisson gratuite + 1 garniture",
+    rewardApplied: "Récompense appliquée : boisson gratuite + 1 garniture.",
+    rewardRemoved: "Récompense supprimée.",
+    freeDrinkReward: "Boisson gratuite + 1 garniture"
   },
   zh: {
     addOns: "附加配料",
@@ -78,7 +93,12 @@ const CHECKOUT_TEXT = {
     sizeRegular: "普通",
     ice: "冰",
     afterReward: "使用奖励后",
-    cartEmpty: "您的购物车是空的。"
+    cartEmpty: "您的购物车是空的。",
+    removeReward: "移除奖励",
+    useReward: "使用 100 积分兑换一杯免费饮料 + 1 份配料",
+    rewardApplied: "已使用奖励：免费饮料 + 1 份配料。",
+    rewardRemoved: "奖励已移除。",
+    freeDrinkReward: "免费饮料 + 1 份配料"
   }
 };
 
@@ -225,6 +245,16 @@ async function loadCheckoutRewards() {
       checkoutRewardMessage.textContent = "Could not load rewards.";
     }
   }
+
+  if (activeReward) {
+    if (useCheckoutRewardBtn) {
+      useCheckoutRewardBtn.textContent = t("removeReward");
+    }
+
+    if (checkoutRewardMessage) {
+      checkoutRewardMessage.textContent = t("rewardApplied");
+    }
+  }
 }
 
 function applyCheckoutReward() {
@@ -249,11 +279,11 @@ function applyCheckoutReward() {
     activeReward = null;
 
     if (checkoutRewardMessage) {
-      checkoutRewardMessage.textContent = "Reward removed.";
+      checkoutRewardMessage.textContent = t("rewardRemoved");
     }
 
     if (useCheckoutRewardBtn) {
-      useCheckoutRewardBtn.textContent = "Use 100 pts = Free Drink + 1 Topping";
+      useCheckoutRewardBtn.textContent = t("useReward");
     }
 
     updateSummary();
@@ -263,15 +293,15 @@ function applyCheckoutReward() {
   activeReward = {
     type: "FREE_DRINK_ONE_TOPPING",
     pointsCost: FREE_DRINK_REWARD_COST,
-    label: "Free drink + 1 topping"
+    label: t("freeDrinkReward")
   };
 
   if (checkoutRewardMessage) {
-    checkoutRewardMessage.textContent = "Reward applied: Free drink + 1 topping.";
+    checkoutRewardMessage.textContent = t("rewardApplied");
   }
 
   if (useCheckoutRewardBtn) {
-    useCheckoutRewardBtn.textContent = "Remove Reward";
+    useCheckoutRewardBtn.textContent = t("removeReward");
   }
 
   updateSummary();
@@ -478,7 +508,7 @@ function updateSummary() {
   const total = discountedSubtotal + tax;
 
   if (activeReward) {
-    subtotalElement.textContent = `$${discountedSubtotal.toFixed(2)} after reward`;
+    subtotalElement.textContent = `$${discountedSubtotal.toFixed(2)} ${t("afterReward")}`;
   } else {
     subtotalElement.textContent = `$${subtotal.toFixed(2)}`;
   }
