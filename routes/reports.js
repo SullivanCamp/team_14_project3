@@ -2,6 +2,8 @@ const express = require("express");
 const router = express.Router();
 const { Pool } = require("pg");
 
+const REPORT_TIME_ZONE = "America/Chicago";
+
 const pool = new Pool({
   user: process.env.PSQL_USER,
   host: process.env.PSQL_HOST,
@@ -11,27 +13,21 @@ const pool = new Pool({
   ssl: { rejectUnauthorized: false }
 });
 
+function getChicagoDateString(date = new Date()) {
+  return new Intl.DateTimeFormat("en-CA", {
+    timeZone: REPORT_TIME_ZONE,
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit"
+  }).format(date);
+}
+
 function getDayBounds(dateString) {
-  const day = dateString ? new Date(`${dateString}T00:00:00`) : new Date();
-  const year = day.getFullYear();
-  const month = String(day.getMonth() + 1).padStart(2, "0");
-  const date = String(day.getDate()).padStart(2, "0");
-
-  const start = `${year}-${month}-${date} 00:00:00`;
-
-  const endDate = new Date(day);
-  endDate.setDate(endDate.getDate() + 1);
-
-  const endYear = endDate.getFullYear();
-  const endMonth = String(endDate.getMonth() + 1).padStart(2, "0");
-  const endDay = String(endDate.getDate()).padStart(2, "0");
-
-  const end = `${endYear}-${endMonth}-${endDay} 00:00:00`;
+  const dayString = dateString || getChicagoDateString();
 
   return {
-    start,
-    end,
-    dayString: `${year}-${month}-${date}`
+    start: `${dayString} 00:00:00`,
+    dayString
   };
 }
 
@@ -41,7 +37,7 @@ async function ensureZReportTable(clientOrPool = pool) {
       id SERIAL PRIMARY KEY,
       report_date DATE NOT NULL UNIQUE,
       generated_by TEXT NOT NULL,
-      generated_at TIMESTAMP NOT NULL DEFAULT (NOW() AT TIME ZONE 'America/Chicago'),
+      generated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
       order_count INTEGER NOT NULL DEFAULT 0,
       total_sales NUMERIC(10, 2) NOT NULL DEFAULT 0,
       avg_order NUMERIC(10, 2) NOT NULL DEFAULT 0,
@@ -50,14 +46,14 @@ async function ensureZReportTable(clientOrPool = pool) {
   `);
 }
 
-async function buildZReport(clientOrPool, start, end) {
+async function buildZReport(clientOrPool, start) {
   const totalsSql = `
     SELECT COUNT(*) AS c,
            COALESCE(SUM(total_price), 0) AS s,
            COALESCE(AVG(total_price), 0) AS a
     FROM orders
-    WHERE order_datetime::timestamp >= $1
-      AND order_datetime::timestamp < $2
+    WHERE order_datetime >= ($1::timestamp AT TIME ZONE '${REPORT_TIME_ZONE}')
+      AND order_datetime < (($1::timestamp + INTERVAL '1 day') AT TIME ZONE '${REPORT_TIME_ZONE}')
       AND is_complete = true
   `;
 
@@ -65,16 +61,16 @@ async function buildZReport(clientOrPool, start, end) {
     SELECT COALESCE(NULLIF(TRIM(payment_method), ''), 'Unknown') AS method,
            COALESCE(SUM(total_price), 0) AS total
     FROM orders
-    WHERE order_datetime::timestamp >= $1
-      AND order_datetime::timestamp < $2
+    WHERE order_datetime >= ($1::timestamp AT TIME ZONE '${REPORT_TIME_ZONE}')
+      AND order_datetime < (($1::timestamp + INTERVAL '1 day') AT TIME ZONE '${REPORT_TIME_ZONE}')
       AND is_complete = true
     GROUP BY COALESCE(NULLIF(TRIM(payment_method), ''), 'Unknown')
     ORDER BY method
   `;
 
   const [totalsResult, paymentResult] = await Promise.all([
-    clientOrPool.query(totalsSql, [start, end]),
-    clientOrPool.query(paymentSql, [start, end])
+    clientOrPool.query(totalsSql, [start]),
+    clientOrPool.query(paymentSql, [start])
   ]);
 
   const totalsRow = totalsResult.rows[0] || { c: 0, s: 0, a: 0 };
@@ -101,21 +97,21 @@ function reportFromGeneratedRow(row) {
 
 router.get("/x", async (req, res) => {
   try {
-    const { start, end, dayString } = getDayBounds(req.query.date);
+    const { start, dayString } = getDayBounds(req.query.date);
 
     const sql = `
       SELECT
-        EXTRACT(HOUR FROM o.order_datetime::timestamp) AS hr,
+        EXTRACT(HOUR FROM o.order_datetime AT TIME ZONE '${REPORT_TIME_ZONE}') AS hr,
         COALESCE(SUM(CASE WHEN o.is_complete THEN o.total_price ELSE 0 END), 0) AS sales,
         COALESCE(SUM(CASE WHEN NOT o.is_complete THEN 1 ELSE 0 END), 0) AS voids
       FROM orders o
-      WHERE o.order_datetime::timestamp >= $1
-        AND o.order_datetime::timestamp < $2
+      WHERE o.order_datetime >= ($1::timestamp AT TIME ZONE '${REPORT_TIME_ZONE}')
+        AND o.order_datetime < (($1::timestamp + INTERVAL '1 day') AT TIME ZONE '${REPORT_TIME_ZONE}')
       GROUP BY hr
       ORDER BY hr
     `;
 
-    const result = await pool.query(sql, [start, end]);
+    const result = await pool.query(sql, [start]);
 
     const rows = Array.from({ length: 24 }, (_, hour) => ({
       hour,
@@ -163,7 +159,7 @@ router.get("/z/today", async (req, res) => {
   try {
     await ensureZReportTable();
 
-    const { start, end, dayString } = getDayBounds(req.query.date);
+    const { start, dayString } = getDayBounds(req.query.date);
 
     const generatedResult = await pool.query(
       `
@@ -188,7 +184,7 @@ router.get("/z/today", async (req, res) => {
       });
     }
 
-    const report = await buildZReport(pool, start, end);
+    const report = await buildZReport(pool, start);
 
     return res.json({
       success: true,
@@ -210,7 +206,7 @@ router.post("/z/generate", async (req, res) => {
 
   try {
     const generatedBy = String(req.body.generatedBy || "").trim() || "Manager";
-    const { start, end, dayString } = getDayBounds(req.body.date);
+    const { start, dayString } = getDayBounds(req.body.date);
 
     await client.query("BEGIN");
     await ensureZReportTable(client);
@@ -241,7 +237,7 @@ router.post("/z/generate", async (req, res) => {
       });
     }
 
-    const report = await buildZReport(client, start, end);
+    const report = await buildZReport(client, start);
 
     const insertResult = await client.query(
       `
@@ -292,26 +288,26 @@ router.post("/z/generate", async (req, res) => {
 
 router.get("/trends", async (req, res) => {
   try {
-    const { start, end, dayString } = getDayBounds(req.query.date);
+    const { start, dayString } = getDayBounds(req.query.date);
     const limit = Math.min(20, Math.max(1, Number(req.query.limit) || 5));
 
     const totalsSql = `
       SELECT COUNT(*) AS total_orders,
              COALESCE(SUM(total_price), 0) AS total_revenue
       FROM orders
-      WHERE order_datetime::timestamp >= $1
-        AND order_datetime::timestamp < $2
+      WHERE order_datetime >= ($1::timestamp AT TIME ZONE '${REPORT_TIME_ZONE}')
+        AND order_datetime < (($1::timestamp + INTERVAL '1 day') AT TIME ZONE '${REPORT_TIME_ZONE}')
         AND is_complete = TRUE
     `;
 
     const hourSql = `
-      SELECT EXTRACT(HOUR FROM order_datetime::timestamp) AS hour,
-             date_trunc('hour', order_datetime::timestamp) AS hour_bucket,
+      SELECT EXTRACT(HOUR FROM order_datetime AT TIME ZONE '${REPORT_TIME_ZONE}') AS hour,
+             date_trunc('hour', order_datetime AT TIME ZONE '${REPORT_TIME_ZONE}') AS hour_bucket,
              COUNT(*) AS order_count,
              COALESCE(SUM(total_price), 0) AS revenue
       FROM orders
-      WHERE order_datetime::timestamp >= $1
-        AND order_datetime::timestamp < $2
+      WHERE order_datetime >= ($1::timestamp AT TIME ZONE '${REPORT_TIME_ZONE}')
+        AND order_datetime < (($1::timestamp + INTERVAL '1 day') AT TIME ZONE '${REPORT_TIME_ZONE}')
         AND is_complete = TRUE
       GROUP BY hour, hour_bucket
       ORDER BY hour ASC
@@ -324,23 +320,23 @@ router.get("/trends", async (req, res) => {
       FROM orders o
       JOIN order_item oi ON oi.order_id = o.id
       LEFT JOIN menu_item mi ON mi.item_id = oi.menu_id
-      WHERE o.order_datetime::timestamp >= $1
-        AND o.order_datetime::timestamp < $2
+      WHERE o.order_datetime >= ($1::timestamp AT TIME ZONE '${REPORT_TIME_ZONE}')
+        AND o.order_datetime < (($1::timestamp + INTERVAL '1 day') AT TIME ZONE '${REPORT_TIME_ZONE}')
         AND o.is_complete = TRUE
       GROUP BY oi.menu_id, mi.name
     `;
 
     const [totalsResult, hourResult, topSellingResult, leastSellingResult] =
       await Promise.all([
-        pool.query(totalsSql, [start, end]),
-        pool.query(hourSql, [start, end]),
+        pool.query(totalsSql, [start]),
+        pool.query(hourSql, [start]),
         pool.query(
-          `${sellingSql} ORDER BY qty DESC, item_name ASC LIMIT $3`,
-          [start, end, limit]
+          `${sellingSql} ORDER BY qty DESC, item_name ASC LIMIT $2`,
+          [start, limit]
         ),
         pool.query(
-          `${sellingSql} ORDER BY qty ASC, item_name ASC LIMIT $3`,
-          [start, end, limit]
+          `${sellingSql} ORDER BY qty ASC, item_name ASC LIMIT $2`,
+          [start, limit]
         )
       ]);
 
@@ -351,7 +347,13 @@ router.get("/trends", async (req, res) => {
       const endDate = new Date(startDate);
       endDate.setHours(endDate.getHours() + 1);
 
-      const options = { hour: "numeric", minute: "2-digit", hour12: true };
+      const options = {
+        hour: "numeric",
+        minute: "2-digit",
+        hour12: true,
+        timeZone: REPORT_TIME_ZONE
+      };
+
       return `${startDate.toLocaleTimeString("en-US", options)}–${endDate.toLocaleTimeString("en-US", options)}`;
     }
 
@@ -435,16 +437,16 @@ router.get("/product-usage", async (req, res) => {
       JOIN order_item oi ON oi.order_id = o.id
       JOIN inventory_menu im ON im.menu_item_id = oi.menu_id
       JOIN inventory_item ii ON ii.inventory_item_id = im.inventory_item_id
-      WHERE o.order_datetime >= $1
-      AND o.order_datetime < $2
-      AND o.is_complete = TRUE
+      WHERE o.order_datetime >= ($1::timestamp AT TIME ZONE '${REPORT_TIME_ZONE}')
+        AND o.order_datetime < (($2::timestamp + INTERVAL '1 day') AT TIME ZONE '${REPORT_TIME_ZONE}')
+        AND o.is_complete = TRUE
       GROUP BY ii.inventory_item_id, ii.name, ii.measurement_units
       ORDER BY total_used DESC;
     `;
 
     const result = await pool.query(query, [
       `${startDate} 00:00:00`,
-      `${endDate} 23:59:59`
+      `${endDate} 00:00:00`
     ]);
 
     res.json(result.rows);
