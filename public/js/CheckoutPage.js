@@ -15,6 +15,88 @@ const checkoutRewardMessage = document.getElementById("checkoutRewardMessage");
 
 const FREE_DRINK_REWARD_COST = 100;
 
+let currentLanguage = normalizeLanguage(localStorage.getItem("preferredLanguage") || "en");
+
+function normalizeLanguage(lang) {
+  if (!lang) return "en";
+
+  if (lang.startsWith("zh")) return "zh";
+  if (lang.startsWith("es")) return "es";
+  if (lang.startsWith("fr")) return "fr";
+
+  return lang;
+}
+
+const CHECKOUT_TEXT = {
+  en: {
+    addOns: "Add-ons",
+    none: "None",
+    each: "each",
+    remove: "Remove",
+    sizeSmall: "Small",
+    sizeMedium: "Medium",
+    sizeLarge: "Large",
+    sizeRegular: "Regular",
+    ice: "Ice",
+    afterReward: "after reward",
+    cartEmpty: "Your cart is empty."
+  },
+  es: {
+    addOns: "Complementos",
+    none: "Ninguno",
+    each: "cada uno",
+    remove: "Eliminar",
+    sizeSmall: "Pequeño",
+    sizeMedium: "Mediano",
+    sizeLarge: "Grande",
+    sizeRegular: "Regular",
+    ice: "hielo",
+    afterReward: "después de recompensa",
+    cartEmpty: "Tu carrito está vacío."
+  },
+  fr: {
+    addOns: "Options",
+    none: "Aucune",
+    each: "chacun",
+    remove: "Supprimer",
+    sizeSmall: "Petit",
+    sizeMedium: "Moyen",
+    sizeLarge: "Grand",
+    sizeRegular: "Standard",
+    ice: "glace",
+    afterReward: "après récompense",
+    cartEmpty: "Votre panier est vide."
+  },
+  zh: {
+    addOns: "附加配料",
+    none: "无",
+    each: "每个",
+    remove: "移除",
+    sizeSmall: "小杯",
+    sizeMedium: "中杯",
+    sizeLarge: "大杯",
+    sizeRegular: "普通",
+    ice: "冰",
+    afterReward: "使用奖励后",
+    cartEmpty: "您的购物车是空的。"
+  }
+};
+
+function t(key) {
+  const lang = normalizeLanguage(currentLanguage);
+  return CHECKOUT_TEXT[lang]?.[key] || CHECKOUT_TEXT.en[key] || key;
+}
+
+function translatedSize(size) {
+  const cleanSize = String(size || "Regular").toLowerCase();
+
+  if (cleanSize === "small") return t("sizeSmall");
+  if (cleanSize === "medium") return t("sizeMedium");
+  if (cleanSize === "large") return t("sizeLarge");
+
+  return t("sizeRegular");
+}
+
 let activeReward = null;
 let activeCustomerRewards = null;
 
@@ -27,6 +109,70 @@ function getActiveCustomer() {
     console.error("Failed to read active customer:", error);
     return null;
   }
+}
+
+async function translateCartItems(targetLanguage) {
+  if (!cartItems.length) return;
+
+  // Always reset to original English/base names first
+  cartItems.forEach((item) => {
+    item.name = item.originalName || item.name;
+
+    if (item.toppings && Array.isArray(item.toppings)) {
+      item.toppings.forEach((topping) => {
+        topping.name = topping.originalName || topping.name;
+      });
+    }
+  });
+
+  if (!targetLanguage || targetLanguage === "en") {
+    saveCart();
+    return;
+  }
+
+  const texts = [];
+
+  cartItems.forEach((item) => {
+    texts.push(item.originalName || item.name || "");
+
+    if (item.toppings && Array.isArray(item.toppings)) {
+      item.toppings.forEach((topping) => {
+        texts.push(topping.originalName || topping.name || "");
+      });
+    }
+  });
+
+  const response = await fetch("/api/translate", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      texts,
+      targetLanguage
+    })
+  });
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(data.error || "Failed to translate cart items.");
+  }
+
+  const translated = data.translatedTexts || [];
+  let i = 0;
+
+  cartItems.forEach((item) => {
+    item.name = translated[i++] || item.originalName || item.name;
+
+    if (item.toppings && Array.isArray(item.toppings)) {
+      item.toppings.forEach((topping) => {
+        topping.name = translated[i++] || topping.originalName || topping.name;
+      });
+    }
+  });
+
+  saveCart();
 }
 
 async function loadCheckoutRewards() {
@@ -156,7 +302,8 @@ function normalizeToppings(toppings) {
 
   return toppings.map((topping) => ({
     id: toNumber(topping.id, 0),
-    name: topping.name || "Addon",
+    originalName: topping.originalName || topping.original_name || topping.name || "Addon",
+    name: topping.name || topping.originalName || topping.original_name || "Addon",
     qty: Math.max(1, toNumber(topping.qty, 1)),
     price: toNumber(topping.price, addonPrice)
   }));
@@ -172,14 +319,15 @@ function normalizeCartItem(raw, index = 0) {
   return {
     cartId: raw.cartId || raw.id || createCartId(),
     itemId: toNumber(raw.itemId ?? raw.id, index + 1),
-    name: raw.name || "Unnamed Item",
+    originalName: raw.originalName || raw.original_name || raw.name || "Unnamed Item",
+    name: raw.name || raw.originalName || raw.original_name || "Unnamed Item",
     price: toNumber(raw.price, 0),
     qty,
     size: raw.size || "Regular",
     sugar,
-    sweetness: raw.sweetness || `${sugar}%`,
+    sweetness: `${sugar}%`,
     ice,
-    iceLabel: raw.iceLabel || `${ice}% Ice`,
+    iceLabel: `${ice}%`,
     toppings: normalizeToppings(raw.toppings)
   };
 }
@@ -210,11 +358,11 @@ function saveCart() {
 }
 
 function sugarLabel(item) {
-  return item.sweetness || `${item.sugar}%`;
+  return `${item.sugar}%`;
 }
 
 function iceLabel(item) {
-  return item.iceLabel || `${item.ice}% Ice`;
+  return `${item.ice}% ${t("ice")}`;
 }
 
 function calculateAddonTotalForItem(item) {
@@ -232,14 +380,14 @@ function calculateAddonTotalForItem(item) {
 
 function toppingsLabel(item) {
   if (!item.toppings || item.toppings.length === 0) {
-    return `<p class="item-toppings">Add-ons: None</p>`;
+    return `<p class="item-toppings">${t("addOns")}: ${t("none")}</p>`;
   }
 
   const toppingControls = item.toppings
     .map(
       (topping) => `
         <div class="addon-row">
-          <span>${topping.name} ($${addonPrice.toFixed(2)} each)</span>
+          <span>${topping.name} ($${addonPrice.toFixed(2)} ${t("each")})</span>
           <div class="addon-controls">
             <button
               class="qty-btn"
@@ -266,7 +414,7 @@ function toppingsLabel(item) {
 
   return `
     <div class="item-toppings">
-      <p>Add-ons:</p>
+      <p>${t("addOns")}:</p>
       ${toppingControls}
     </div>
   `;
@@ -354,7 +502,7 @@ function renderCart() {
   cartList.innerHTML = "";
 
   if (cartItems.length === 0) {
-    cartList.innerHTML = `<p class="empty-cart" data-i18n="cartEmpty">Your cart is empty.</p>`;
+    cartList.innerHTML = `<p class="empty-cart">${t("cartEmpty")}</p>`;
     updateSummary();
     return;
   }
@@ -383,9 +531,9 @@ function renderCart() {
     itemDiv.innerHTML = `
       <div class="item-info">
         <h3>${item.name}</h3>
-        <p>${item.size} • ${sugarLabel(item)} • ${iceLabel(item)}</p>
+        <p>${translatedSize(item.size)} • ${sugarLabel(item)} • ${iceLabel(item)}</p>
         ${toppingsLabel(item)}
-        <p class="item-price">$${item.price.toFixed(2)} each</p>
+        <p class="item-price">$${item.price.toFixed(2)} ${t("each")}</p>
       </div>
 
       <div class="item-controls">
@@ -396,7 +544,7 @@ function renderCart() {
 
       <div class="item-total">
         <p>$${lineTotal.toFixed(2)}</p>
-        <button class="remove-btn" type="button" aria-label="Remove ${item.name}" onclick="removeItem('${item.cartId}')">Remove</button>
+        <button class="remove-btn" type="button" aria-label="${t("remove")} ${item.name}" onclick="removeItem('${item.cartId}')">${t("remove")}</button>
       </div>
     `;
 
@@ -559,6 +707,37 @@ if (useCheckoutRewardBtn) {
   useCheckoutRewardBtn.addEventListener("click", applyCheckoutReward);
 }
 
-loadCart();
-renderCart();
-loadCheckoutRewards();
+async function initCheckoutPage() {
+  loadCart();
+
+  try {
+    await translateCartItems(currentLanguage);
+  } catch (error) {
+    console.error("Cart item translation failed:", error);
+  }
+
+  renderCart();
+  loadCheckoutRewards();
+}
+
+initCheckoutPage();
+
+const languageSelect = document.getElementById("languageSelect");
+
+if (languageSelect) {
+  languageSelect.addEventListener("change", async (event) => {
+    currentLanguage = normalizeLanguage(event.target.value);
+    localStorage.setItem("preferredLanguage", currentLanguage);
+
+    loadCart();
+
+    try {
+      await translateCartItems(currentLanguage);
+    } catch (error) {
+      console.error("Cart item translation failed:", error);
+    }
+
+    renderCart();
+    loadCheckoutRewards();
+  });
+}

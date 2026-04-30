@@ -68,6 +68,20 @@ const FALLBACK_TEXT = {
   total: "Total",
   placeOrder: "Place Order",
   backToMenu: "Back to Menu",
+  size: "Size",
+  required: "Required",
+  drinkQuantity: "Drink Quantity",
+  addToppings: "Add Toppings",
+  addToCart: "Add To Cart",
+  smallSize: "Small -$0.75",
+  mediumSize: "Medium",
+  largeSize: "Large +$0.75",
+  zeroPercent: "0%",
+  twentyFivePercent: "25%",
+  fiftyPercent: "50%",
+  seventyFivePercent: "75%",
+  hundredPercent: "100%",
+  hundredTwentyFivePercent: "125%",
 };
 
 function getTranslatableNodes() {

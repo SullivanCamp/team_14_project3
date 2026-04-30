@@ -50,8 +50,23 @@ function resetPopupFields() {
 }
 
 function openAddonPopup(drinkCard) {
+  const currentLanguage = localStorage.getItem("preferredLanguage") || "en";
+
+  const popupText = {
+    en: {
+      customize: "Customize"
+    },
+    es: {
+      customize: "Personalizar"
+    }
+  };
+
+  function popupT(key) {
+    return popupText[currentLanguage]?.[key] || popupText.en[key] || key;
+  }
+
   activeDrinkCard = drinkCard;
-  popupDrinkName.textContent = "Customize " + drinkCard.dataset.name;
+  popupDrinkName.textContent = popupT("customize") + " " + drinkCard.dataset.name;
   resetPopupFields();
 
   popupOverlay.style.display = "block";
@@ -62,10 +77,8 @@ function openAddonPopup(drinkCard) {
   });
 
   setTimeout(() => {
-    if (window.screenReaderEnabled === true && window.keyboardMode === true) {
-      const first = addonPopup.querySelector("button, input, select");
-      if (first) first.focus();
-    }
+    const first = addonPopup.querySelector("button, input, select");
+    if (first) first.focus();
   }, 50);
 }
 
@@ -91,6 +104,7 @@ function getSelectedAddons() {
     if (qty > 0) {
       selected.push({
         id: Number(input.dataset.id),
+        originalName: input.dataset.originalName || input.dataset.name,
         name: input.dataset.name,
         qty: qty,
         price: Number(input.dataset.price)
@@ -112,7 +126,7 @@ function getCustomizationSelections() {
     sugar,
     sweetness: `${sugar}%`,
     ice,
-    iceLabel: `${ice}% Ice`,
+    iceLabel: `${ice}%`,
     size,
     sizePriceAdjust,
     qty
