@@ -1,4 +1,28 @@
 const FALLBACK_TEXT = {
+  pageTitleAuth: "Team 14 Kiosk",
+  welcomeTitle: "Welcome In",
+  welcomeSubtitle: "Log in for rewards, make an account real quick, or just skip and order.",
+  login: "Log In",
+  signup: "Sign Up",
+  skip: "Skip for Now",
+  back: "← Back",
+  loginTitle: "Log In",
+  labelEmailPhone: "Email or Phone",
+  phEmailPhone: "Enter your email or phone",
+  labelPassword: "Password",
+  phPassword: "Enter your password",
+  continue: "Continue to Menu",
+  signupTitle: "Create Account",
+  labelFirstName: "First Name",
+  phFirstName: "First name",
+  labelLastName: "Last Name",
+  phLastName: "Last name",
+  labelEmail: "Email",
+  phEmail: "Enter your email",
+  labelPhone: "Phone Number",
+  phPhone: "Enter your phone number",
+  createAccount: "Create Account and Order",
+
   brandName: "Team 14",
   searchDrinks: "Search drinks...",
   rewards: "Rewards",
@@ -117,23 +141,29 @@ function restoreEnglish() {
 
 document.addEventListener("DOMContentLoaded", async () => {
   const languageSelect = document.getElementById("languageSelect");
-  if (!languageSelect) return;
-
   const savedLanguage = localStorage.getItem("preferredLanguage") || "en";
-  languageSelect.value = savedLanguage;
 
+  // If we have a dropdown, reflect the saved language
+  if (languageSelect) {
+    languageSelect.value = savedLanguage;
+  }
+
+  // Always apply translation / fallback, even without the dropdown
   try {
     await translatePage(savedLanguage);
   } catch (err) {
     console.error("Initial translation failed:", err);
   }
 
-  languageSelect.addEventListener("change", async (event) => {
-    try {
-      await translatePage(event.target.value);
-    } catch (err) {
-      console.error("Language switch failed:", err);
-      alert("Could not translate page right now.");
-    }
-  });
+  // Only wire change handler if the dropdown exists
+  if (languageSelect) {
+    languageSelect.addEventListener("change", async (event) => {
+      try {
+        await translatePage(event.target.value);
+      } catch (err) {
+        console.error("Language switch failed:", err);
+        alert("Could not translate page right now.");
+      }
+    });
+  }
 });

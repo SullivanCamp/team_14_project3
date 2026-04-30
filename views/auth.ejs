@@ -6,70 +6,56 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Team 14 Kiosk</title>
+  <title data-i18n="pageTitleAuth">Team 14 Kiosk</title>
   <link rel="stylesheet" href="/css/auth.css">
 </head>
 <body>
   <main class="auth-shell">
     <section class="auth-card">
-      <div class="brand-pill">Team 14 Kiosk</div>
-
+      <div class="brand-pill" data-i18n="brandName">Team 14 Kiosk</div>
       <div id="startScreen" class="auth-panel active">
-        <h1>Welcome In</h1>
-        <p class="subtitle">
+        <h1 data-i18n="welcomeTitle">Welcome In</h1>
+        <p class="subtitle" data-i18n="welcomeSubtitle">
           Log in for rewards, make an account real quick, or just skip and order.
         </p>
-
         <div class="auth-actions">
-          <button class="auth-btn primary" id="showLoginBtn" type="button">Log In</button>
-          <button class="auth-btn secondary" id="showSignupBtn" type="button">Sign Up</button>
-          <button class="auth-btn ghost" id="skipBtn" type="button">Skip for Now</button>
+          <button class="auth-btn primary" id="showLoginBtn" type="button" data-i18n="login">Log In</button>
+          <button class="auth-btn secondary" id="showSignupBtn" type="button" data-i18n="signup">Sign Up</button>
+          <button class="auth-btn ghost" id="skipBtn" type="button" data-i18n="skip">Skip for Now</button>
         </div>
       </div>
-
       <div id="loginScreen" class="auth-panel">
-        <button class="back-btn" id="backFromLogin" type="button">← Back</button>
-        <h2>Log In</h2>
-
+        <button class="back-btn" id="backFromLogin" type="button" data-i18n="back">← Back</button>
+        <h2 data-i18n="loginTitle">Log In</h2>
         <form id="loginForm" class="auth-form">
-          <label for="loginIdentifier">Email or Phone</label>
-          <input type="text" id="loginIdentifier" placeholder="Enter your email or phone" required>
-
-          <label for="loginPassword">Password</label>
-          <input type="password" id="loginPassword" placeholder="Enter your password" required>
-
-          <button class="auth-btn primary" type="submit">Continue to Menu</button>
+          <label for="loginIdentifier" data-i18n="labelEmailPhone">Email or Phone</label>
+          <input type="text" id="loginIdentifier" placeholder="Enter your email or phone" required data-i18n-placeholder="phEmailPhone">
+          <label for="loginPassword" data-i18n="labelPassword">Password</label>
+          <input type="password" id="loginPassword" placeholder="Enter your password" required data-i18n-placeholder="phPassword">
+          <button class="auth-btn primary" type="submit" data-i18n="continue">Continue to Menu</button>
         </form>
       </div>
-
       <div id="signupScreen" class="auth-panel">
-        <button class="back-btn" id="backFromSignup" type="button">← Back</button>
-        <h2>Create Account</h2>
-
+        <button class="back-btn" id="backFromSignup" type="button" data-i18n="back">← Back</button>
+        <h2 data-i18n="signupTitle">Create Account</h2>
         <form id="signupForm" class="auth-form">
-          <label for="signupFirstName">First Name</label>
-          <input type="text" id="signupFirstName" placeholder="First name" required>
-
-          <label for="signupLastName">Last Name</label>
-          <input type="text" id="signupLastName" placeholder="Last name">
-
-          <label for="signupEmail">Email</label>
-          <input type="email" id="signupEmail" placeholder="Enter your email" required>
-
-          <label for="signupPhone">Phone Number</label>
-          <input type="text" id="signupPhone" placeholder="Enter your phone number">
-
-          <label for="signupPassword">Password</label>
-          <input type="password" id="signupPassword" placeholder="Enter your password" required>
-
-          <button class="auth-btn primary" type="submit">Create Account and Order</button>
+          <label for="signupFirstName" data-i18n="labelFirstName">First Name</label>
+          <input type="text" id="signupFirstName" placeholder="First name" required data-i18n-placeholder="phFirstName">
+          <label for="signupLastName" data-i18n="labelLastName">Last Name</label>
+          <input type="text" id="signupLastName" placeholder="Last name" data-i18n-placeholder="phLastName">
+          <label for="signupEmail" data-i18n="labelEmail">Email</label>
+          <input type="email" id="signupEmail" placeholder="Enter your email" required data-i18n-placeholder="phEmail">
+          <label for="signupPhone" data-i18n="labelPhone">Phone Number</label>
+          <input type="text" id="signupPhone" placeholder="Enter your phone number" data-i18n-placeholder="phPhone">
+          <label for="signupPassword" data-i18n="labelPassword">Password</label>
+          <input type="password" id="signupPassword" placeholder="Enter your password" required data-i18n-placeholder="phPassword">
+          <button class="auth-btn primary" type="submit" data-i18n="createAccount">Create Account and Order</button>
         </form>
       </div>
-
       <p id="authMessage" class="auth-message"></p>
     </section>
   </main>
-
   <script src="/js/auth.js"></script>
+  <script src="/js/translate.js"></script>
 </body>
 </html>
