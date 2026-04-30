@@ -44,7 +44,9 @@ const CHECKOUT_TEXT = {
     useReward: "Use 100 pts = Free Drink + 1 Topping",
     rewardApplied: "Reward applied: Free drink + 1 topping.",
     rewardRemoved: "Reward removed.",
-    freeDrinkReward: "Free drink + 1 topping"
+    freeDrinkReward: "Free drink + 1 topping",
+    canUse: "You can use 100 points for a free drink with one topping",
+    cannotUse: "You need 100 points to use this reward.",
   },
   es: {
     addOns: "Complementos",
@@ -62,7 +64,9 @@ const CHECKOUT_TEXT = {
     useReward: "Usa 100 puntos para obtener una bebida gratis + 1 ingrediente adicional",
     rewardApplied: "Recompensa aplicada: bebida gratis + 1 ingrediente adicional.",
     rewardRemoved: "Recompensa eliminada.",
-    freeDrinkReward: "Bebida gratis + 1 ingrediente adicional"
+    freeDrinkReward: "Bebida gratis + 1 ingrediente adicional",
+    canUse: "Puedes usar 100 puntos para una bebida gratis con un ingrediente adicional",
+    cannotUse: "Necesitas 100 puntos para usar esta recompensa.",
   },
   fr: {
     addOns: "Options",
@@ -80,7 +84,9 @@ const CHECKOUT_TEXT = {
     useReward: "Utilisez 100 points pour une boisson gratuite + 1 garniture",
     rewardApplied: "Récompense appliquée : boisson gratuite + 1 garniture.",
     rewardRemoved: "Récompense supprimée.",
-    freeDrinkReward: "Boisson gratuite + 1 garniture"
+    freeDrinkReward: "Boisson gratuite + 1 garniture",
+    canUse: "Vous pouvez utiliser 100 points pour une boisson gratuite avec un supplément",
+    cannotUse: "Vous avez besoin de 100 points pour utiliser cette récompense.",
   },
   zh: {
     addOns: "附加配料",
@@ -98,7 +104,9 @@ const CHECKOUT_TEXT = {
     useReward: "使用 100 积分兑换一杯免费饮料 + 1 份配料",
     rewardApplied: "已使用奖励：免费饮料 + 1 份配料。",
     rewardRemoved: "奖励已移除。",
-    freeDrinkReward: "免费饮料 + 1 份配料"
+    freeDrinkReward: "免费饮料 + 1 份配料",
+    canUse: "您可以使用100积分兑换一杯带一个配料的免费饮品",
+    cannotUse: "您需要100积分才能使用此奖励。",
   }
 };
 
@@ -233,8 +241,8 @@ async function loadCheckoutRewards() {
     if (checkoutRewardMessage) {
       checkoutRewardMessage.textContent =
         points >= FREE_DRINK_REWARD_COST
-          ? "You can use 100 points for a free drink with one topping."
-          : "You need 100 points to use this reward.";
+          ? t("canUse")
+          : t("cannotUse");
     }
   } catch (error) {
     console.error("Failed to load checkout rewards:", error);
