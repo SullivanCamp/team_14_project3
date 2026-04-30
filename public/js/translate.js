@@ -28,6 +28,7 @@ const FALLBACK_TEXT = {
   rewards: "Rewards",
   viewCart: "View Cart",
   pageTitleMenu: "Team 14 Menu",
+  tapiInit: "How can I help?",
   screenReader: "Enable Screen Reader",
   locationCollegeStation: "College Station, TX",
   askTapi:"Ask Tapi!",
